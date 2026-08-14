@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1039738812261",
+    "project_id": "eureka-9675a",
+    "storage_bucket": "eureka-9675a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1039738812261:android:6400f71b3d67acc729138c",
+        "android_client_info": {
+          "package_name": "br.com.eureka.eureka"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJYqMf8Ay6BjXNo5YZlPkhPk4LOHyXCFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
