@@ -35,7 +35,9 @@ abstract final class AppStrings {
           'Esta atividade ainda não está disponível offline. Verifique sua conexão e tente novamente.',
       loadingContent = 'Carregando conteúdo',
       comingSoon = 'Em breve',
-      lessonProgress = 'Progresso da atividade';
+      lessonProgress = 'Progresso da atividade',
+      closeActivity = 'Fechar atividade',
+      lessonTimeRemaining = 'Tempo restante da aula';
   static const xpLabel = 'Pontos de experiência';
   static const levelLabel = 'Nível atual';
   static String xpValue(int value) => '$value XP';
@@ -47,4 +49,9 @@ abstract final class AppStrings {
       value == 1 ? '1 lição concluída' : '$value lições concluídas';
   static String recommendationReason(String lesson) =>
       'Reforce $lesson e avance com confiança.';
+  static String lessonTime(Duration value) {
+    final minutes = value.inMinutes.toString().padLeft(2, '0');
+    final seconds = (value.inSeconds % 60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
 }

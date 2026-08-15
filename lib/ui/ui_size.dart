@@ -9,6 +9,7 @@ abstract final class UiSize {
   static const buttonHeightLg = 56.0;
   static const inputHeight = 52.0;
   static const progressHeight = 10.0;
+  static const lessonProgressHeight = 12.0;
   static const bottomNavigationHeight = 72.0;
   static const homeAppBarHeight = 64.0;
   static const numericButtonWidth = 56.0;
@@ -18,7 +19,7 @@ abstract final class UiSize {
   static const avatarXl = 96.0;
 
   // Aliases semânticos preservados para componentes existentes.
-  static const touchTarget = buttonHeightSm;
+  static const touchTarget = 48.0;
   static const icon = iconMd;
   static const avatar = avatarLg;
 }

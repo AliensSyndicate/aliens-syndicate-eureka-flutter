@@ -25,6 +25,7 @@ abstract final class UiColor {
   // Estrutura
   static const outline = Color(0xFF594A60);
   static const divider = Color(0xFF493D4F);
+  static const lessonProgressTrack = Color(0xFF494351);
 
   // Carregamento
   static const skeleton = navigationBackground;

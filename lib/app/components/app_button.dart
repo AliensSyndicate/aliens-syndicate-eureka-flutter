@@ -8,19 +8,22 @@ class AppButton extends StatelessWidget {
     required this.label,
     this.onPressed,
     this.isLoading = false,
+    this.color,
     super.key,
   });
   final String label;
   final VoidCallback? onPressed;
   final bool isLoading;
+  final Color? color;
   bool get isEnabled => onPressed != null && !isLoading;
 
   @override
   Widget build(BuildContext context) {
     final enabled = isEnabled;
-    final topColor = enabled ? UiColor.primary : UiColor.surfaceElevated;
+    final activeColor = color ?? UiColor.primary;
+    final topColor = enabled ? activeColor : UiColor.surfaceElevated;
     final depthColor = enabled
-        ? Color.lerp(UiColor.primary, UiColor.background, .28)!
+        ? Color.lerp(activeColor, UiColor.background, .28)!
         : UiColor.divider;
     return Semantics(
       button: true,
