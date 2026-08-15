@@ -11,6 +11,7 @@ class ProgressService {
     completedLessonIds: List<String>.from(
       _box.get('completed_lessons', defaultValue: <String>[]),
     ),
+    lastLessonId: _box.get('last_lesson_id') as String?,
   );
   int completionPercentage(List<Lesson> lessons) {
     return SubjectProgressService().calculate(
@@ -25,7 +26,15 @@ class ProgressService {
     final xp =
         current.xp +
         (current.completedLessonIds.contains(lessonId) ? 0 : earnedXp);
-    await _box.putAll({'xp': xp, 'completed_lessons': ids});
-    return UserProgress(xp: xp, completedLessonIds: ids);
+    await _box.putAll({
+      'xp': xp,
+      'completed_lessons': ids,
+      'last_lesson_id': lessonId,
+    });
+    return UserProgress(
+      xp: xp,
+      completedLessonIds: ids,
+      lastLessonId: lessonId,
+    );
   }
 }

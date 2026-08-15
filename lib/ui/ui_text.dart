@@ -23,21 +23,21 @@ abstract final class UiText {
     fontSize: 28,
     height: 1.15,
     fontWeight: FontWeight.w700,
-    color: UiColor.textPrimary,
+    color: UiColor.accent,
   );
   static const h4 = TextStyle(
     fontFamily: fontFamily,
     fontSize: 24,
     height: 1.20,
     fontWeight: FontWeight.w700,
-    color: UiColor.textPrimary,
+    color: UiColor.accent,
   );
   static const h5 = TextStyle(
     fontFamily: fontFamily,
     fontSize: 20,
     height: 1.25,
     fontWeight: FontWeight.w600,
-    color: UiColor.textPrimary,
+    color: UiColor.accent,
   );
   static const h6 = TextStyle(
     fontFamily: fontFamily,

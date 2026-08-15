@@ -2,6 +2,7 @@ abstract final class AppStrings {
   static const appName = 'Eureka',
       greeting = 'Olá, Explorador!',
       subjectsTitle = 'Matérias',
+      continueWhereStopped = 'Continuar de onde parou',
       journeySubtitle = 'Sua próxima descoberta está logo adiante.',
       home = 'Home',
       social = 'Social',
