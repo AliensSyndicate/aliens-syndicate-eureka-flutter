@@ -2,10 +2,10 @@
   "published": true,
   "enabled": true,
   "schemaVersion": 1,
-  "contentVersion": 5,
+  "contentVersion": 7,
   "payload": {
     "schemaVersion": 1,
-    "contentVersion": 5,
+    "contentVersion": 7,
     "locale": "pt-BR",
     "updatedAt": "2026-08-14T00:00:00.000Z",
     "subjects": [
@@ -474,7 +474,14 @@
                 "prerequisiteLessonIds": [
                   "portuguese_ef_5_5"
                 ],
-                "activities": []
+                "activities": [
+                  {
+                    "id": "text_genres_v1",
+                    "version": 2,
+                    "checksum": null,
+                    "order": 0
+                  }
+                ]
               },
               {
                 "id": "portuguese_ef_5_7",
@@ -2368,7 +2375,14 @@
                 "prerequisiteLessonIds": [
                   "mathematics_ef_5_1"
                 ],
-                "activities": []
+                "activities": [
+                  {
+                    "id": "fractions_intro_v1",
+                    "version": 2,
+                    "checksum": null,
+                    "order": 0
+                  }
+                ]
               },
               {
                 "id": "mathematics_ef_5_3",
@@ -3375,7 +3389,14 @@
                 "prerequisiteLessonIds": [
                   "science_ef_5_1"
                 ],
-                "activities": []
+                "activities": [
+                  {
+                    "id": "water_cycle_v1",
+                    "version": 2,
+                    "checksum": null,
+                    "order": 0
+                  }
+                ]
               },
               {
                 "id": "science_ef_5_3",

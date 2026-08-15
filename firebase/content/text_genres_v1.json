@@ -1,1 +1,187 @@
-{"published":true,"enabled":true,"payload":{"schemaVersion":1,"activityVersion":1,"lessonId":"text_genres","subjectId":"portuguese","topicId":"genres","schoolYear":5,"summary":"Cada texto tem uma intenção: informar, ensinar, divertir ou convencer.","questions":[{"id":"genre_1","version":1,"type":"multipleChoice","prompt":"Qual texto ensina a preparar um alimento?","options":["Receita","Poema","Notícia"],"correctAnswer":"Receita","difficulty":1,"tags":[],"subjectId":"portuguese","topicId":"genres"}]}}
+{
+  "id": "text_genres_v1",
+  "published": true,
+  "enabled": true,
+  "payload": {
+    "id": "text_genres_v1",
+    "schemaVersion": 1,
+    "activityVersion": 2,
+    "lessonId": "portuguese_ef_5_6",
+    "subjectId": "portuguese",
+    "topicId": "genres",
+    "schoolYear": 5,
+    "summary": "Cada texto tem uma intenção: informar, ensinar, divertir ou convencer.",
+    "questions": [
+      {
+        "id": "genre_1",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual texto ensina a preparar um alimento?",
+        "options": [
+          "Receita",
+          "Poema",
+          "Notícia"
+        ],
+        "correctAnswer": "Receita",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "portuguese",
+        "topicId": "genres"
+      },
+      {
+        "id": "genre_2",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual gênero informa um acontecimento recente?",
+        "options": [
+          "Notícia",
+          "Fábula",
+          "Bilhete"
+        ],
+        "correctAnswer": "Notícia",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "portuguese",
+        "topicId": "genres"
+      },
+      {
+        "id": "genre_3",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual texto costuma ter versos e estrofes?",
+        "options": [
+          "Poema",
+          "Manual",
+          "Reportagem"
+        ],
+        "correctAnswer": "Poema",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "portuguese",
+        "topicId": "genres"
+      },
+      {
+        "id": "genre_4",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual gênero apresenta instruções de uso?",
+        "options": [
+          "Manual",
+          "Conto",
+          "Entrevista"
+        ],
+        "correctAnswer": "Manual",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "portuguese",
+        "topicId": "genres"
+      },
+      {
+        "id": "genre_5",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual texto é usado para deixar um recado curto?",
+        "options": [
+          "Bilhete",
+          "Verbete",
+          "Crônica"
+        ],
+        "correctAnswer": "Bilhete",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "portuguese",
+        "topicId": "genres"
+      },
+      {
+        "id": "genre_6",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual gênero registra perguntas e respostas?",
+        "options": [
+          "Entrevista",
+          "Receita",
+          "Poema"
+        ],
+        "correctAnswer": "Entrevista",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "portuguese",
+        "topicId": "genres"
+      },
+      {
+        "id": "genre_7",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual texto apresenta o significado de uma palavra?",
+        "options": [
+          "Verbete",
+          "Notícia",
+          "Convite"
+        ],
+        "correctAnswer": "Verbete",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "portuguese",
+        "topicId": "genres"
+      },
+      {
+        "id": "genre_8",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual gênero chama pessoas para um evento?",
+        "options": [
+          "Convite",
+          "Reportagem",
+          "Fábula"
+        ],
+        "correctAnswer": "Convite",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "portuguese",
+        "topicId": "genres"
+      },
+      {
+        "id": "genre_9",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual texto narra uma história curta com personagens?",
+        "options": [
+          "Conto",
+          "Manual",
+          "Verbete"
+        ],
+        "correctAnswer": "Conto",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "portuguese",
+        "topicId": "genres"
+      },
+      {
+        "id": "genre_10",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual gênero aprofunda informações sobre um tema?",
+        "options": [
+          "Reportagem",
+          "Bilhete",
+          "Receita"
+        ],
+        "correctAnswer": "Reportagem",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "portuguese",
+        "topicId": "genres"
+      }
+    ]
+  }
+}

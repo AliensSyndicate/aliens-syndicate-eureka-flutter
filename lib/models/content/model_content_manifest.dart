@@ -105,6 +105,13 @@ class SubjectContentManifest {
       )
       .expand((item) => item.lessons)
       .toList();
+  List<Lesson> availableLessonsForYear(
+    int year, {
+    EducationStage stage = EducationStage.elementarySchool,
+  }) => lessonsForYear(
+    year,
+    stage: stage,
+  ).where((lesson) => lesson.hasActivity).toList();
   factory SubjectContentManifest.fromMap(Map<String, dynamic> map) =>
       SubjectContentManifest(
         id: map['id'] as String,

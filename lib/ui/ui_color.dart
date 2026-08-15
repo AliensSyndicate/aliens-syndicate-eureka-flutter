@@ -5,7 +5,7 @@ import '../enums/subject_type.dart';
 abstract final class UiColor {
   // Identidade principal
   static const background = Color(0xFF2D2636);
-  static const navigationBackground = Color(0xFF322A37);
+  static const navigationBackground = background;
   static const accent = Color(0xFFD38DFD);
   static const text = Color(0xFFF9F4FC);
 
@@ -25,6 +25,9 @@ abstract final class UiColor {
   // Estrutura
   static const outline = Color(0xFF594A60);
   static const divider = Color(0xFF493D4F);
+
+  // Carregamento
+  static const skeleton = navigationBackground;
 
   // Feedback
   static const success = Color(0xFF58CC02);

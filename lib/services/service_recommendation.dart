@@ -8,7 +8,9 @@ class RecommendationService {
     Map<String, int> difficultyScores,
   ) {
     final candidates = subjects
-        .where((subject) => subject.lessonsForYear(schoolYear).isNotEmpty)
+        .where(
+          (subject) => subject.availableLessonsForYear(schoolYear).isNotEmpty,
+        )
         .toList();
     if (candidates.isEmpty) return null;
     candidates.sort((a, b) {
@@ -23,7 +25,7 @@ class RecommendationService {
     final subject = candidates.first;
     return LearningRecommendation(
       subject: subject,
-      lesson: subject.lessonsForYear(schoolYear).first,
+      lesson: subject.availableLessonsForYear(schoolYear).first,
     );
   }
 }

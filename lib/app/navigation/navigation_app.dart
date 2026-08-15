@@ -5,7 +5,9 @@ import '../../pages/home/page_home.dart';
 import '../../pages/profile/page_profile.dart';
 import '../../pages/simulation/page_simulation.dart';
 import '../../pages/social/page_social.dart';
+import '../../ui/ui_color.dart';
 import '../../ui/ui_icon.dart';
+import '../../ui/ui_navigation.dart';
 
 class NavigationApp extends StatefulWidget {
   const NavigationApp({super.key});
@@ -27,28 +29,41 @@ class _NavigationAppState extends State<NavigationApp> {
     body: SafeArea(
       child: IndexedStack(index: index, children: pages),
     ),
-    bottomNavigationBar: NavigationBar(
-      selectedIndex: index,
-      onDestinationSelected: (value) => setState(() => index = value),
-      destinations: const [
-        NavigationDestination(icon: Icon(UiIcon.home), label: AppStrings.home),
-        NavigationDestination(
-          icon: Icon(UiIcon.social),
-          label: AppStrings.social,
+    bottomNavigationBar: DecoratedBox(
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: UiColor.divider,
+            width: UiNavigation.topBorderWidth,
+          ),
         ),
-        NavigationDestination(
-          icon: Icon(UiIcon.explore),
-          label: AppStrings.explore,
-        ),
-        NavigationDestination(
-          icon: Icon(UiIcon.simulation),
-          label: AppStrings.simulation,
-        ),
-        NavigationDestination(
-          icon: Icon(UiIcon.profile),
-          label: AppStrings.profile,
-        ),
-      ],
+      ),
+      child: NavigationBar(
+        selectedIndex: index,
+        onDestinationSelected: (value) => setState(() => index = value),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(UiIcon.home),
+            label: AppStrings.home,
+          ),
+          NavigationDestination(
+            icon: Icon(UiIcon.social),
+            label: AppStrings.social,
+          ),
+          NavigationDestination(
+            icon: Icon(UiIcon.explore),
+            label: AppStrings.explore,
+          ),
+          NavigationDestination(
+            icon: Icon(UiIcon.simulation),
+            label: AppStrings.simulation,
+          ),
+          NavigationDestination(
+            icon: Icon(UiIcon.profile),
+            label: AppStrings.profile,
+          ),
+        ],
+      ),
     ),
   );
 }

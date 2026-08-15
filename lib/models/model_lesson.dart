@@ -29,4 +29,7 @@ class Lesson {
   final int activityVersion;
   final String? activityChecksum;
   final List<ActivityReference> activities;
+
+  bool get hasActivity =>
+      questions.isNotEmpty || activities.isNotEmpty || activityId != null;
 }

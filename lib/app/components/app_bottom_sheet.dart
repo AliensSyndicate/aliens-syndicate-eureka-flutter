@@ -11,7 +11,6 @@ class AppBottomSheet {
   }) => showModalBottomSheet<T>(
     context: context,
     isScrollControlled: true,
-    showDragHandle: true,
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(

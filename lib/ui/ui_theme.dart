@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'ui_color.dart';
 import 'ui_radius.dart';
 import 'ui_size.dart';
-import 'ui_bottom_sheet.dart';
 import 'ui_text.dart';
 
 abstract final class UiTheme {
@@ -79,16 +78,8 @@ abstract final class UiTheme {
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: UiColor.surfaceElevated,
       modalBackgroundColor: UiColor.surfaceElevated,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(UiBottomSheet.radius),
-        ),
-      ),
-      dragHandleColor: UiColor.textSecondary,
-      dragHandleSize: Size(
-        UiBottomSheet.handleWidth,
-        UiBottomSheet.handleHeight,
-      ),
+      showDragHandle: false,
+      shape: RoundedRectangleBorder(),
     ),
   );
 }

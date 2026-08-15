@@ -1,1 +1,187 @@
-{"published":true,"enabled":true,"payload":{"schemaVersion":1,"activityVersion":1,"lessonId":"fractions_intro","subjectId":"mathematics","topicId":"fractions","schoolYear":5,"summary":"Uma fração mostra quantas partes iguais de um todo estamos usando.","questions":[{"id":"fraction_1","version":1,"type":"multipleChoice","prompt":"Qual fração representa metade?","options":["1/2","1/3","2/3"],"correctAnswer":"1/2","difficulty":1,"tags":[],"subjectId":"mathematics","topicId":"fractions"},{"id":"fraction_2","version":1,"type":"textInput","prompt":"Complete: duas partes de quatro são ___.","options":[],"correctAnswer":"2/4","difficulty":1,"tags":[],"subjectId":"mathematics","topicId":"fractions"}]}}
+{
+  "id": "fractions_intro_v1",
+  "published": true,
+  "enabled": true,
+  "payload": {
+    "id": "fractions_intro_v1",
+    "schemaVersion": 1,
+    "activityVersion": 2,
+    "lessonId": "mathematics_ef_5_2",
+    "subjectId": "mathematics",
+    "topicId": "fractions",
+    "schoolYear": 5,
+    "summary": "Uma fração mostra quantas partes iguais de um todo estamos usando.",
+    "questions": [
+      {
+        "id": "fraction_1",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual fração representa metade?",
+        "options": [
+          "1/2",
+          "1/3",
+          "2/3"
+        ],
+        "correctAnswer": "1/2",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "mathematics",
+        "topicId": "fractions"
+      },
+      {
+        "id": "fraction_2",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual fração representa um quarto?",
+        "options": [
+          "1/4",
+          "1/2",
+          "3/4"
+        ],
+        "correctAnswer": "1/4",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "mathematics",
+        "topicId": "fractions"
+      },
+      {
+        "id": "fraction_3",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual fração é equivalente a 1/2?",
+        "options": [
+          "2/4",
+          "1/3",
+          "3/4"
+        ],
+        "correctAnswer": "2/4",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "mathematics",
+        "topicId": "fractions"
+      },
+      {
+        "id": "fraction_4",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual fração é maior?",
+        "options": [
+          "3/4",
+          "1/4",
+          "2/8"
+        ],
+        "correctAnswer": "3/4",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "mathematics",
+        "topicId": "fractions"
+      },
+      {
+        "id": "fraction_5",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Duas partes de oito representam:",
+        "options": [
+          "2/8",
+          "8/2",
+          "1/8"
+        ],
+        "correctAnswer": "2/8",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "mathematics",
+        "topicId": "fractions"
+      },
+      {
+        "id": "fraction_6",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual fração representa um inteiro?",
+        "options": [
+          "4/4",
+          "3/4",
+          "1/4"
+        ],
+        "correctAnswer": "4/4",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "mathematics",
+        "topicId": "fractions"
+      },
+      {
+        "id": "fraction_7",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual é a menor fração?",
+        "options": [
+          "1/5",
+          "2/5",
+          "4/5"
+        ],
+        "correctAnswer": "1/5",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "mathematics",
+        "topicId": "fractions"
+      },
+      {
+        "id": "fraction_8",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Metade de uma pizza dividida em 8 fatias corresponde a:",
+        "options": [
+          "4/8",
+          "2/8",
+          "6/8"
+        ],
+        "correctAnswer": "4/8",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "mathematics",
+        "topicId": "fractions"
+      },
+      {
+        "id": "fraction_9",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual par contém frações equivalentes?",
+        "options": [
+          "1/2 e 3/6",
+          "1/3 e 2/3",
+          "1/4 e 3/4"
+        ],
+        "correctAnswer": "1/2 e 3/6",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "mathematics",
+        "topicId": "fractions"
+      },
+      {
+        "id": "fraction_10",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Em 3/5, o número de partes escolhidas é:",
+        "options": [
+          "3",
+          "5",
+          "8"
+        ],
+        "correctAnswer": "3",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "mathematics",
+        "topicId": "fractions"
+      }
+    ]
+  }
+}

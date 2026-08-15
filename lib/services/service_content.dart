@@ -9,8 +9,11 @@ import '../models/content/model_content_manifest.dart';
 import '../models/model_lesson.dart';
 import '../models/model_question.dart';
 import '../models/content/model_activity_reference.dart';
+import 'service_question_selection.dart';
 
 class ContentService {
+  static const _downloadTimeout = Duration(seconds: 4);
+
   ContentService(
     this._remoteRepository,
     this._manifestCache,
@@ -59,8 +62,11 @@ class ContentService {
     return getSubjects();
   }
 
-  List<Lesson> getJourneyLessons() =>
-      List.unmodifiable(_manifest.lessonsForYear(ProductConfig.v1SchoolYear));
+  List<Lesson> getJourneyLessons() => List.unmodifiable(
+    _manifest
+        .lessonsForYear(ProductConfig.v1SchoolYear)
+        .where((lesson) => lesson.hasActivity),
+  );
 
   List<SubjectContentManifest> getSubjectsForYear(int year) =>
       List.unmodifiable(_manifest.subjectsForYear(year));
@@ -94,31 +100,46 @@ class ContentService {
     final payloads = (await Future.wait(
       references.map(_loadActivityPayload),
     )).whereType<Map<String, dynamic>>().toList();
-    if (payloads.isNotEmpty) return _lessonWithPayloads(lesson, payloads);
-    return seedLessons.firstWhere(
-      (seed) => seed.id == lesson.id,
-      orElse: () => lesson,
-    );
+    if (payloads.isNotEmpty) {
+      final loaded = _lessonWithPayloads(lesson, payloads);
+      if (loaded.questions.isNotEmpty) return loaded;
+    }
+    for (final reference in references) {
+      final seedId = reference.id.replaceFirst(RegExp(r'_v\d+$'), '');
+      for (final seed in seedLessons) {
+        if (seed.id == seedId) {
+          return _lessonWithSeed(lesson, seed);
+        }
+      }
+    }
+    return lesson;
   }
 
   Future<Map<String, dynamic>?> _loadActivityPayload(
     ActivityReference reference,
-  ) => _downloads.putIfAbsent(
-    reference.id,
-    () => _fetchActivityPayload(
-      reference,
-    ).whenComplete(() => _downloads.remove(reference.id)),
-  );
+  ) {
+    return _downloads.putIfAbsent(
+      reference.id,
+      () => _fetchActivityPayload(reference).whenComplete(() {
+        _downloads.remove(reference.id);
+      }),
+    );
+  }
 
   Future<Map<String, dynamic>?> _fetchActivityPayload(
     ActivityReference reference,
   ) async {
     var payload = _activityCache.read(reference.id, reference.version);
+    if (!_isValidActivityPayload(payload, reference)) payload = null;
     if (payload == null && _remoteRepository != null) {
       try {
-        payload = await _remoteRepository.fetchActivity(reference.id);
-        if (payload != null) {
-          await _activityCache.write(reference.id, reference.version, payload);
+        payload = await _remoteRepository
+            .fetchActivity(reference.id)
+            .timeout(_downloadTimeout, onTimeout: () => null);
+        if (_isValidActivityPayload(payload, reference)) {
+          await _activityCache.write(reference.id, reference.version, payload!);
+        } else {
+          payload = null;
         }
       } on Object {
         payload = null;
@@ -126,6 +147,14 @@ class ContentService {
     }
     return payload;
   }
+
+  bool _isValidActivityPayload(
+    Map<String, dynamic>? payload,
+    ActivityReference reference,
+  ) =>
+      payload != null &&
+      payload['id'] == reference.id &&
+      payload['activityVersion'] == reference.version;
 
   Lesson _lessonWithPayloads(
     Lesson lesson,
@@ -135,6 +164,7 @@ class ContentService {
         .expand(
           (payload) => (payload['questions'] as List<dynamic>? ?? const [])
               .whereType<Map>()
+              .where((raw) => raw['enabled'] != false)
               .map((raw) {
                 final map = Map<String, dynamic>.from(raw);
                 return Question(
@@ -154,7 +184,11 @@ class ContentService {
               }),
         )
         .toList();
-    if (questions.isEmpty) return lesson;
+    final uniqueQuestionIds = questions.map((question) => question.id).toSet();
+    if (questions.length < QuestionSelectionService.poolSize ||
+        uniqueQuestionIds.length != questions.length) {
+      return lesson;
+    }
     return Lesson(
       id: lesson.id,
       title: lesson.title,
@@ -171,6 +205,22 @@ class ContentService {
       activities: lesson.activities,
     );
   }
+
+  Lesson _lessonWithSeed(Lesson lesson, Lesson seed) => Lesson(
+    id: lesson.id,
+    title: lesson.title,
+    summary: seed.summary,
+    subject: lesson.subject,
+    questions: seed.questions,
+    schoolYear: lesson.schoolYear,
+    topicId: lesson.topicId,
+    skillId: lesson.skillId,
+    prerequisiteLessonIds: lesson.prerequisiteLessonIds,
+    activityId: lesson.activityId,
+    activityVersion: lesson.activityVersion,
+    activityChecksum: lesson.activityChecksum,
+    activities: lesson.activities,
+  );
 
   bool _isValid(ContentManifest manifest) {
     if (manifest.schemaVersion != 1 || manifest.locale != 'pt-BR') return false;

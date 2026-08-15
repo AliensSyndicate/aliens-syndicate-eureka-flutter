@@ -1,1 +1,187 @@
-{"published":true,"enabled":true,"payload":{"schemaVersion":1,"activityVersion":1,"lessonId":"water_cycle","subjectId":"science","topicId":"water","schoolYear":5,"summary":"A água circula pela natureza em transformações contínuas.","questions":[{"id":"water_1","version":1,"type":"multipleChoice","prompt":"Como se chama a passagem da água líquida para vapor?","options":["Evaporação","Precipitação","Solidificação"],"correctAnswer":"Evaporação","difficulty":1,"tags":[],"subjectId":"science","topicId":"water"}]}}
+{
+  "id": "water_cycle_v1",
+  "published": true,
+  "enabled": true,
+  "payload": {
+    "id": "water_cycle_v1",
+    "schemaVersion": 1,
+    "activityVersion": 2,
+    "lessonId": "science_ef_5_2",
+    "subjectId": "science",
+    "topicId": "water",
+    "schoolYear": 5,
+    "summary": "A água circula pela natureza em transformações contínuas.",
+    "questions": [
+      {
+        "id": "water_1",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Como se chama a passagem da água líquida para vapor?",
+        "options": [
+          "Evaporação",
+          "Precipitação",
+          "Solidificação"
+        ],
+        "correctAnswer": "Evaporação",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "science",
+        "topicId": "water"
+      },
+      {
+        "id": "water_2",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Como se chama a formação de gotículas nas nuvens?",
+        "options": [
+          "Condensação",
+          "Fusão",
+          "Infiltração"
+        ],
+        "correctAnswer": "Condensação",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "science",
+        "topicId": "water"
+      },
+      {
+        "id": "water_3",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "A queda de água das nuvens é chamada de:",
+        "options": [
+          "Precipitação",
+          "Evaporação",
+          "Transpiração"
+        ],
+        "correctAnswer": "Precipitação",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "science",
+        "topicId": "water"
+      },
+      {
+        "id": "water_4",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Qual fonte de energia impulsiona a evaporação?",
+        "options": [
+          "Sol",
+          "Lua",
+          "Solo"
+        ],
+        "correctAnswer": "Sol",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "science",
+        "topicId": "water"
+      },
+      {
+        "id": "water_5",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Quando a água entra no solo, ocorre:",
+        "options": [
+          "Infiltração",
+          "Condensação",
+          "Ebulição"
+        ],
+        "correctAnswer": "Infiltração",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "science",
+        "topicId": "water"
+      },
+      {
+        "id": "water_6",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Em qual estado está o vapor de água?",
+        "options": [
+          "Gasoso",
+          "Sólido",
+          "Líquido"
+        ],
+        "correctAnswer": "Gasoso",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "science",
+        "topicId": "water"
+      },
+      {
+        "id": "water_7",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "O gelo é água em estado:",
+        "options": [
+          "Sólido",
+          "Gasoso",
+          "Líquido"
+        ],
+        "correctAnswer": "Sólido",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "science",
+        "topicId": "water"
+      },
+      {
+        "id": "water_8",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Rios e lagos participam do ciclo como locais de:",
+        "options": [
+          "Acúmulo de água",
+          "Criação de água",
+          "Desaparecimento de água"
+        ],
+        "correctAnswer": "Acúmulo de água",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "science",
+        "topicId": "water"
+      },
+      {
+        "id": "water_9",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "As plantas liberam vapor de água principalmente pela:",
+        "options": [
+          "Transpiração",
+          "Precipitação",
+          "Solidificação"
+        ],
+        "correctAnswer": "Transpiração",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "science",
+        "topicId": "water"
+      },
+      {
+        "id": "water_10",
+        "enabled": true,
+        "version": 1,
+        "type": "multipleChoice",
+        "prompt": "Economizar água ajuda a:",
+        "options": [
+          "Preservar esse recurso",
+          "Interromper o ciclo",
+          "Impedir a chuva"
+        ],
+        "correctAnswer": "Preservar esse recurso",
+        "difficulty": 1,
+        "tags": [],
+        "subjectId": "science",
+        "topicId": "water"
+      }
+    ]
+  }
+}

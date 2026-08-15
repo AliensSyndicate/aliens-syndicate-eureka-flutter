@@ -2,12 +2,13 @@ import '../../enums/education_stage.dart';
 import '../../enums/subject_type.dart';
 import '../../config/config_product.dart';
 import '../../models/content/model_content_manifest.dart';
+import '../../models/content/model_activity_reference.dart';
 import '../../models/model_lesson.dart';
 import 'seed_curriculum.dart';
 
 ContentManifest buildSeedContentManifest() => ContentManifest(
   schemaVersion: 1,
-  contentVersion: 5,
+  contentVersion: 7,
   locale: 'pt-BR',
   updatedAt: DateTime.utc(2026, 8, 14),
   subjects: _subjects.indexed.map((entry) {
@@ -51,7 +52,7 @@ ContentManifest buildSeedContentManifest() => ContentManifest(
               prerequisiteLessonIds: itemOrder == 0
                   ? const []
                   : ['${definition.type.name}_${stageId}_${grade.year}_$itemOrder'],
-              activities: const [],
+              activities: _activitiesFor(id),
               questions: const [],
             );
           }).toList(),
@@ -81,3 +82,16 @@ const _subjects = [
   _SubjectDefinition(SubjectType.philosophy, 'Filosofia'),
   _SubjectDefinition(SubjectType.sociology, 'Sociologia'),
 ];
+
+List<ActivityReference> _activitiesFor(String lessonId) => switch (lessonId) {
+  'portuguese_ef_5_6' => const [
+    ActivityReference(id: 'text_genres_v1', version: 2),
+  ],
+  'mathematics_ef_5_2' => const [
+    ActivityReference(id: 'fractions_intro_v1', version: 2),
+  ],
+  'science_ef_5_2' => const [
+    ActivityReference(id: 'water_cycle_v1', version: 2),
+  ],
+  _ => const [],
+};

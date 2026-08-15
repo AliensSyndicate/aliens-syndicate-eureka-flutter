@@ -15,6 +15,7 @@ import '../../ui/ui_text.dart';
 import '../lesson/page_lesson.dart';
 import '../subject/page_subject_lessons.dart';
 import 'widgets/widget_continue_learning_card.dart';
+import 'widgets/widget_home_cards_skeleton.dart';
 import 'widgets/widget_recommendation_card.dart';
 import 'widgets/widget_subject_card.dart';
 
@@ -55,14 +56,16 @@ class _PageHomeState extends State<PageHome> {
             future: subjects,
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
+                return const HomeCardsSkeleton();
               }
               final items = snapshot.data!;
               final savedProgress = ServiceRegistry.progress.load();
               SubjectContentManifest? lastSubject;
               Lesson? lastLesson;
               for (final subject in items) {
-                for (final lesson in subject.lessons) {
+                for (final lesson in subject.availableLessonsForYear(
+                  schoolYear,
+                )) {
                   if (lesson.id == savedProgress.lastLessonId) {
                     lastSubject = subject;
                     lastLesson = lesson;
@@ -73,7 +76,7 @@ class _PageHomeState extends State<PageHome> {
               if (lastLesson == null) {
                 for (final subject in items) {
                   if (subject.id != 'mathematics') continue;
-                  final lessons = subject.lessonsForYear(schoolYear);
+                  final lessons = subject.availableLessonsForYear(schoolYear);
                   if (lessons.isNotEmpty) {
                     lastSubject = subject;
                     lastLesson = lessons.first;

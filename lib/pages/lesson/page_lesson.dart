@@ -35,6 +35,7 @@ class _PageLessonState extends State<PageLesson> {
       answerService: ServiceRegistry.answer,
       scoringService: ServiceRegistry.scoring,
       progressService: ServiceRegistry.progress,
+      questionSelectionService: ServiceRegistry.questionSelection,
     );
   }
 
@@ -93,7 +94,7 @@ class _PageLessonState extends State<PageLesson> {
       ),
       children: [
         LessonProgressBar(
-          value: (controller.currentIndex + 1) / widget.lesson.questions.length,
+          value: (controller.currentIndex + 1) / controller.totalQuestions,
         ),
         const SizedBox(height: UiSpacing.lg),
         Text(question.prompt, style: Theme.of(context).textTheme.titleLarge),
@@ -154,9 +155,7 @@ class _PageLessonState extends State<PageLesson> {
             : AppStrings.lessonComplete,
         content: Column(
           children: [
-            Text(
-              '${controller.correctAnswers}/${widget.lesson.questions.length}',
-            ),
+            Text('${controller.correctAnswers}/${controller.totalQuestions}'),
             if (controller.earnedXp > 0) Text('+${controller.earnedXp} XP'),
             if (widget.mode == LearningMode.simulation) ...[
               const SizedBox(height: UiSpacing.md),
