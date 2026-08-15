@@ -10,6 +10,7 @@ import 'service_content.dart';
 import 'service_scoring.dart';
 import 'service_simulation.dart';
 import 'service_firebase.dart';
+import 'service_recommendation.dart';
 
 /// Ponto único de composição das dependências locais da V1.
 abstract final class ServiceRegistry {
@@ -28,4 +29,5 @@ abstract final class ServiceRegistry {
   );
   static ScoringService get scoring => ScoringService();
   static SimulationService get simulation => SimulationService();
+  static RecommendationService get recommendation => RecommendationService();
 }

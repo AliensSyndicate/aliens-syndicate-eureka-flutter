@@ -20,6 +20,18 @@ class ProgressService {
     );
   }
 
+  Map<String, int> loadDifficultyScores() {
+    final stored = _box.get('difficulty_subjects');
+    if (stored is! Map) return {};
+    return stored.map((key, value) => MapEntry(key.toString(), value as int));
+  }
+
+  Future<void> recordDifficulty(String subjectId) async {
+    final scores = loadDifficultyScores();
+    scores[subjectId] = (scores[subjectId] ?? 0) + 1;
+    await _box.put('difficulty_subjects', scores);
+  }
+
   Future<UserProgress> completeLesson(String lessonId, int earnedXp) async {
     final current = load();
     final ids = {...current.completedLessonIds, lessonId}.toList();

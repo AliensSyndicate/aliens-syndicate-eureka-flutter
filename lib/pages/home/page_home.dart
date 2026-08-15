@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
+import '../../app/components/app_home_bar.dart';
 import '../../controllers/controller_home.dart';
 import '../../enums/learning_mode.dart';
 import '../../l10n/app_strings.dart';
@@ -13,6 +14,7 @@ import '../../ui/ui_text.dart';
 import '../lesson/page_lesson.dart';
 import '../subject/page_subject_lessons.dart';
 import 'widgets/widget_continue_learning_card.dart';
+import 'widgets/widget_recommendation_card.dart';
 import 'widgets/widget_subject_card.dart';
 
 class PageHome extends StatefulWidget {
@@ -33,83 +35,129 @@ class _PageHomeState extends State<PageHome> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      FutureBuilder<List<SubjectContentManifest>>(
-        future: subjects,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final items = snapshot.data!;
-          final savedProgress = ServiceRegistry.progress.load();
-          SubjectContentManifest? lastSubject;
-          Lesson? lastLesson;
-          for (final subject in items) {
-            for (final lesson in subject.lessonsForYear(schoolYear)) {
-              if (lesson.id == savedProgress.lastLessonId) {
-                lastSubject = subject;
-                lastLesson = lesson;
+  Widget build(BuildContext context) {
+    final progress = ServiceRegistry.progress.load();
+    return Column(
+      children: [
+        AppHomeBar(
+          xp: progress.xp,
+          level: progress.level,
+          onXpTap: () =>
+              _showValue(AppStrings.xpLabel, AppStrings.xpValue(progress.xp)),
+          onLevelTap: () => _showValue(
+            AppStrings.levelLabel,
+            AppStrings.levelValue(progress.level),
+          ),
+        ),
+        Expanded(
+          child: FutureBuilder<List<SubjectContentManifest>>(
+            future: subjects,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
               }
-            }
-          }
-          // Fallback visual temporário: não altera o progresso persistido.
-          if (lastLesson == null) {
-            for (final subject in items) {
-              if (subject.id != 'mathematics') continue;
-              final lessons = subject.lessonsForYear(schoolYear);
-              if (lessons.isNotEmpty) {
-                lastSubject = subject;
-                lastLesson = lessons.first;
+              final items = snapshot.data!;
+              final savedProgress = ServiceRegistry.progress.load();
+              SubjectContentManifest? lastSubject;
+              Lesson? lastLesson;
+              for (final subject in items) {
+                for (final lesson in subject.lessonsForYear(schoolYear)) {
+                  if (lesson.id == savedProgress.lastLessonId) {
+                    lastSubject = subject;
+                    lastLesson = lesson;
+                  }
+                }
               }
-            }
-          }
-          return ListView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: UiSpacing.pageHorizontal,
-              vertical: UiSpacing.pageVertical,
-            ),
-            children: [
-              if (lastSubject != null && lastLesson != null) ...[
-                Text(AppStrings.continueWhereStopped, style: UiText.h5),
-                const SizedBox(height: UiSpacing.sm),
-                ContinueLearningCard(
-                  subject: lastSubject,
-                  lesson: lastLesson,
-                  progress: ServiceRegistry.progress.completionPercentage(
-                    lastSubject.lessonsForYear(schoolYear),
-                  ),
-                  onTap: () => _continueLesson(lastLesson!),
+              // Fallback visual temporário: não altera o progresso persistido.
+              if (lastLesson == null) {
+                for (final subject in items) {
+                  if (subject.id != 'mathematics') continue;
+                  final lessons = subject.lessonsForYear(schoolYear);
+                  if (lessons.isNotEmpty) {
+                    lastSubject = subject;
+                    lastLesson = lessons.first;
+                  }
+                }
+              }
+              final recommendation = ServiceRegistry.recommendation.recommend(
+                items,
+                schoolYear,
+                ServiceRegistry.progress.loadDifficultyScores(),
+              );
+              return ListView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: UiSpacing.pageHorizontal,
+                  vertical: UiSpacing.pageVertical,
                 ),
-                const SizedBox(height: UiSpacing.sectionSpacing),
-              ],
-              Text(AppStrings.subjectsTitle, style: UiText.h5),
-              const SizedBox(height: UiSpacing.sm),
-              const Text(AppStrings.journeySubtitle, style: UiText.p),
-              const SizedBox(height: UiSpacing.sectionSpacing),
-              ...items.map((subject) {
-                final progress = ServiceRegistry.progress.completionPercentage(
-                  subject.lessonsForYear(schoolYear),
-                );
-                return SubjectCard(
-                  subject: subject,
-                  progress: progress,
-                  onTap: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => PageSubjectLessons(
-                          subject: subject,
-                          schoolYear: schoolYear,
-                        ),
+                children: [
+                  if (lastSubject != null && lastLesson != null) ...[
+                    Text(AppStrings.continueWhereStopped, style: UiText.h5),
+                    const SizedBox(height: UiSpacing.sm),
+                    ContinueLearningCard(
+                      subject: lastSubject,
+                      lesson: lastLesson,
+                      progress: ServiceRegistry.progress.completionPercentage(
+                        lastSubject.lessonsForYear(schoolYear),
                       ),
+                      onTap: () => _continueLesson(lastLesson!),
+                    ),
+                    const SizedBox(height: UiSpacing.sectionSpacing),
+                  ],
+                  if (recommendation != null) ...[
+                    Text(AppStrings.recommendedForYou, style: UiText.h5),
+                    const SizedBox(height: UiSpacing.sm),
+                    RecommendationCard(
+                      recommendation: recommendation,
+                      onTap: () => _continueLesson(recommendation.lesson),
+                    ),
+                    const SizedBox(height: UiSpacing.sectionSpacing),
+                  ],
+                  Text(AppStrings.subjectsTitle, style: UiText.h5),
+                  const SizedBox(height: UiSpacing.xxs),
+                  const Text(AppStrings.journeySubtitle, style: UiText.p),
+                  const SizedBox(height: UiSpacing.sectionSpacing),
+                  ...items.map((subject) {
+                    final progress = ServiceRegistry.progress
+                        .completionPercentage(
+                          subject.lessonsForYear(schoolYear),
+                        );
+                    return SubjectCard(
+                      subject: subject,
+                      progress: progress,
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => PageSubjectLessons(
+                              subject: subject,
+                              schoolYear: schoolYear,
+                            ),
+                          ),
+                        );
+                        if (mounted) setState(() {});
+                      },
                     );
-                    if (mounted) setState(() {});
-                  },
-                );
-              }),
-            ],
-          );
-        },
+                  }),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _showValue(String title, String value) =>
+      AppBottomSheet.show<void>(
+        context,
+        title: title,
+        content: Text(value),
+        actions: [
+          AppButton(
+            label: AppStrings.finish,
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       );
 
   Future<void> _continueLesson(Lesson lesson) async {

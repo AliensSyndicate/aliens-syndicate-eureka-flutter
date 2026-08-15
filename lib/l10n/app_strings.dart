@@ -3,6 +3,7 @@ abstract final class AppStrings {
       greeting = 'Olá, Explorador!',
       subjectsTitle = 'Matérias',
       continueWhereStopped = 'Continuar de onde parou',
+      recommendedForYou = 'Recomendado para você',
       journeySubtitle = 'Sua próxima descoberta está logo adiante.',
       home = 'Home',
       social = 'Social',
@@ -33,9 +34,15 @@ abstract final class AppStrings {
       contentUnavailable =
           'Esta atividade ainda não está disponível offline. Verifique sua conexão e tente novamente.',
       lessonProgress = 'Progresso da atividade';
+  static const xpLabel = 'Pontos de experiência';
+  static const levelLabel = 'Nível atual';
+  static String xpValue(int value) => '$value XP';
+  static String levelValue(int value) => 'Você está no nível $value.';
 
   static String schoolYear(int year) => '$yearº ano';
   static String level(int value) => 'Nível $value';
   static String completedLessons(int value) =>
       value == 1 ? '1 lição concluída' : '$value lições concluídas';
+  static String recommendationReason(String lesson) =>
+      'Reforce $lesson e avance com confiança.';
 }

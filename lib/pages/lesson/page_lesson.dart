@@ -124,7 +124,8 @@ class _PageLessonState extends State<PageLesson> {
 
   Future<void> _submit() async {
     final question = controller.currentQuestion;
-    final correct = controller.submit(answer);
+    final correct = await controller.submit(answer);
+    if (!mounted) return;
     await AppBottomSheet.show<void>(
       context,
       title: correct

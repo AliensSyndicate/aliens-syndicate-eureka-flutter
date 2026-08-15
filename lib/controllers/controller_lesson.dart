@@ -41,9 +41,13 @@ class LessonController {
   int get earnedXp => mode == LearningMode.journey
       ? _scoringService.calculateJourneyXp(correctAnswers: correctAnswers)
       : 0;
-  bool submit(String answer) {
+  Future<bool> submit(String answer) async {
     _answers[currentQuestion.id] = answer;
-    return _answerService.isCorrect(currentQuestion, answer);
+    final correct = _answerService.isCorrect(currentQuestion, answer);
+    if (!correct) {
+      await _progressService.recordDifficulty(currentQuestion.subjectId);
+    }
+    return correct;
   }
 
   void next() {
