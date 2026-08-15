@@ -1,12 +1,13 @@
 import '../../enums/education_stage.dart';
 import '../../enums/subject_type.dart';
+import '../../config/config_product.dart';
 import '../../models/content/model_content_manifest.dart';
 import '../../models/model_lesson.dart';
 import 'seed_curriculum.dart';
 
 ContentManifest buildSeedContentManifest() => ContentManifest(
   schemaVersion: 1,
-  contentVersion: 4,
+  contentVersion: 5,
   locale: 'pt-BR',
   updatedAt: DateTime.utc(2026, 8, 14),
   subjects: _subjects.indexed.map((entry) {
@@ -33,6 +34,9 @@ ContentManifest buildSeedContentManifest() => ContentManifest(
               : CurriculumSource.bncc,
           title: grade.stage.yearLabel(grade.year),
           order: gradeOrder,
+          enabled:
+              grade.stage == EducationStage.elementarySchool &&
+              grade.year == ProductConfig.v1SchoolYear,
           lessons: grade.items.indexed.map((itemEntry) {
             final (itemOrder, title) = itemEntry;
             final id =

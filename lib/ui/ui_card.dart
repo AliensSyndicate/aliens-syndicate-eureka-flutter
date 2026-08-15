@@ -9,5 +9,5 @@ abstract final class UiCard {
   static const subjectHeight = 64.0;
   static const progressTagHeight = 36.0;
   static const continueMinHeight = 132.0;
-  static const recommendationBorderWidth = 4.0;
+  static const highlightBorderWidth = 4.0;
 }

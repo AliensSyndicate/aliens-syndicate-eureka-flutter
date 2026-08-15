@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../enums/subject_type.dart';
 import 'ui_color.dart';
 
 abstract final class UiGradient {
@@ -16,4 +17,29 @@ abstract final class UiGradient {
     ],
     stops: [0, .28, .28, .68, .68, 1],
   );
+
+  static const continueLearning = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      UiColor.continueBase,
+      UiColor.continueBase,
+      UiColor.continueStripe,
+      UiColor.continueStripe,
+      UiColor.continueBase,
+      UiColor.continueBase,
+    ],
+    stops: [0, .28, .28, .68, .68, 1],
+  );
+
+  static LinearGradient forSubject(SubjectType subject) {
+    final base = UiColor.forSubject(subject);
+    final stripe = UiColor.subjectStripe(subject);
+    return LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [base, base, stripe, stripe, base, base],
+      stops: const [0, .28, .28, .68, .68, 1],
+    );
+  }
 }

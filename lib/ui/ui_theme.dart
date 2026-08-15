@@ -11,6 +11,9 @@ abstract final class UiTheme {
     brightness: Brightness.dark,
     fontFamily: UiText.fontFamily,
     scaffoldBackgroundColor: UiColor.background,
+    splashFactory: NoSplash.splashFactory,
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
     colorScheme:
         ColorScheme.fromSeed(
           seedColor: UiColor.primary,
@@ -55,6 +58,9 @@ abstract final class UiTheme {
         minimumSize: WidgetStatePropertyAll(
           Size.fromHeight(UiSize.touchTarget),
         ),
+        overlayColor: WidgetStateProperty.fromMap({
+          WidgetState.pressed: Colors.transparent,
+        }),
       ),
     ),
     navigationBarTheme: const NavigationBarThemeData(

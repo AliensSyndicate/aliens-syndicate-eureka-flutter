@@ -14,7 +14,8 @@ void main() {
     final manifest = ContentManifest.fromMap(
       Map<String, dynamic>.from(document['payload'] as Map),
     );
-    expect(manifest.contentVersion, 4);
+    expect(document['enabled'], isTrue);
+    expect(manifest.contentVersion, 5);
     expect(manifest.subjects, hasLength(12));
     expect(manifest.subjectsForYear(5).map((subject) => subject.title), [
       'Ciências',
@@ -23,7 +24,7 @@ void main() {
       'Matemática',
       'Português',
     ]);
-    expect(manifest.lessons.length, greaterThan(250));
+    expect(manifest.lessons, hasLength(34));
     expect(
       manifest.lessons.every((lesson) => lesson.questions.isEmpty),
       isTrue,
@@ -35,7 +36,12 @@ void main() {
     expect(
       manifest.subjects
           .expand((subject) => subject.schoolYears)
-          .any((year) => year.id.endsWith('_em_1')),
+          .where((year) => year.enabled)
+          .every(
+            (year) =>
+                year.year == 5 &&
+                year.educationStage == EducationStage.elementarySchool,
+          ),
       isTrue,
     );
     final spanish = manifest.subjects.singleWhere(
@@ -47,10 +53,42 @@ void main() {
       ),
       isTrue,
     );
-    expect(manifest.lessonsForYear(1), isNotEmpty);
+    expect(manifest.lessonsForYear(1), isEmpty);
     expect(
       manifest.lessonsForYear(1, stage: EducationStage.highSchool),
-      isNotEmpty,
+      isEmpty,
     );
+    final subjects = manifest.toMap()['subjects'] as List<dynamic>;
+    expect(
+      subjects.expand(
+        (subject) =>
+            (subject as Map<String, dynamic>)['schoolYears'] as List<dynamic>,
+      ),
+      everyElement(contains('enabled')),
+    );
+    final rawSubjects =
+        (document['payload'] as Map<String, dynamic>)['subjects']
+            as List<dynamic>;
+    expect(
+      rawSubjects.expand(
+        (subject) =>
+            (subject as Map<String, dynamic>)['schoolYears'] as List<dynamic>,
+      ),
+      everyElement(contains('enabled')),
+    );
+  });
+
+  test('documentos de atividade declaram disponibilidade no app', () {
+    final files = Directory('firebase/content')
+        .listSync()
+        .whereType<File>()
+        .where((file) => file.path.endsWith('_v1.json'));
+
+    expect(files, isNotEmpty);
+    for (final file in files) {
+      final document =
+          jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+      expect(document['enabled'], isA<bool>(), reason: file.path);
+    }
   });
 }

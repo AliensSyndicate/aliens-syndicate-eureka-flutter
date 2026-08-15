@@ -1,5 +1,6 @@
 import '../data/local/hive_content_activity_cache.dart';
 import '../data/local/hive_content_manifest_cache.dart';
+import '../config/config_product.dart';
 import '../data/seed/seed_content.dart';
 import '../data/seed/seed_content_manifest.dart';
 import '../enums/question_type.dart';
@@ -59,13 +60,13 @@ class ContentService {
   }
 
   List<Lesson> getJourneyLessons() =>
-      List.unmodifiable(_manifest.lessonsForYear(5));
+      List.unmodifiable(_manifest.lessonsForYear(ProductConfig.v1SchoolYear));
 
   List<SubjectContentManifest> getSubjectsForYear(int year) =>
       List.unmodifiable(_manifest.subjectsForYear(year));
 
   List<SubjectContentManifest> getSubjects() =>
-      List.unmodifiable(_manifest.sortedSubjects);
+      List.unmodifiable(_manifest.subjectsForYear(ProductConfig.v1SchoolYear));
 
   List<Lesson> search(String query) {
     final value = query.trim().toLowerCase();

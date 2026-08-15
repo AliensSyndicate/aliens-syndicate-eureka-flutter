@@ -14,7 +14,9 @@ class FirestoreContentRepository implements ContentRepository {
         .doc('current')
         .get();
     final data = document.data();
-    if (data == null || data['published'] != true) return null;
+    if (data == null || data['published'] != true || data['enabled'] != true) {
+      return null;
+    }
     return ContentManifest.fromMap(
       Map<String, dynamic>.from(data['payload'] as Map),
     );
@@ -27,7 +29,9 @@ class FirestoreContentRepository implements ContentRepository {
         .doc(activityId)
         .get();
     final data = document.data();
-    if (data == null || data['published'] != true) return null;
+    if (data == null || data['published'] != true || data['enabled'] != true) {
+      return null;
+    }
     return Map<String, dynamic>.from(data['payload'] as Map);
   }
 

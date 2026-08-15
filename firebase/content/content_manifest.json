@@ -1,10 +1,11 @@
 {
   "published": true,
+  "enabled": true,
   "schemaVersion": 1,
-  "contentVersion": 4,
+  "contentVersion": 5,
   "payload": {
     "schemaVersion": 1,
-    "contentVersion": 4,
+    "contentVersion": 5,
     "locale": "pt-BR",
     "updatedAt": "2026-08-14T00:00:00.000Z",
     "subjects": [
@@ -21,6 +22,7 @@
             "curriculumSource": "bncc",
             "title": "1º ano EF",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "portuguese_ef_1_1",
@@ -106,6 +108,7 @@
             "curriculumSource": "bncc",
             "title": "2º ano EF",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "portuguese_ef_2_1",
@@ -202,6 +205,7 @@
             "curriculumSource": "bncc",
             "title": "3º ano EF",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "portuguese_ef_3_1",
@@ -298,6 +302,7 @@
             "curriculumSource": "bncc",
             "title": "4º ano EF",
             "order": 3,
+            "enabled": false,
             "lessons": [
               {
                 "id": "portuguese_ef_4_1",
@@ -405,6 +410,7 @@
             "curriculumSource": "bncc",
             "title": "5º ano EF",
             "order": 4,
+            "enabled": true,
             "lessons": [
               {
                 "id": "portuguese_ef_5_1",
@@ -512,6 +518,7 @@
             "curriculumSource": "bncc",
             "title": "6º ano EF",
             "order": 5,
+            "enabled": false,
             "lessons": [
               {
                 "id": "portuguese_ef_6_1",
@@ -608,6 +615,7 @@
             "curriculumSource": "bncc",
             "title": "7º ano EF",
             "order": 6,
+            "enabled": false,
             "lessons": [
               {
                 "id": "portuguese_ef_7_1",
@@ -704,6 +712,7 @@
             "curriculumSource": "bncc",
             "title": "8º ano EF",
             "order": 7,
+            "enabled": false,
             "lessons": [
               {
                 "id": "portuguese_ef_8_1",
@@ -800,6 +809,7 @@
             "curriculumSource": "bncc",
             "title": "9º ano EF",
             "order": 8,
+            "enabled": false,
             "lessons": [
               {
                 "id": "portuguese_ef_9_1",
@@ -896,6 +906,7 @@
             "curriculumSource": "editorial",
             "title": "1ª série EM",
             "order": 9,
+            "enabled": false,
             "lessons": [
               {
                 "id": "portuguese_em_1_1",
@@ -970,6 +981,7 @@
             "curriculumSource": "editorial",
             "title": "2ª série EM",
             "order": 10,
+            "enabled": false,
             "lessons": [
               {
                 "id": "portuguese_em_2_1",
@@ -1044,6 +1056,7 @@
             "curriculumSource": "editorial",
             "title": "3ª série EM",
             "order": 11,
+            "enabled": false,
             "lessons": [
               {
                 "id": "portuguese_em_3_1",
@@ -1126,6 +1139,7 @@
             "curriculumSource": "bncc",
             "title": "6º ano EF",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "english_ef_6_1",
@@ -1222,6 +1236,7 @@
             "curriculumSource": "bncc",
             "title": "7º ano EF",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "english_ef_7_1",
@@ -1318,6 +1333,7 @@
             "curriculumSource": "bncc",
             "title": "8º ano EF",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "english_ef_8_1",
@@ -1414,6 +1430,7 @@
             "curriculumSource": "bncc",
             "title": "9º ano EF",
             "order": 3,
+            "enabled": false,
             "lessons": [
               {
                 "id": "english_ef_9_1",
@@ -1510,6 +1527,7 @@
             "curriculumSource": "editorial",
             "title": "1ª série EM",
             "order": 4,
+            "enabled": false,
             "lessons": [
               {
                 "id": "english_em_1_1",
@@ -1573,6 +1591,7 @@
             "curriculumSource": "editorial",
             "title": "2ª série EM",
             "order": 5,
+            "enabled": false,
             "lessons": [
               {
                 "id": "english_em_2_1",
@@ -1636,6 +1655,7 @@
             "curriculumSource": "editorial",
             "title": "3ª série EM",
             "order": 6,
+            "enabled": false,
             "lessons": [
               {
                 "id": "english_em_3_1",
@@ -1707,6 +1727,7 @@
             "curriculumSource": "editorial",
             "title": "1ª série EM",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "spanish_em_1_1",
@@ -1781,6 +1802,7 @@
             "curriculumSource": "editorial",
             "title": "2ª série EM",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "spanish_em_2_1",
@@ -1855,6 +1877,7 @@
             "curriculumSource": "editorial",
             "title": "3ª série EM",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "spanish_em_3_1",
@@ -1937,6 +1960,7 @@
             "curriculumSource": "bncc",
             "title": "1º ano EF",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "mathematics_ef_1_1",
@@ -2033,6 +2057,7 @@
             "curriculumSource": "bncc",
             "title": "2º ano EF",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "mathematics_ef_2_1",
@@ -2129,6 +2154,7 @@
             "curriculumSource": "bncc",
             "title": "3º ano EF",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "mathematics_ef_3_1",
@@ -2225,6 +2251,7 @@
             "curriculumSource": "bncc",
             "title": "4º ano EF",
             "order": 3,
+            "enabled": false,
             "lessons": [
               {
                 "id": "mathematics_ef_4_1",
@@ -2321,6 +2348,7 @@
             "curriculumSource": "bncc",
             "title": "5º ano EF",
             "order": 4,
+            "enabled": true,
             "lessons": [
               {
                 "id": "mathematics_ef_5_1",
@@ -2417,6 +2445,7 @@
             "curriculumSource": "bncc",
             "title": "6º ano EF",
             "order": 5,
+            "enabled": false,
             "lessons": [
               {
                 "id": "mathematics_ef_6_1",
@@ -2513,6 +2542,7 @@
             "curriculumSource": "bncc",
             "title": "7º ano EF",
             "order": 6,
+            "enabled": false,
             "lessons": [
               {
                 "id": "mathematics_ef_7_1",
@@ -2609,6 +2639,7 @@
             "curriculumSource": "bncc",
             "title": "8º ano EF",
             "order": 7,
+            "enabled": false,
             "lessons": [
               {
                 "id": "mathematics_ef_8_1",
@@ -2705,6 +2736,7 @@
             "curriculumSource": "bncc",
             "title": "9º ano EF",
             "order": 8,
+            "enabled": false,
             "lessons": [
               {
                 "id": "mathematics_ef_9_1",
@@ -2801,6 +2833,7 @@
             "curriculumSource": "editorial",
             "title": "1ª série EM",
             "order": 9,
+            "enabled": false,
             "lessons": [
               {
                 "id": "mathematics_em_1_1",
@@ -2875,6 +2908,7 @@
             "curriculumSource": "editorial",
             "title": "2ª série EM",
             "order": 10,
+            "enabled": false,
             "lessons": [
               {
                 "id": "mathematics_em_2_1",
@@ -2949,6 +2983,7 @@
             "curriculumSource": "editorial",
             "title": "3ª série EM",
             "order": 11,
+            "enabled": false,
             "lessons": [
               {
                 "id": "mathematics_em_3_1",
@@ -3031,6 +3066,7 @@
             "curriculumSource": "bncc",
             "title": "1º ano EF",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "science_ef_1_1",
@@ -3094,6 +3130,7 @@
             "curriculumSource": "bncc",
             "title": "2º ano EF",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "science_ef_2_1",
@@ -3168,6 +3205,7 @@
             "curriculumSource": "bncc",
             "title": "3º ano EF",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "science_ef_3_1",
@@ -3242,6 +3280,7 @@
             "curriculumSource": "bncc",
             "title": "4º ano EF",
             "order": 3,
+            "enabled": false,
             "lessons": [
               {
                 "id": "science_ef_4_1",
@@ -3316,6 +3355,7 @@
             "curriculumSource": "bncc",
             "title": "5º ano EF",
             "order": 4,
+            "enabled": true,
             "lessons": [
               {
                 "id": "science_ef_5_1",
@@ -3390,6 +3430,7 @@
             "curriculumSource": "bncc",
             "title": "6º ano EF",
             "order": 5,
+            "enabled": false,
             "lessons": [
               {
                 "id": "science_ef_6_1",
@@ -3464,6 +3505,7 @@
             "curriculumSource": "bncc",
             "title": "7º ano EF",
             "order": 6,
+            "enabled": false,
             "lessons": [
               {
                 "id": "science_ef_7_1",
@@ -3538,6 +3580,7 @@
             "curriculumSource": "bncc",
             "title": "8º ano EF",
             "order": 7,
+            "enabled": false,
             "lessons": [
               {
                 "id": "science_ef_8_1",
@@ -3601,6 +3644,7 @@
             "curriculumSource": "bncc",
             "title": "9º ano EF",
             "order": 8,
+            "enabled": false,
             "lessons": [
               {
                 "id": "science_ef_9_1",
@@ -3683,6 +3727,7 @@
             "curriculumSource": "editorial",
             "title": "1ª série EM",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "biology_em_1_1",
@@ -3757,6 +3802,7 @@
             "curriculumSource": "editorial",
             "title": "2ª série EM",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "biology_em_2_1",
@@ -3831,6 +3877,7 @@
             "curriculumSource": "editorial",
             "title": "3ª série EM",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "biology_em_3_1",
@@ -3913,6 +3960,7 @@
             "curriculumSource": "editorial",
             "title": "1ª série EM",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "physics_em_1_1",
@@ -3987,6 +4035,7 @@
             "curriculumSource": "editorial",
             "title": "2ª série EM",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "physics_em_2_1",
@@ -4061,6 +4110,7 @@
             "curriculumSource": "editorial",
             "title": "3ª série EM",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "physics_em_3_1",
@@ -4143,6 +4193,7 @@
             "curriculumSource": "editorial",
             "title": "1ª série EM",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "chemistry_em_1_1",
@@ -4217,6 +4268,7 @@
             "curriculumSource": "editorial",
             "title": "2ª série EM",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "chemistry_em_2_1",
@@ -4291,6 +4343,7 @@
             "curriculumSource": "editorial",
             "title": "3ª série EM",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "chemistry_em_3_1",
@@ -4373,6 +4426,7 @@
             "curriculumSource": "bncc",
             "title": "1º ano EF",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "history_ef_1_1",
@@ -4436,6 +4490,7 @@
             "curriculumSource": "bncc",
             "title": "2º ano EF",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "history_ef_2_1",
@@ -4499,6 +4554,7 @@
             "curriculumSource": "bncc",
             "title": "3º ano EF",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "history_ef_3_1",
@@ -4562,6 +4618,7 @@
             "curriculumSource": "bncc",
             "title": "4º ano EF",
             "order": 3,
+            "enabled": false,
             "lessons": [
               {
                 "id": "history_ef_4_1",
@@ -4636,6 +4693,7 @@
             "curriculumSource": "bncc",
             "title": "5º ano EF",
             "order": 4,
+            "enabled": true,
             "lessons": [
               {
                 "id": "history_ef_5_1",
@@ -4699,6 +4757,7 @@
             "curriculumSource": "bncc",
             "title": "6º ano EF",
             "order": 5,
+            "enabled": false,
             "lessons": [
               {
                 "id": "history_ef_6_1",
@@ -4773,6 +4832,7 @@
             "curriculumSource": "bncc",
             "title": "7º ano EF",
             "order": 6,
+            "enabled": false,
             "lessons": [
               {
                 "id": "history_ef_7_1",
@@ -4858,6 +4918,7 @@
             "curriculumSource": "bncc",
             "title": "8º ano EF",
             "order": 7,
+            "enabled": false,
             "lessons": [
               {
                 "id": "history_ef_8_1",
@@ -4932,6 +4993,7 @@
             "curriculumSource": "bncc",
             "title": "9º ano EF",
             "order": 8,
+            "enabled": false,
             "lessons": [
               {
                 "id": "history_ef_9_1",
@@ -5017,6 +5079,7 @@
             "curriculumSource": "editorial",
             "title": "1ª série EM",
             "order": 9,
+            "enabled": false,
             "lessons": [
               {
                 "id": "history_em_1_1",
@@ -5091,6 +5154,7 @@
             "curriculumSource": "editorial",
             "title": "2ª série EM",
             "order": 10,
+            "enabled": false,
             "lessons": [
               {
                 "id": "history_em_2_1",
@@ -5165,6 +5229,7 @@
             "curriculumSource": "editorial",
             "title": "3ª série EM",
             "order": 11,
+            "enabled": false,
             "lessons": [
               {
                 "id": "history_em_3_1",
@@ -5247,6 +5312,7 @@
             "curriculumSource": "bncc",
             "title": "1º ano EF",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "geography_ef_1_1",
@@ -5310,6 +5376,7 @@
             "curriculumSource": "bncc",
             "title": "2º ano EF",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "geography_ef_2_1",
@@ -5373,6 +5440,7 @@
             "curriculumSource": "bncc",
             "title": "3º ano EF",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "geography_ef_3_1",
@@ -5447,6 +5515,7 @@
             "curriculumSource": "bncc",
             "title": "4º ano EF",
             "order": 3,
+            "enabled": false,
             "lessons": [
               {
                 "id": "geography_ef_4_1",
@@ -5521,6 +5590,7 @@
             "curriculumSource": "bncc",
             "title": "5º ano EF",
             "order": 4,
+            "enabled": true,
             "lessons": [
               {
                 "id": "geography_ef_5_1",
@@ -5595,6 +5665,7 @@
             "curriculumSource": "bncc",
             "title": "6º ano EF",
             "order": 5,
+            "enabled": false,
             "lessons": [
               {
                 "id": "geography_ef_6_1",
@@ -5680,6 +5751,7 @@
             "curriculumSource": "bncc",
             "title": "7º ano EF",
             "order": 6,
+            "enabled": false,
             "lessons": [
               {
                 "id": "geography_ef_7_1",
@@ -5754,6 +5826,7 @@
             "curriculumSource": "bncc",
             "title": "8º ano EF",
             "order": 7,
+            "enabled": false,
             "lessons": [
               {
                 "id": "geography_ef_8_1",
@@ -5828,6 +5901,7 @@
             "curriculumSource": "bncc",
             "title": "9º ano EF",
             "order": 8,
+            "enabled": false,
             "lessons": [
               {
                 "id": "geography_ef_9_1",
@@ -5902,6 +5976,7 @@
             "curriculumSource": "editorial",
             "title": "1ª série EM",
             "order": 9,
+            "enabled": false,
             "lessons": [
               {
                 "id": "geography_em_1_1",
@@ -5976,6 +6051,7 @@
             "curriculumSource": "editorial",
             "title": "2ª série EM",
             "order": 10,
+            "enabled": false,
             "lessons": [
               {
                 "id": "geography_em_2_1",
@@ -6050,6 +6126,7 @@
             "curriculumSource": "editorial",
             "title": "3ª série EM",
             "order": 11,
+            "enabled": false,
             "lessons": [
               {
                 "id": "geography_em_3_1",
@@ -6132,6 +6209,7 @@
             "curriculumSource": "editorial",
             "title": "1ª série EM",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "philosophy_em_1_1",
@@ -6206,6 +6284,7 @@
             "curriculumSource": "editorial",
             "title": "2ª série EM",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "philosophy_em_2_1",
@@ -6280,6 +6359,7 @@
             "curriculumSource": "editorial",
             "title": "3ª série EM",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "philosophy_em_3_1",
@@ -6362,6 +6442,7 @@
             "curriculumSource": "editorial",
             "title": "1ª série EM",
             "order": 0,
+            "enabled": false,
             "lessons": [
               {
                 "id": "sociology_em_1_1",
@@ -6436,6 +6517,7 @@
             "curriculumSource": "editorial",
             "title": "2ª série EM",
             "order": 1,
+            "enabled": false,
             "lessons": [
               {
                 "id": "sociology_em_2_1",
@@ -6510,6 +6592,7 @@
             "curriculumSource": "editorial",
             "title": "3ª série EM",
             "order": 2,
+            "enabled": false,
             "lessons": [
               {
                 "id": "sociology_em_3_1",

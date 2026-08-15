@@ -8,16 +8,22 @@ import '../../models/model_lesson.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_color.dart';
+import '../../ui/ui_text.dart';
 import '../lesson/page_lesson.dart';
 import 'widgets/widget_curriculum_year_section.dart';
 
 class PageSubjectLessons extends StatelessWidget {
-  const PageSubjectLessons({required this.subject, super.key});
+  const PageSubjectLessons({
+    required this.subject,
+    required this.schoolYear,
+    super.key,
+  });
   final SubjectContentManifest subject;
+  final int schoolYear;
 
   @override
   Widget build(BuildContext context) {
-    final years = [...subject.schoolYears]
+    final years = [...subject.schoolYearsForYear(schoolYear)]
       ..sort((a, b) => a.order.compareTo(b.order));
     final completed = ServiceRegistry.progress
         .load()
@@ -33,6 +39,8 @@ class PageSubjectLessons extends StatelessWidget {
             vertical: UiSpacing.pageVertical,
           ),
           children: [
+            const _ComingSoonMessage(),
+            const SizedBox(height: UiSpacing.sectionSpacing),
             if (years.isEmpty)
               const Padding(
                 padding: EdgeInsets.all(UiSpacing.sectionSpacing),
@@ -49,6 +57,7 @@ class PageSubjectLessons extends StatelessWidget {
                 onLessonTap: (lesson) => _openLesson(context, lesson),
               ),
             ),
+            const _ComingSoonMessage(),
           ],
         ),
       ),
@@ -80,4 +89,15 @@ class PageSubjectLessons extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ComingSoonMessage extends StatelessWidget {
+  const _ComingSoonMessage();
+
+  @override
+  Widget build(BuildContext context) => const Text(
+    AppStrings.comingSoon,
+    textAlign: TextAlign.center,
+    style: UiText.disabledTitle,
+  );
 }

@@ -4,6 +4,7 @@ import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
 import '../../app/components/app_home_bar.dart';
 import '../../controllers/controller_home.dart';
+import '../../config/config_product.dart';
 import '../../enums/learning_mode.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/content/model_content_manifest.dart';
@@ -30,7 +31,7 @@ class _PageHomeState extends State<PageHome> {
   @override
   void initState() {
     super.initState();
-    schoolYear = ServiceRegistry.user.loadCurrentUser().schoolYear;
+    schoolYear = ProductConfig.v1SchoolYear;
     subjects = HomeController(ServiceRegistry.content).loadSubjects(schoolYear);
   }
 
@@ -90,6 +91,15 @@ class _PageHomeState extends State<PageHome> {
                   vertical: UiSpacing.pageVertical,
                 ),
                 children: [
+                  if (recommendation != null) ...[
+                    Text(AppStrings.recommendedForYou, style: UiText.h4),
+                    const SizedBox(height: UiSpacing.sm),
+                    RecommendationCard(
+                      recommendation: recommendation,
+                      onTap: () => _continueLesson(recommendation.lesson),
+                    ),
+                    const SizedBox(height: UiSpacing.sectionSpacing),
+                  ],
                   if (lastSubject != null && lastLesson != null) ...[
                     Text(AppStrings.continueWhereStopped, style: UiText.h4),
                     const SizedBox(height: UiSpacing.sm),
@@ -103,22 +113,15 @@ class _PageHomeState extends State<PageHome> {
                     ),
                     const SizedBox(height: UiSpacing.sectionSpacing),
                   ],
-                  if (recommendation != null) ...[
-                    Text(AppStrings.recommendedForYou, style: UiText.h4),
-                    const SizedBox(height: UiSpacing.sm),
-                    RecommendationCard(
-                      recommendation: recommendation,
-                      onTap: () => _continueLesson(recommendation.lesson),
-                    ),
-                    const SizedBox(height: UiSpacing.sectionSpacing),
-                  ],
                   Text(AppStrings.subjectsTitle, style: UiText.h4),
                   const SizedBox(height: UiSpacing.xxs),
                   const Text(AppStrings.journeySubtitle, style: UiText.p),
                   const SizedBox(height: UiSpacing.sm),
                   ...items.map((subject) {
                     final progress = ServiceRegistry.progress
-                        .completionPercentage(subject.lessons);
+                        .completionPercentage(
+                          subject.lessonsForYear(schoolYear),
+                        );
                     return SubjectCard(
                       subject: subject,
                       progress: progress,
@@ -126,8 +129,10 @@ class _PageHomeState extends State<PageHome> {
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) =>
-                                PageSubjectLessons(subject: subject),
+                            builder: (_) => PageSubjectLessons(
+                              subject: subject,
+                              schoolYear: schoolYear,
+                            ),
                           ),
                         );
                         if (mounted) setState(() {});

@@ -19,6 +19,7 @@ class ContentManifest {
 
   List<Lesson> get lessons => subjects
       .expand((subject) => subject.schoolYears)
+      .where((schoolYear) => schoolYear.enabled)
       .expand((item) => item.lessons)
       .toList();
   List<SubjectContentManifest> get sortedSubjects =>
@@ -30,7 +31,10 @@ class ContentManifest {
     EducationStage stage = EducationStage.elementarySchool,
   }) => subjects
       .expand((subject) => subject.schoolYears)
-      .where((item) => item.year == year && item.educationStage == stage)
+      .where(
+        (item) =>
+            item.enabled && item.year == year && item.educationStage == stage,
+      )
       .expand((item) => item.lessons)
       .toList();
   List<SubjectContentManifest> subjectsForYear(
@@ -39,7 +43,11 @@ class ContentManifest {
   }) => sortedSubjects
       .where(
         (subject) => subject.schoolYears.any(
-          (item) => item.year == year && item.educationStage == stage,
+          (item) =>
+              item.enabled &&
+              item.year == year &&
+              item.educationStage == stage &&
+              item.lessons.isNotEmpty,
         ),
       )
       .toList();
@@ -74,13 +82,27 @@ class SubjectContentManifest {
   final SubjectType type;
   final int order;
   final List<SubjectSchoolYearManifest> schoolYears;
-  List<Lesson> get lessons =>
-      schoolYears.expand((item) => item.lessons).toList();
+  List<Lesson> get lessons => schoolYears
+      .where((item) => item.enabled)
+      .expand((item) => item.lessons)
+      .toList();
+  List<SubjectSchoolYearManifest> schoolYearsForYear(
+    int year, {
+    EducationStage stage = EducationStage.elementarySchool,
+  }) => schoolYears
+      .where(
+        (item) =>
+            item.enabled && item.year == year && item.educationStage == stage,
+      )
+      .toList();
   List<Lesson> lessonsForYear(
     int year, {
     EducationStage stage = EducationStage.elementarySchool,
   }) => schoolYears
-      .where((item) => item.year == year && item.educationStage == stage)
+      .where(
+        (item) =>
+            item.enabled && item.year == year && item.educationStage == stage,
+      )
       .expand((item) => item.lessons)
       .toList();
   factory SubjectContentManifest.fromMap(Map<String, dynamic> map) =>
@@ -116,12 +138,14 @@ class SubjectSchoolYearManifest {
     required this.title,
     required this.order,
     required this.lessons,
+    this.enabled = true,
   });
   final String id, title;
   final int year, order;
   final EducationStage educationStage;
   final CurriculumSource curriculumSource;
   final List<Lesson> lessons;
+  final bool enabled;
   factory SubjectSchoolYearManifest.fromMap(
     Map<String, dynamic> map,
     SubjectType subject,
@@ -136,6 +160,7 @@ class SubjectSchoolYearManifest {
     ),
     title: map['title'] as String,
     order: map['order'] as int,
+    enabled: map['enabled'] as bool? ?? true,
     lessons: _maps(map['lessons'])
         .map(
           (lesson) => Lesson(
@@ -164,6 +189,7 @@ class SubjectSchoolYearManifest {
     'curriculumSource': curriculumSource.name,
     'title': title,
     'order': order,
+    'enabled': enabled,
     'lessons': lessons
         .map(
           (lesson) => {

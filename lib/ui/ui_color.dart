@@ -37,6 +37,11 @@ abstract final class UiColor {
   static const recommendationStripe = Color(0xFFF9DA49);
   static const recommendationBorder = Color(0xFFDFA93A);
 
+  // Continuar aprendendo
+  static const continueBase = Color(0xFFD9DDE3);
+  static const continueStripe = Color(0xFFE9ECF0);
+  static const continueBorder = Color(0xFFA9B0BA);
+
   // Matérias
   static const mathematics = Color(0xFF1CB0F6);
   static const portuguese = Color(0xFFFF6B9D);
@@ -49,7 +54,7 @@ abstract final class UiColor {
   static const history = Color(0xFFFF9600);
   static const geography = Color(0xFFCE82FF);
   static const philosophy = Color(0xFFE66B8C);
-  static const sociology = Color(0xFF4DABF7);
+  static const sociology = Color(0xFFD3A065);
 
   static Color forSubject(SubjectType value) => switch (value) {
     SubjectType.mathematics => mathematics,
@@ -65,4 +70,10 @@ abstract final class UiColor {
     SubjectType.philosophy => philosophy,
     SubjectType.sociology => sociology,
   };
+
+  static Color subjectStripe(SubjectType value) =>
+      Color.lerp(forSubject(value), text, .12)!;
+
+  static Color subjectBorder(SubjectType value) =>
+      Color.lerp(forSubject(value), background, .24)!;
 }

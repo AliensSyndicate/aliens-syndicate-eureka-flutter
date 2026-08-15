@@ -28,7 +28,7 @@ class RecommendationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(UiRadius.card),
         side: const BorderSide(
           color: UiColor.recommendationBorder,
-          width: UiCard.recommendationBorderWidth,
+          width: UiCard.highlightBorderWidth,
         ),
       ),
       child: InkWell(

@@ -33,6 +33,7 @@ abstract final class AppStrings {
       emptyResults = 'Nenhum conteúdo encontrado.',
       contentUnavailable =
           'Esta atividade ainda não está disponível offline. Verifique sua conexão e tente novamente.',
+      comingSoon = 'Em breve',
       lessonProgress = 'Progresso da atividade';
   static const xpLabel = 'Pontos de experiência';
   static const levelLabel = 'Nível atual';

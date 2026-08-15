@@ -35,8 +35,6 @@ class LessonCard extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(UiCard.featureRadius),
-            splashColor: UiColor.text.withValues(alpha: .16),
-            highlightColor: UiColor.background.withValues(alpha: .08),
             child: SizedBox(
               height: UiCard.featureMinHeight,
               child: Padding(

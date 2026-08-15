@@ -8,6 +8,7 @@ void main() {
   final manifest = buildSeedContentManifest();
   final document = {
     'published': true,
+    'enabled': true,
     'schemaVersion': manifest.schemaVersion,
     'contentVersion': manifest.contentVersion,
     'payload': manifest.toMap(),
