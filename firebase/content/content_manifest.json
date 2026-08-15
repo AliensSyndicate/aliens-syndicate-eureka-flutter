@@ -1,0 +1,14 @@
+{"published":true,"payload":{"schemaVersion":1,"contentVersion":3,"locale":"pt-BR","updatedAt":"2026-08-14T00:00:00.000Z","subjects":[
+{"id":"portuguese","title":"Português","type":"portuguese","order":0,"schoolYears":[{"id":"portuguese_year_5","year":5,"title":"5º ano","order":0,"lessons":[{"id":"text_genres","title":"Gêneros textuais","summary":"Cada texto tem uma intenção: informar, ensinar, divertir ou convencer.","topicId":"genres","skillId":null,"prerequisiteLessonIds":[],"activities":[{"id":"text_genres_v1","version":1,"checksum":null,"order":0}]}]}]},
+{"id":"english","title":"Inglês","type":"english","order":1,"schoolYears":[{"id":"english_year_5","year":5,"title":"5º ano","order":0,"lessons":[]}]},
+{"id":"spanish","title":"Espanhol","type":"spanish","order":2,"schoolYears":[{"id":"spanish_year_5","year":5,"title":"5º ano","order":0,"lessons":[]}]},
+{"id":"mathematics","title":"Matemática","type":"mathematics","order":3,"schoolYears":[{"id":"mathematics_year_5","year":5,"title":"5º ano","order":0,"lessons":[{"id":"fractions_intro","title":"Frações na prática","summary":"Uma fração mostra quantas partes iguais de um todo estamos usando.","topicId":"fractions","skillId":null,"prerequisiteLessonIds":[],"activities":[{"id":"fractions_intro_v1","version":1,"checksum":null,"order":0}]}]}]},
+{"id":"science","title":"Ciências","type":"science","order":4,"schoolYears":[{"id":"science_year_5","year":5,"title":"5º ano","order":0,"lessons":[{"id":"water_cycle","title":"O ciclo da água","summary":"A água circula pela natureza em transformações contínuas.","topicId":"water","skillId":null,"prerequisiteLessonIds":[],"activities":[{"id":"water_cycle_v1","version":1,"checksum":null,"order":0}]}]}]},
+{"id":"biology","title":"Biologia","type":"biology","order":5,"schoolYears":[{"id":"biology_year_5","year":5,"title":"5º ano","order":0,"lessons":[]}]},
+{"id":"physics","title":"Física","type":"physics","order":6,"schoolYears":[{"id":"physics_year_5","year":5,"title":"5º ano","order":0,"lessons":[]}]},
+{"id":"chemistry","title":"Química","type":"chemistry","order":7,"schoolYears":[{"id":"chemistry_year_5","year":5,"title":"5º ano","order":0,"lessons":[]}]},
+{"id":"history","title":"História","type":"history","order":8,"schoolYears":[{"id":"history_year_5","year":5,"title":"5º ano","order":0,"lessons":[]}]},
+{"id":"geography","title":"Geografia","type":"geography","order":9,"schoolYears":[{"id":"geography_year_5","year":5,"title":"5º ano","order":0,"lessons":[]}]},
+{"id":"philosophy","title":"Filosofia","type":"philosophy","order":10,"schoolYears":[{"id":"philosophy_year_5","year":5,"title":"5º ano","order":0,"lessons":[]}]},
+{"id":"sociology","title":"Sociologia","type":"sociology","order":11,"schoolYears":[{"id":"sociology_year_5","year":5,"title":"5º ano","order":0,"lessons":[]}]}
+]}}

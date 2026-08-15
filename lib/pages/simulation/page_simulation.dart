@@ -90,12 +90,33 @@ class _PageSimulationState extends State<PageSimulation> {
       );
       return;
     }
+    final activities = await Future.wait(
+      selected.map(ServiceRegistry.content.loadActivity),
+    );
+    final available = activities
+        .where((lesson) => lesson.questions.isNotEmpty)
+        .toList();
+    if (!mounted) return;
+    if (available.isEmpty) {
+      await AppBottomSheet.show<void>(
+        context,
+        title: AppStrings.simulation,
+        content: const Text(AppStrings.contentUnavailable),
+        actions: [
+          AppButton(
+            label: AppStrings.finish,
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      );
+      return;
+    }
     final simulation = Lesson(
       id: 'simulation',
       title: AppStrings.simulation,
       summary: AppStrings.noXpOutsideJourney,
-      subject: selected.first.subject,
-      questions: selected.expand((lesson) => lesson.questions).toList(),
+      subject: available.first.subject,
+      questions: available.expand((lesson) => lesson.questions).toList(),
     );
     if (mounted) {
       await Navigator.push(

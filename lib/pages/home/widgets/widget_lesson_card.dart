@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../l10n/app_strings.dart';
 import '../../../models/model_lesson.dart';
 import '../../../ui/ui_card.dart';
@@ -17,8 +18,6 @@ class LessonCard extends StatelessWidget {
 
   final Lesson lesson;
   final VoidCallback onTap;
-
-  /// Espaço reservado para a ilustração de cada matéria/lição.
   final Widget? illustration;
 
   @override
@@ -82,7 +81,6 @@ class _LessonCopy extends StatelessWidget {
         style: UiText.h3.copyWith(
           color: UiColor.background,
           fontWeight: FontWeight.w800,
-          fontStyle: FontStyle.italic,
           height: 1,
         ),
       ),
@@ -94,7 +92,6 @@ class _LessonCopy extends StatelessWidget {
         style: UiText.label.copyWith(
           color: UiColor.background.withValues(alpha: .58),
           fontWeight: FontWeight.w800,
-          fontStyle: FontStyle.italic,
         ),
       ),
       const Spacer(),
@@ -111,7 +108,6 @@ class _LessonCopy extends StatelessWidget {
           style: UiText.label.copyWith(
             color: UiColor.text,
             fontWeight: FontWeight.w800,
-            fontStyle: FontStyle.italic,
           ),
         ),
       ),

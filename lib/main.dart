@@ -6,12 +6,18 @@ import 'ui/ui_color.dart';
 import 'ui/ui_theme.dart';
 import 'l10n/app_strings.dart';
 import 'services/service_firebase.dart';
+import 'services/service_registry.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox<dynamic>('eureka');
+  await Hive.openBox<dynamic>('content_cache_v1');
   await FirebaseService.initialize();
+  await ServiceRegistry.content.syncManifest().timeout(
+    const Duration(seconds: 4),
+    onTimeout: () => false,
+  );
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(

@@ -6,6 +6,14 @@ service cloud.firestore {
       allow read: if collection in ['subjects', 'units', 'topics', 'skills', 'lessons', 'questions'] && resource.data.published == true;
       allow write: if false;
     }
+    match /content_manifests/{document} {
+      allow read: if resource.data.published == true;
+      allow write: if false;
+    }
+    match /content_activities/{document} {
+      allow read: if resource.data.published == true;
+      allow write: if false;
+    }
     // A V1 não envia progresso local ao Firebase. Liberar somente após autenticação e revisão LGPD.
     match /users/{userId}/{document=**} { allow read, write: if false; }
     match /{document=**} { allow read, write: if false; }

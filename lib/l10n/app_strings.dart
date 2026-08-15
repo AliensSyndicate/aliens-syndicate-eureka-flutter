@@ -1,6 +1,7 @@
 abstract final class AppStrings {
   static const appName = 'Eureka',
       greeting = 'Olá, Explorador!',
+      subjectsTitle = 'Matérias',
       journeySubtitle = 'Sua próxima descoberta está logo adiante.',
       home = 'Home',
       social = 'Social',
@@ -28,6 +29,8 @@ abstract final class AppStrings {
       reviewSuggestion = 'Vale revisar',
       strongPerformance = 'Ótimo domínio destes conteúdos!',
       emptyResults = 'Nenhum conteúdo encontrado.',
+      contentUnavailable =
+          'Esta atividade ainda não está disponível offline. Verifique sua conexão e tente novamente.',
       lessonProgress = 'Progresso da atividade';
 
   static String schoolYear(int year) => '$yearº ano';

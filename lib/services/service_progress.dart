@@ -1,5 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/model_progress.dart';
+import '../models/model_lesson.dart';
+import 'service_subject_progress.dart';
 
 class ProgressService {
   ProgressService(this._box);
@@ -10,6 +12,13 @@ class ProgressService {
       _box.get('completed_lessons', defaultValue: <String>[]),
     ),
   );
+  int completionPercentage(List<Lesson> lessons) {
+    return SubjectProgressService().calculate(
+      lessons,
+      load().completedLessonIds.toSet(),
+    );
+  }
+
   Future<UserProgress> completeLesson(String lessonId, int earnedXp) async {
     final current = load();
     final ids = {...current.completedLessonIds, lessonId}.toList();
