@@ -1,3 +1,14 @@
 abstract final class UiSpacing {
-  static const double xs = 4, sm = 8, md = 16, lg = 24, xl = 32;
+  static const xxs = 4.0;
+  static const xs = 8.0;
+  static const sm = 12.0;
+  static const md = 16.0;
+  static const lg = 20.0;
+  static const xl = 24.0;
+  static const xxl = 32.0;
+  static const xxxl = 40.0;
+  static const pageHorizontal = 20.0;
+  static const pageVertical = 16.0;
+  static const cardPadding = 16.0;
+  static const sectionSpacing = 24.0;
 }

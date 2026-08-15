@@ -34,7 +34,10 @@ class _PageSimulationState extends State<PageSimulation> {
         }
         final items = snapshot.data!;
         return ListView(
-          padding: const EdgeInsets.all(UiSpacing.lg),
+          padding: const EdgeInsets.symmetric(
+            horizontal: UiSpacing.pageHorizontal,
+            vertical: UiSpacing.pageVertical,
+          ),
           children: [
             Text(
               AppStrings.simulation,

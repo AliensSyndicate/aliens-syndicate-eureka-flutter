@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_strings.dart';
+import '../../../ui/ui_size.dart';
+import '../../../ui/ui_radius.dart';
 
 class LessonProgressBar extends StatelessWidget {
   const LessonProgressBar({required this.value, super.key});
@@ -10,8 +12,8 @@ class LessonProgressBar extends StatelessWidget {
     value: '${(value * 100).round()}%',
     child: LinearProgressIndicator(
       value: value,
-      minHeight: 10,
-      borderRadius: BorderRadius.circular(10),
+      minHeight: UiSize.progressHeight,
+      borderRadius: BorderRadius.circular(UiRadius.pill),
     ),
   );
 }

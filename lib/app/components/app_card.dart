@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../ui/ui_spacing.dart';
-import '../../ui/ui_radius.dart';
+import '../../ui/ui_card.dart';
+import '../../ui/ui_color.dart';
 
 class AppCard extends StatelessWidget {
   const AppCard({required this.child, this.onTap, super.key});
@@ -9,17 +9,30 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = Padding(
-      padding: const EdgeInsets.all(UiSpacing.md),
+      padding: const EdgeInsets.all(UiCard.padding),
       child: child,
     );
-    return Card(
+    final decorated = Material(
+      color: UiColor.surface,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(UiCard.radius),
+        side: const BorderSide(
+          color: UiColor.outline,
+          width: UiCard.borderWidth,
+        ),
+      ),
       child: onTap == null
           ? content
           : InkWell(
-              borderRadius: BorderRadius.circular(UiRadius.md),
+              borderRadius: BorderRadius.circular(UiCard.radius),
               onTap: onTap,
               child: content,
             ),
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: UiCard.borderWidth),
+      child: decorated,
     );
   }
 }

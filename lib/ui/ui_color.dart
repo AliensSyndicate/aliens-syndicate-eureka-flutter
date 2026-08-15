@@ -3,18 +3,41 @@ import 'package:flutter/material.dart';
 import '../enums/subject_type.dart';
 
 abstract final class UiColor {
-  static const background = Color(0xFFF7F8FC),
-      surface = Colors.white,
-      primary = Color(0xFF6C5CE7),
-      secondary = Color(0xFF00B894),
-      textPrimary = Color(0xFF24283B),
-      textSecondary = Color(0xFF6B7280),
-      outline = Color(0xFFE6E8F0),
-      mathematics = Color(0xFF5B8DEF),
-      portuguese = Color(0xFFEF6F91),
-      science = Color(0xFF35B779),
-      history = Color(0xFFF2A65A),
-      geography = Color(0xFF8E6BBE);
+  // Identidade principal
+  static const background = Color(0xFF2D2636);
+  static const navigationBackground = Color(0xFF322A37);
+  static const accent = Color(0xFFD38DFD);
+  static const text = Color(0xFFF9F4FC);
+
+  // Superfícies derivadas
+  static const surface = Color(0xFF352C3A);
+  static const surfaceElevated = Color(0xFF403447);
+
+  // Marca e ações
+  static const primary = accent;
+  static const secondary = accent;
+
+  // Texto
+  static const textPrimary = text;
+  static const textSecondary = Color(0xFFC8BBCD);
+  static const textDisabled = Color(0xFF817585);
+
+  // Estrutura
+  static const outline = Color(0xFF594A60);
+  static const divider = Color(0xFF493D4F);
+
+  // Feedback
+  static const success = Color(0xFF58CC02);
+  static const error = Color(0xFFFF4B4B);
+  static const warning = Color(0xFFFFC800);
+  static const info = Color(0xFF1CB0F6);
+
+  // Matérias
+  static const mathematics = Color(0xFF1CB0F6);
+  static const portuguese = Color(0xFFFF6B9D);
+  static const science = Color(0xFF58CC02);
+  static const history = Color(0xFFFF9600);
+  static const geography = Color(0xFFCE82FF);
 
   static Color forSubject(SubjectType value) => switch (value) {
     SubjectType.mathematics => mathematics,

@@ -9,6 +9,7 @@ import '../../l10n/app_strings.dart';
 import '../../models/model_lesson.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_spacing.dart';
+import '../../ui/ui_size.dart';
 import 'widgets/widget_progress_bar.dart';
 import 'widgets/widget_question_option.dart';
 
@@ -50,7 +51,10 @@ class _PageLessonState extends State<PageLesson> {
   );
 
   Widget _summary(BuildContext context) => Padding(
-    padding: const EdgeInsets.all(UiSpacing.lg),
+    padding: const EdgeInsets.symmetric(
+      horizontal: UiSpacing.pageHorizontal,
+      vertical: UiSpacing.pageVertical,
+    ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -83,7 +87,10 @@ class _PageLessonState extends State<PageLesson> {
   Widget _question(BuildContext context) {
     final question = controller.currentQuestion;
     return ListView(
-      padding: const EdgeInsets.all(UiSpacing.lg),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UiSpacing.pageHorizontal,
+        vertical: UiSpacing.pageVertical,
+      ),
       children: [
         LessonProgressBar(
           value: (controller.currentIndex + 1) / widget.lesson.questions.length,
@@ -124,7 +131,7 @@ class _PageLessonState extends State<PageLesson> {
           ? AppStrings.correctFeedback
           : AppStrings.incorrectFeedback,
       content: correct
-          ? const Icon(Icons.celebration_rounded, size: 56)
+          ? const Icon(Icons.celebration_rounded, size: UiSize.buttonHeightLg)
           : Text('${AppStrings.correctAnswer}: ${question.correctAnswer}'),
       actions: [
         AppButton(

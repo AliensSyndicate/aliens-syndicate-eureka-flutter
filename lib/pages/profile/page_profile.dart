@@ -12,7 +12,10 @@ class PageProfile extends StatelessWidget {
     final user = ServiceRegistry.user.loadCurrentUser();
     final progress = ServiceRegistry.progress.load();
     return ListView(
-      padding: const EdgeInsets.all(UiSpacing.lg),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UiSpacing.pageHorizontal,
+        vertical: UiSpacing.pageVertical,
+      ),
       children: [
         Center(
           child: CircleAvatar(
@@ -20,7 +23,7 @@ class PageProfile extends StatelessWidget {
             backgroundColor: UiColor.primary.withValues(alpha: .15),
             child: const Icon(
               Icons.face_rounded,
-              size: 48,
+              size: UiSize.avatarMd,
               color: UiColor.primary,
             ),
           ),

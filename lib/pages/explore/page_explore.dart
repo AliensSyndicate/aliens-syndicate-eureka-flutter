@@ -43,7 +43,10 @@ class _PageExploreState extends State<PageExplore> {
                   )
                   .toList();
         return ListView(
-          padding: const EdgeInsets.all(UiSpacing.lg),
+          padding: const EdgeInsets.symmetric(
+            horizontal: UiSpacing.pageHorizontal,
+            vertical: UiSpacing.pageVertical,
+          ),
           children: [
             Text(
               AppStrings.explore,

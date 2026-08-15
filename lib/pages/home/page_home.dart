@@ -1,12 +1,14 @@
+import 'package:eureka/ui/ui_text.dart';
 import 'package:flutter/material.dart';
+
 import '../../controllers/controller_home.dart';
 import '../../enums/learning_mode.dart';
 import '../../l10n/app_strings.dart';
+import '../../models/model_lesson.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_spacing.dart';
-import 'widgets/widget_lesson_card.dart';
 import '../lesson/page_lesson.dart';
-import '../../models/model_lesson.dart';
+import 'widgets/widget_lesson_card.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({super.key});
@@ -32,12 +34,12 @@ class _PageHomeState extends State<PageHome> {
         }
         final items = snapshot.data!;
         return ListView(
-          padding: const EdgeInsets.all(UiSpacing.lg),
+          padding: const EdgeInsets.symmetric(
+            horizontal: UiSpacing.pageHorizontal,
+            vertical: UiSpacing.pageVertical,
+          ),
           children: [
-            Text(
-              AppStrings.greeting,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text(AppStrings.greeting, style: UiText.h2),
             const SizedBox(height: UiSpacing.sm),
             const Text(AppStrings.journeySubtitle),
             const SizedBox(height: UiSpacing.lg),

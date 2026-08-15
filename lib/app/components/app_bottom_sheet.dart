@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../ui/ui_spacing.dart';
+import '../../ui/ui_bottom_sheet.dart';
 
 class AppBottomSheet {
   static Future<T?> show<T>(
@@ -14,10 +15,10 @@ class AppBottomSheet {
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-          UiSpacing.lg,
-          UiSpacing.md,
-          UiSpacing.lg,
-          MediaQuery.viewInsetsOf(context).bottom + UiSpacing.lg,
+          UiBottomSheet.horizontalPadding,
+          UiBottomSheet.topPadding,
+          UiBottomSheet.horizontalPadding,
+          MediaQuery.viewInsetsOf(context).bottom + UiBottomSheet.bottomPadding,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
