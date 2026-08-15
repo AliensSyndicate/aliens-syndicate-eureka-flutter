@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../models/model_learning_recommendation.dart';
+
 import '../../../l10n/app_strings.dart';
+import '../../../models/model_learning_recommendation.dart';
 import '../../../ui/ui_card.dart';
 import '../../../ui/ui_color.dart';
+import '../../../ui/ui_gradient.dart';
 import '../../../ui/ui_radius.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
@@ -19,19 +21,25 @@ class RecommendationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = UiColor.forSubject(recommendation.subject.type);
     return Material(
-      color: color,
+      color: UiColor.recommendationBase,
       clipBehavior: Clip.antiAlias,
-      borderRadius: BorderRadius.circular(UiRadius.card),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(UiRadius.card),
+        side: const BorderSide(
+          color: UiColor.recommendationBorder,
+          width: UiCard.recommendationBorderWidth,
+        ),
+      ),
       child: InkWell(
         onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: UiCard.recommendationMinHeight,
-          ),
+        child: Ink(
+          decoration: const BoxDecoration(gradient: UiGradient.recommendation),
           child: Padding(
-            padding: const EdgeInsets.all(UiSpacing.cardPadding),
+            padding: const EdgeInsets.symmetric(
+              horizontal: UiSpacing.lg,
+              vertical: UiSpacing.xl,
+            ),
             child: Row(
               children: [
                 Expanded(
@@ -55,9 +63,7 @@ class RecommendationCard extends StatelessWidget {
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: UiText.label.copyWith(
-                          color: UiColor.background.withValues(alpha: .68),
-                        ),
+                        style: UiText.label.copyWith(color: UiColor.background),
                       ),
                     ],
                   ),

@@ -61,7 +61,7 @@ class _PageHomeState extends State<PageHome> {
               SubjectContentManifest? lastSubject;
               Lesson? lastLesson;
               for (final subject in items) {
-                for (final lesson in subject.lessonsForYear(schoolYear)) {
+                for (final lesson in subject.lessons) {
                   if (lesson.id == savedProgress.lastLessonId) {
                     lastSubject = subject;
                     lastLesson = lesson;
@@ -91,7 +91,7 @@ class _PageHomeState extends State<PageHome> {
                 ),
                 children: [
                   if (lastSubject != null && lastLesson != null) ...[
-                    Text(AppStrings.continueWhereStopped, style: UiText.h5),
+                    Text(AppStrings.continueWhereStopped, style: UiText.h4),
                     const SizedBox(height: UiSpacing.sm),
                     ContinueLearningCard(
                       subject: lastSubject,
@@ -104,7 +104,7 @@ class _PageHomeState extends State<PageHome> {
                     const SizedBox(height: UiSpacing.sectionSpacing),
                   ],
                   if (recommendation != null) ...[
-                    Text(AppStrings.recommendedForYou, style: UiText.h5),
+                    Text(AppStrings.recommendedForYou, style: UiText.h4),
                     const SizedBox(height: UiSpacing.sm),
                     RecommendationCard(
                       recommendation: recommendation,
@@ -112,15 +112,13 @@ class _PageHomeState extends State<PageHome> {
                     ),
                     const SizedBox(height: UiSpacing.sectionSpacing),
                   ],
-                  Text(AppStrings.subjectsTitle, style: UiText.h5),
+                  Text(AppStrings.subjectsTitle, style: UiText.h4),
                   const SizedBox(height: UiSpacing.xxs),
                   const Text(AppStrings.journeySubtitle, style: UiText.p),
-                  const SizedBox(height: UiSpacing.sectionSpacing),
+                  const SizedBox(height: UiSpacing.sm),
                   ...items.map((subject) {
                     final progress = ServiceRegistry.progress
-                        .completionPercentage(
-                          subject.lessonsForYear(schoolYear),
-                        );
+                        .completionPercentage(subject.lessons);
                     return SubjectCard(
                       subject: subject,
                       progress: progress,
@@ -128,10 +126,8 @@ class _PageHomeState extends State<PageHome> {
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => PageSubjectLessons(
-                              subject: subject,
-                              schoolYear: schoolYear,
-                            ),
+                            builder: (_) =>
+                                PageSubjectLessons(subject: subject),
                           ),
                         );
                         if (mounted) setState(() {});

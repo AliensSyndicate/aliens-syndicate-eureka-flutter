@@ -32,6 +32,11 @@ abstract final class UiColor {
   static const warning = Color(0xFFFFC800);
   static const info = Color(0xFF1CB0F6);
 
+  // Recomendação
+  static const recommendationBase = Color(0xFFF7CA45);
+  static const recommendationStripe = Color(0xFFF9DA49);
+  static const recommendationBorder = Color(0xFFDFA93A);
+
   // Matérias
   static const mathematics = Color(0xFF1CB0F6);
   static const portuguese = Color(0xFFFF6B9D);

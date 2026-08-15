@@ -14,7 +14,10 @@ class ContentService {
     this._remoteRepository,
     this._manifestCache,
     this._activityCache,
-  ) : _manifest = _manifestCache.read() ?? buildSeedContentManifest();
+  ) : _manifest = _newestManifest(
+        _manifestCache.read(),
+        buildSeedContentManifest(),
+      );
   final ContentRepository? _remoteRepository;
   final HiveContentManifestCache _manifestCache;
   final HiveContentActivityCache _activityCache;
@@ -50,11 +53,19 @@ class ContentService {
     return getSubjectsForYear(year);
   }
 
+  Future<List<SubjectContentManifest>> loadSubjects() async {
+    await syncManifest();
+    return getSubjects();
+  }
+
   List<Lesson> getJourneyLessons() =>
       List.unmodifiable(_manifest.lessonsForYear(5));
 
   List<SubjectContentManifest> getSubjectsForYear(int year) =>
       List.unmodifiable(_manifest.subjectsForYear(year));
+
+  List<SubjectContentManifest> getSubjects() =>
+      List.unmodifiable(_manifest.sortedSubjects);
 
   List<Lesson> search(String query) {
     final value = query.trim().toLowerCase();
@@ -70,6 +81,7 @@ class ContentService {
 
   Future<Lesson> loadActivity(Lesson lesson) async {
     if (lesson.questions.isNotEmpty) return Future.value(lesson);
+    if (lesson.activities.isEmpty && lesson.activityId == null) return lesson;
     final references = lesson.activities.isNotEmpty
         ? ([...lesson.activities]..sort((a, b) => a.order.compareTo(b.order)))
         : [
@@ -170,8 +182,17 @@ class ContentService {
         ids.length == lessons.length &&
         lessons.every(
           (lesson) =>
-              lesson.activities.isNotEmpty &&
               lesson.activities.every((activity) => activity.id.isNotEmpty),
         );
   }
+}
+
+ContentManifest _newestManifest(
+  ContentManifest? cached,
+  ContentManifest bundled,
+) {
+  if (cached == null || cached.contentVersion < bundled.contentVersion) {
+    return bundled;
+  }
+  return cached;
 }

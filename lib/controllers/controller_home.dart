@@ -5,5 +5,5 @@ class HomeController {
   HomeController(this._contentService);
   final ContentService _contentService;
   Future<List<SubjectContentManifest>> loadSubjects(int schoolYear) =>
-      _contentService.loadSubjectsForYear(schoolYear);
+      _contentService.loadSubjects();
 }

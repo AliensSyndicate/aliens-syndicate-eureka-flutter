@@ -1,4 +1,5 @@
 import '../../enums/subject_type.dart';
+import '../../enums/education_stage.dart';
 import '../model_lesson.dart';
 import 'model_activity_reference.dart';
 
@@ -16,19 +17,32 @@ class ContentManifest {
   final DateTime updatedAt;
   final List<SubjectContentManifest> subjects;
 
-  List<Lesson> lessonsForYear(int year) => subjects
+  List<Lesson> get lessons => subjects
       .expand((subject) => subject.schoolYears)
-      .where((item) => item.year == year)
       .expand((item) => item.lessons)
       .toList();
-  List<SubjectContentManifest> subjectsForYear(int year) =>
-      ([...subjects]..sort(
-            (a, b) => _alphabetic(a.title).compareTo(_alphabetic(b.title)),
-          ))
-          .where(
-            (subject) => subject.schoolYears.any((item) => item.year == year),
-          )
-          .toList();
+  List<SubjectContentManifest> get sortedSubjects =>
+      [...subjects]
+        ..sort((a, b) => _alphabetic(a.title).compareTo(_alphabetic(b.title)));
+
+  List<Lesson> lessonsForYear(
+    int year, {
+    EducationStage stage = EducationStage.elementarySchool,
+  }) => subjects
+      .expand((subject) => subject.schoolYears)
+      .where((item) => item.year == year && item.educationStage == stage)
+      .expand((item) => item.lessons)
+      .toList();
+  List<SubjectContentManifest> subjectsForYear(
+    int year, {
+    EducationStage stage = EducationStage.elementarySchool,
+  }) => sortedSubjects
+      .where(
+        (subject) => subject.schoolYears.any(
+          (item) => item.year == year && item.educationStage == stage,
+        ),
+      )
+      .toList();
 
   factory ContentManifest.fromMap(Map<String, dynamic> map) => ContentManifest(
     schemaVersion: map['schemaVersion'] as int,
@@ -60,8 +74,13 @@ class SubjectContentManifest {
   final SubjectType type;
   final int order;
   final List<SubjectSchoolYearManifest> schoolYears;
-  List<Lesson> lessonsForYear(int year) => schoolYears
-      .where((item) => item.year == year)
+  List<Lesson> get lessons =>
+      schoolYears.expand((item) => item.lessons).toList();
+  List<Lesson> lessonsForYear(
+    int year, {
+    EducationStage stage = EducationStage.elementarySchool,
+  }) => schoolYears
+      .where((item) => item.year == year && item.educationStage == stage)
       .expand((item) => item.lessons)
       .toList();
   factory SubjectContentManifest.fromMap(Map<String, dynamic> map) =>
@@ -92,12 +111,16 @@ class SubjectSchoolYearManifest {
   const SubjectSchoolYearManifest({
     required this.id,
     required this.year,
+    this.educationStage = EducationStage.elementarySchool,
+    this.curriculumSource = CurriculumSource.bncc,
     required this.title,
     required this.order,
     required this.lessons,
   });
   final String id, title;
   final int year, order;
+  final EducationStage educationStage;
+  final CurriculumSource curriculumSource;
   final List<Lesson> lessons;
   factory SubjectSchoolYearManifest.fromMap(
     Map<String, dynamic> map,
@@ -105,6 +128,12 @@ class SubjectSchoolYearManifest {
   ) => SubjectSchoolYearManifest(
     id: map['id'] as String,
     year: map['year'] as int,
+    educationStage: EducationStage.values.byName(
+      map['educationStage'] as String? ?? EducationStage.elementarySchool.name,
+    ),
+    curriculumSource: CurriculumSource.values.byName(
+      map['curriculumSource'] as String? ?? CurriculumSource.bncc.name,
+    ),
     title: map['title'] as String,
     order: map['order'] as int,
     lessons: _maps(map['lessons'])
@@ -131,6 +160,8 @@ class SubjectSchoolYearManifest {
   Map<String, dynamic> toMap() => {
     'id': id,
     'year': year,
+    'educationStage': educationStage.name,
+    'curriculumSource': curriculumSource.name,
     'title': title,
     'order': order,
     'lessons': lessons

@@ -1,68 +1,79 @@
+import '../../enums/education_stage.dart';
 import '../../enums/subject_type.dart';
-import '../../models/content/model_activity_reference.dart';
 import '../../models/content/model_content_manifest.dart';
 import '../../models/model_lesson.dart';
-import 'seed_content.dart';
+import 'seed_curriculum.dart';
 
-ContentManifest buildSeedContentManifest() {
-  SubjectContentManifest subject(
-    String id,
-    String title,
-    SubjectType type,
-    int order,
-  ) {
-    final lessons = seedLessons
-        .where((lesson) => lesson.subject == type)
-        .map(
-          (lesson) => Lesson(
-            id: lesson.id,
-            title: lesson.title,
-            summary: lesson.summary,
-            subject: type,
-            schoolYear: lesson.schoolYear,
-            topicId: lesson.topicId,
-            skillId: lesson.skillId,
-            prerequisiteLessonIds: lesson.prerequisiteLessonIds,
-            activities: [ActivityReference(id: '${lesson.id}_v1', version: 1)],
-            questions: const [],
-          ),
-        )
-        .toList();
+ContentManifest buildSeedContentManifest() => ContentManifest(
+  schemaVersion: 1,
+  contentVersion: 4,
+  locale: 'pt-BR',
+  updatedAt: DateTime.utc(2026, 8, 14),
+  subjects: _subjects.indexed.map((entry) {
+    final (order, definition) = entry;
+    final grades = seedCurriculum[definition.type] ?? const [];
     return SubjectContentManifest(
-      id: id,
-      title: title,
-      type: type,
+      id: definition.type.name,
+      title: definition.title,
+      type: definition.type,
       order: order,
-      schoolYears: [
-        SubjectSchoolYearManifest(
-          id: '${id}_year_5',
-          year: 5,
-          title: '5º ano',
-          order: 0,
-          lessons: lessons,
-        ),
-      ],
+      schoolYears: grades.indexed.map((gradeEntry) {
+        final (gradeOrder, grade) = gradeEntry;
+        final stageId = grade.stage == EducationStage.elementarySchool
+            ? 'ef'
+            : 'em';
+        return SubjectSchoolYearManifest(
+          id: '${definition.type.name}_${stageId}_${grade.year}',
+          year: grade.year,
+          educationStage: grade.stage,
+          curriculumSource:
+              grade.stage == EducationStage.highSchool ||
+                  definition.type == SubjectType.spanish
+              ? CurriculumSource.editorial
+              : CurriculumSource.bncc,
+          title: grade.stage.yearLabel(grade.year),
+          order: gradeOrder,
+          lessons: grade.items.indexed.map((itemEntry) {
+            final (itemOrder, title) = itemEntry;
+            final id =
+                '${definition.type.name}_${stageId}_${grade.year}_${itemOrder + 1}';
+            return Lesson(
+              id: id,
+              title: title,
+              summary: '',
+              subject: definition.type,
+              schoolYear: grade.year,
+              topicId: id,
+              prerequisiteLessonIds: itemOrder == 0
+                  ? const []
+                  : ['${definition.type.name}_${stageId}_${grade.year}_$itemOrder'],
+              activities: const [],
+              questions: const [],
+            );
+          }).toList(),
+        );
+      }).toList(),
     );
-  }
+  }).toList(),
+);
 
-  return ContentManifest(
-    schemaVersion: 1,
-    contentVersion: 3,
-    locale: 'pt-BR',
-    updatedAt: DateTime.utc(2026, 8, 14),
-    subjects: [
-      subject('portuguese', 'Português', SubjectType.portuguese, 0),
-      subject('english', 'Inglês', SubjectType.english, 1),
-      subject('spanish', 'Espanhol', SubjectType.spanish, 2),
-      subject('mathematics', 'Matemática', SubjectType.mathematics, 3),
-      subject('science', 'Ciências', SubjectType.science, 4),
-      subject('biology', 'Biologia', SubjectType.biology, 5),
-      subject('physics', 'Física', SubjectType.physics, 6),
-      subject('chemistry', 'Química', SubjectType.chemistry, 7),
-      subject('history', 'História', SubjectType.history, 8),
-      subject('geography', 'Geografia', SubjectType.geography, 9),
-      subject('philosophy', 'Filosofia', SubjectType.philosophy, 10),
-      subject('sociology', 'Sociologia', SubjectType.sociology, 11),
-    ],
-  );
+class _SubjectDefinition {
+  const _SubjectDefinition(this.type, this.title);
+  final SubjectType type;
+  final String title;
 }
+
+const _subjects = [
+  _SubjectDefinition(SubjectType.portuguese, 'Português'),
+  _SubjectDefinition(SubjectType.english, 'Inglês'),
+  _SubjectDefinition(SubjectType.spanish, 'Espanhol'),
+  _SubjectDefinition(SubjectType.mathematics, 'Matemática'),
+  _SubjectDefinition(SubjectType.science, 'Ciências'),
+  _SubjectDefinition(SubjectType.biology, 'Biologia'),
+  _SubjectDefinition(SubjectType.physics, 'Física'),
+  _SubjectDefinition(SubjectType.chemistry, 'Química'),
+  _SubjectDefinition(SubjectType.history, 'História'),
+  _SubjectDefinition(SubjectType.geography, 'Geografia'),
+  _SubjectDefinition(SubjectType.philosophy, 'Filosofia'),
+  _SubjectDefinition(SubjectType.sociology, 'Sociologia'),
+];
