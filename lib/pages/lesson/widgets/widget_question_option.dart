@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_spacing.dart';
@@ -11,12 +12,14 @@ class QuestionOption extends StatelessWidget {
     required this.selected,
     required this.onTap,
     this.state,
+    this.bottomSpacing = UiSpacing.sm,
     super.key,
   });
   final String label;
   final bool selected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final QuestionOptionState? state;
+  final double bottomSpacing;
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +33,13 @@ class QuestionOption extends StatelessWidget {
       _ => UiColor.outline,
     };
     final disabled = current == QuestionOptionState.disabled;
+    final interactive = !disabled && onTap != null;
     return Padding(
-      padding: const EdgeInsets.only(bottom: UiSpacing.sm),
+      padding: EdgeInsets.only(bottom: bottomSpacing),
       child: Semantics(
         selected: selected,
         button: true,
-        enabled: !disabled,
+        enabled: interactive,
         child: Opacity(
           opacity: disabled ? .55 : 1,
           child: Material(
@@ -44,7 +48,7 @@ class QuestionOption extends StatelessWidget {
                 : accent.withValues(alpha: .14),
             borderRadius: BorderRadius.circular(UiOption.radius),
             child: InkWell(
-              onTap: disabled ? null : onTap,
+              onTap: interactive ? onTap : null,
               borderRadius: BorderRadius.circular(UiOption.radius),
               child: Container(
                 constraints: const BoxConstraints(

@@ -17,10 +17,10 @@ abstract final class AppStrings {
       selectToReview = 'Selecionar para revisar',
       lessonSummary = 'Antes de começar',
       startActivity = 'Começar atividade',
-      checkAnswer = 'Conferir resposta',
-      nextQuestion = 'Próxima pergunta',
+      checkAnswer = 'Confirmar',
+      nextQuestion = 'Continuar',
       finish = 'Concluir',
-      correctFeedback = 'Muito bem! Você encontrou a resposta.',
+      correctFeedback = 'Muito bem!',
       incorrectFeedback = 'Quase! Leve essa ideia para a próxima.',
       correctAnswer = 'Resposta correta',
       lessonComplete = 'Descoberta concluída!',
@@ -37,7 +37,13 @@ abstract final class AppStrings {
       comingSoon = 'Em breve',
       lessonProgress = 'Progresso da atividade',
       closeActivity = 'Fechar atividade',
-      lessonTimeRemaining = 'Tempo restante da aula';
+      lessonTimeRemaining = 'Tempo restante da aula',
+      lessonTimeUp = 'O tempo da aula terminou',
+      lessonTimeUpMessage =
+          'Os 20 minutos acabaram. Você pode tentar esta lição novamente.',
+      answeredActivity = 'Atividade respondida',
+      currentActivity = 'Atividade atual',
+      returnToCurrentActivity = 'Voltar à atividade atual';
   static const xpLabel = 'Pontos de experiência';
   static const levelLabel = 'Nível atual';
   static String xpValue(int value) => '$value XP';
@@ -49,6 +55,8 @@ abstract final class AppStrings {
       value == 1 ? '1 lição concluída' : '$value lições concluídas';
   static String recommendationReason(String lesson) =>
       'Reforce $lesson e avance com confiança.';
+  static String activityPosition(int current, int total) =>
+      'Atividade $current de $total';
   static String lessonTime(Duration value) {
     final minutes = value.inMinutes.toString().padLeft(2, '0');
     final seconds = (value.inSeconds % 60).toString().padLeft(2, '0');

@@ -32,10 +32,20 @@ class LessonController {
   final ProgressService _progressService;
   final List<Question> _questions;
   final Map<String, String> _answers = {};
+  final Map<String, bool> _results = {};
   int currentIndex = 0;
   Question get currentQuestion => _questions[currentIndex];
+  List<Question> get visibleQuestions => List.unmodifiable(
+    _questions.take((currentIndex + 1).clamp(0, _questions.length)),
+  );
   int get totalQuestions => _questions.length;
   bool get isLastQuestion => currentIndex == _questions.length - 1;
+  bool get hasSubmittedCurrent => _answers.containsKey(currentQuestion.id);
+  int get answeredQuestions => _answers.length;
+  double get completionProgress =>
+      totalQuestions == 0 ? 0 : answeredQuestions / totalQuestions;
+  String? answerFor(Question question) => _answers[question.id];
+  bool? resultFor(Question question) => _results[question.id];
   int get correctAnswers => _questions
       .where(
         (question) =>
@@ -54,8 +64,15 @@ class LessonController {
       ? _scoringService.calculateJourneyXp(correctAnswers: correctAnswers)
       : 0;
   Future<bool> submit(String answer) async {
+    if (answer.trim().isEmpty) {
+      throw ArgumentError.value(answer, 'answer', 'A resposta é obrigatória.');
+    }
+    if (hasSubmittedCurrent) {
+      throw StateError('A atividade atual já foi respondida.');
+    }
     _answers[currentQuestion.id] = answer;
     final correct = _answerService.isCorrect(currentQuestion, answer);
+    _results[currentQuestion.id] = correct;
     if (!correct) {
       await _progressService.recordDifficulty(currentQuestion.subjectId);
     }
@@ -63,6 +80,9 @@ class LessonController {
   }
 
   void next() {
+    if (!hasSubmittedCurrent) {
+      throw StateError('Responda a atividade atual antes de avançar.');
+    }
     if (!isLastQuestion) {
       currentIndex++;
     }

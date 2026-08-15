@@ -41,7 +41,7 @@ void main() {
     expect(indicator.minHeight, UiSize.lessonProgressHeight);
     expect(indicator.color, subjectColor);
     expect(indicator.backgroundColor, UiColor.lessonProgressTrack);
-    expect(find.text('40%'), findsOneWidget);
+    expect(find.text('40%'), findsNothing);
     expect(find.text('20:00'), findsOneWidget);
     expect(find.bySemanticsLabel(AppStrings.lessonProgress), findsOneWidget);
     expect(find.byTooltip(AppStrings.closeActivity), findsOneWidget);
@@ -50,9 +50,9 @@ void main() {
     final progressCenter = tester.getCenter(
       find.byType(LinearProgressIndicator),
     );
-    final percentageCenter = tester.getCenter(find.text('40%'));
+    final timerCenter = tester.getCenter(find.text('20:00'));
     expect(closeCenter.dy, closeTo(progressCenter.dy, 1));
-    expect(percentageCenter.dy, closeTo(progressCenter.dy, 1));
+    expect(timerCenter.dy, closeTo(progressCenter.dy, 1));
     expect(
       tester.getSize(find.byType(IconButton)),
       const Size.square(UiSize.touchTarget),

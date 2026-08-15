@@ -8,9 +8,13 @@ class AppBottomSheet {
     required String title,
     required Widget content,
     List<Widget> actions = const [],
+    bool isDismissible = true,
+    bool enableDrag = true,
   }) => showModalBottomSheet<T>(
     context: context,
     isScrollControlled: true,
+    isDismissible: isDismissible,
+    enableDrag: enableDrag,
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(

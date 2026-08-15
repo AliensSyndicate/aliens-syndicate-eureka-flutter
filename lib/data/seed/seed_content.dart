@@ -3,6 +3,62 @@ import '../../enums/subject_type.dart';
 import '../../models/model_lesson.dart';
 import '../../models/model_question.dart';
 
+final modelMultipleChoiceLesson = Lesson(
+  id: 'balanced_food_model',
+  title: 'Escolhas para uma alimentação equilibrada',
+  summary:
+      'Os alimentos fornecem energia e nutrientes para o corpo. Uma alimentação equilibrada combina frutas, verduras, cereais, proteínas e água.',
+  subject: SubjectType.science,
+  topicId: 'balanced_food',
+  questions: [
+    _question(
+      'balanced_food_1',
+      'Qual opção é uma fruta?',
+      ['1. Maçã', '2. Arroz', '3. Feijão', '4. Queijo'],
+      '1. Maçã',
+      'science',
+      'balanced_food',
+    ),
+    _question(
+      'balanced_food_2',
+      'Qual bebida é a melhor escolha para manter o corpo hidratado?',
+      ['1. Refrigerante', '2. Água', '3. Xarope', '4. Energético'],
+      '2. Água',
+      'science',
+      'balanced_food',
+    ),
+    _question(
+      'balanced_food_3',
+      'Qual opção apresenta uma verdura ou um legume?',
+      ['1. Biscoito', '2. Bala', '3. Cenoura', '4. Sorvete'],
+      '3. Cenoura',
+      'science',
+      'balanced_food',
+    ),
+    _question(
+      'balanced_food_4',
+      'Qual refeição combina diferentes grupos de alimentos?',
+      [
+        '1. Apenas balas',
+        '2. Apenas refrigerante',
+        '3. Apenas batata frita',
+        '4. Arroz, feijão, salada e ovo',
+      ],
+      '4. Arroz, feijão, salada e ovo',
+      'science',
+      'balanced_food',
+    ),
+    _question(
+      'balanced_food_5',
+      'Qual alimento deve ser consumido com menos frequência por conter muito açúcar?',
+      ['1. Banana', '2. Alface', '3. Feijão', '4. Pirulito'],
+      '4. Pirulito',
+      'science',
+      'balanced_food',
+    ),
+  ],
+);
+
 final seedLessons = <Lesson>[
   Lesson(
     id: 'fractions_intro',
@@ -273,6 +329,7 @@ final seedLessons = <Lesson>[
       ),
     ],
   ),
+  modelMultipleChoiceLesson,
 ];
 
 Question _question(
