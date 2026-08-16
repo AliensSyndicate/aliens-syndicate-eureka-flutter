@@ -45,7 +45,8 @@ abstract final class AppStrings {
       currentActivity = 'Atividade atual',
       returnToCurrentActivity = 'Voltar à atividade atual',
       matchingPrompt = 'Toque os pares correspondentes',
-      matchingComplete = 'Todos os pares conectados!';
+      matchingComplete = 'Todos os pares conectados!',
+      orderingPrompt = 'Monte a frase na ordem correta';
   static const xpLabel = 'Pontos de experiência';
   static const levelLabel = 'Nível atual';
   static String xpValue(int value) => '$value XP';

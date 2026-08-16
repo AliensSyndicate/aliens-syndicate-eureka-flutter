@@ -8,6 +8,7 @@ import '../../../ui/ui_color.dart';
 import '../../../ui/ui_spacing.dart';
 import 'exercise_matching.dart';
 import 'exercise_multiple_choice.dart';
+import 'exercise_ordering.dart';
 import 'exercise_text_input.dart';
 
 enum LessonActivityStatus { active, answeredCorrect, answeredIncorrect }
@@ -49,8 +50,7 @@ class LessonActivity extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     label: isCurrent ? AppStrings.currentActivity : AppStrings.answeredActivity,
-    child: SingleChildScrollView(
-      physics: const ClampingScrollPhysics(),
+    child: Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: UiSpacing.pageHorizontal,
         vertical: UiSpacing.xs,
@@ -80,6 +80,20 @@ class LessonActivity extends StatelessWidget {
               )
             else
               _MatchingDoneIndicator(correct: isCorrect),
+          ] else if (question.type == QuestionType.ordering) ...[
+            Text(
+              AppStrings.orderingPrompt,
+              style: UiText.p.copyWith(color: UiColor.textSecondary),
+            ),
+            const SizedBox(height: UiSpacing.sm),
+            ExerciseOrdering(
+              key: ValueKey('ordering-${question.id}'),
+              words: question.options,
+              primaryColor: primaryColor,
+              enabled: interactionEnabled,
+              initialAnswer: submittedAnswer,
+              onChanged: onOptionSelected,
+            ),
           ] else if (question.type == QuestionType.multipleChoice)
             ExerciseMultipleChoice(
               questionId: question.id,

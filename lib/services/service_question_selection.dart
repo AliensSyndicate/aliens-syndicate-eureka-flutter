@@ -21,13 +21,13 @@ class QuestionSelectionService {
       ordered.add(ordered.removeAt(0));
     }
 
-    // Modo teste: garante que a questão de matching apareça como 1ª atividade.
-    final matchingIndex = ordered.indexWhere(
-      (q) => q.type == QuestionType.matching,
+    // Modo teste: garante que a questão de ordering apareça como 1ª atividade.
+    final orderingIndex = ordered.indexWhere(
+      (q) => q.type == QuestionType.ordering,
     );
-    if (matchingIndex != -1 && ordered[matchingIndex].id != lastQuestionId) {
-      final matching = ordered.removeAt(matchingIndex);
-      ordered.insert(0, matching);
+    if (orderingIndex != -1 && ordered[orderingIndex].id != lastQuestionId) {
+      final ordering = ordered.removeAt(orderingIndex);
+      ordered.insert(0, ordering);
     }
 
     return ordered.take(count.clamp(0, ordered.length)).toList();

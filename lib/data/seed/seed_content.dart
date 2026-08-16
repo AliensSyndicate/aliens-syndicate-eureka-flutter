@@ -69,6 +69,15 @@ final seedLessons = <Lesson>[
     subject: SubjectType.mathematics,
     topicId: 'fractions',
     questions: [
+      // Exercício de ordenação: frase explicativa sobre frações
+      _orderingQuestion(
+        'fraction_ordering_1',
+        'Ordene as palavras para formar a frase:',
+        ['Uma', 'fração', 'representa', 'partes', 'de', 'um', 'todo'],
+        'Uma fração representa partes de um todo',
+        'mathematics',
+        'fractions',
+      ),
       // Exercício de ligação: fração ↔ nome por extenso
       _matchingQuestion(
         'fraction_matching_1',
@@ -391,4 +400,22 @@ Question _matchingQuestion(
   subjectId: subjectId,
   topicId: topicId,
   pairs: pairs,
+);
+
+/// Cria uma questão de ordenação de frase.
+Question _orderingQuestion(
+  String id,
+  String prompt,
+  List<String> words,
+  String correctAnswer,
+  String subjectId,
+  String topicId,
+) => Question(
+  id: id,
+  prompt: prompt,
+  type: QuestionType.ordering,
+  options: words,
+  correctAnswer: correctAnswer,
+  subjectId: subjectId,
+  topicId: topicId,
 );
