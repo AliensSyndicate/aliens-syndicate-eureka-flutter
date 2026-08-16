@@ -24,7 +24,7 @@ void main() {
         id: 'question_$index',
         prompt: 'Questão $index',
         type: QuestionType.multipleChoice,
-        options: const ['A', 'B'],
+        options: const ['A', 'B', 'C', 'D'],
         correctAnswer: 'A',
         subjectId: 'mathematics',
         topicId: 'topic',

@@ -1,6 +1,7 @@
 import '../../enums/question_type.dart';
 import '../../enums/subject_type.dart';
 import '../../models/model_lesson.dart';
+import '../../models/model_matching_pair.dart';
 import '../../models/model_question.dart';
 
 final modelMultipleChoiceLesson = Lesson(
@@ -68,10 +69,24 @@ final seedLessons = <Lesson>[
     subject: SubjectType.mathematics,
     topicId: 'fractions',
     questions: [
+      // Exercício de ligação: fração ↔ nome por extenso
+      _matchingQuestion(
+        'fraction_matching_1',
+        'Ligue cada fração ao seu nome',
+        [
+          MatchingPair(left: '1/2', right: 'Metade'),
+          MatchingPair(left: '1/4', right: 'Um quarto'),
+          MatchingPair(left: '3/4', right: 'Três quartos'),
+          MatchingPair(left: '1/3', right: 'Um terço'),
+          MatchingPair(left: '2/3', right: 'Dois terços'),
+        ],
+        'mathematics',
+        'fractions',
+      ),
       _question(
         'fraction_1',
         'Qual fração representa metade?',
-        ['1/2', '1/3', '2/3'],
+        ['1/2', '1/3', '2/3', '3/3'],
         '1/2',
         'mathematics',
         'fractions',
@@ -79,7 +94,7 @@ final seedLessons = <Lesson>[
       _question(
         'fraction_2',
         'Qual fração representa um quarto?',
-        ['1/4', '1/2', '3/4'],
+        ['1/4', '1/2', '3/4', '2/4'],
         '1/4',
         'mathematics',
         'fractions',
@@ -87,7 +102,7 @@ final seedLessons = <Lesson>[
       _question(
         'fraction_3',
         'Qual fração é equivalente a 1/2?',
-        ['2/4', '1/3', '3/4'],
+        ['2/4', '1/3', '3/4', '1/6'],
         '2/4',
         'mathematics',
         'fractions',
@@ -95,7 +110,7 @@ final seedLessons = <Lesson>[
       _question(
         'fraction_4',
         'Qual fração é maior?',
-        ['3/4', '1/4', '2/8'],
+        ['3/4', '1/4', '2/8', '1/8'],
         '3/4',
         'mathematics',
         'fractions',
@@ -103,7 +118,7 @@ final seedLessons = <Lesson>[
       _question(
         'fraction_5',
         'Duas partes de oito representam:',
-        ['2/8', '8/2', '1/8'],
+        ['2/8', '8/2', '1/8', '4/8'],
         '2/8',
         'mathematics',
         'fractions',
@@ -111,7 +126,7 @@ final seedLessons = <Lesson>[
       _question(
         'fraction_6',
         'Qual fração representa um inteiro?',
-        ['4/4', '3/4', '1/4'],
+        ['4/4', '3/4', '1/4', '2/4'],
         '4/4',
         'mathematics',
         'fractions',
@@ -119,7 +134,7 @@ final seedLessons = <Lesson>[
       _question(
         'fraction_7',
         'Qual é a menor fração?',
-        ['1/5', '2/5', '4/5'],
+        ['1/5', '2/5', '4/5', '3/5'],
         '1/5',
         'mathematics',
         'fractions',
@@ -127,7 +142,7 @@ final seedLessons = <Lesson>[
       _question(
         'fraction_8',
         'Metade de uma pizza dividida em 8 fatias corresponde a:',
-        ['4/8', '2/8', '6/8'],
+        ['4/8', '2/8', '6/8', '1/8'],
         '4/8',
         'mathematics',
         'fractions',
@@ -135,7 +150,7 @@ final seedLessons = <Lesson>[
       _question(
         'fraction_9',
         'Qual par contém frações equivalentes?',
-        ['1/2 e 3/6', '1/3 e 2/3', '1/4 e 3/4'],
+        ['1/2 e 3/6', '1/3 e 2/3', '1/4 e 3/4', '2/3 e 3/6'],
         '1/2 e 3/6',
         'mathematics',
         'fractions',
@@ -143,7 +158,7 @@ final seedLessons = <Lesson>[
       _question(
         'fraction_10',
         'Em 3/5, o número de partes escolhidas é:',
-        ['3', '5', '8'],
+        ['3', '5', '8', '2'],
         '3',
         'mathematics',
         'fractions',
@@ -161,7 +176,7 @@ final seedLessons = <Lesson>[
       _question(
         'genre_1',
         'Qual texto ensina a preparar um alimento?',
-        ['Receita', 'Poema', 'Notícia'],
+        ['Receita', 'Poema', 'Notícia', 'Fábula'],
         'Receita',
         'portuguese',
         'genres',
@@ -169,7 +184,7 @@ final seedLessons = <Lesson>[
       _question(
         'genre_2',
         'Qual gênero informa um acontecimento recente?',
-        ['Notícia', 'Fábula', 'Bilhete'],
+        ['Notícia', 'Fábula', 'Bilhete', 'Conto'],
         'Notícia',
         'portuguese',
         'genres',
@@ -177,7 +192,7 @@ final seedLessons = <Lesson>[
       _question(
         'genre_3',
         'Qual texto costuma ter versos e estrofes?',
-        ['Poema', 'Manual', 'Reportagem'],
+        ['Poema', 'Manual', 'Reportagem', 'Receita'],
         'Poema',
         'portuguese',
         'genres',
@@ -185,7 +200,7 @@ final seedLessons = <Lesson>[
       _question(
         'genre_4',
         'Qual gênero apresenta instruções de uso?',
-        ['Manual', 'Conto', 'Entrevista'],
+        ['Manual', 'Conto', 'Entrevista', 'Notícia'],
         'Manual',
         'portuguese',
         'genres',
@@ -193,7 +208,7 @@ final seedLessons = <Lesson>[
       _question(
         'genre_5',
         'Qual texto é usado para deixar um recado curto?',
-        ['Bilhete', 'Verbete', 'Crônica'],
+        ['Bilhete', 'Verbete', 'Crônica', 'Poema'],
         'Bilhete',
         'portuguese',
         'genres',
@@ -201,7 +216,7 @@ final seedLessons = <Lesson>[
       _question(
         'genre_6',
         'Qual gênero registra perguntas e respostas?',
-        ['Entrevista', 'Receita', 'Poema'],
+        ['Entrevista', 'Receita', 'Poema', 'Conto'],
         'Entrevista',
         'portuguese',
         'genres',
@@ -209,7 +224,7 @@ final seedLessons = <Lesson>[
       _question(
         'genre_7',
         'Qual texto apresenta o significado de uma palavra?',
-        ['Verbete', 'Notícia', 'Convite'],
+        ['Verbete', 'Notícia', 'Convite', 'Manual'],
         'Verbete',
         'portuguese',
         'genres',
@@ -217,7 +232,7 @@ final seedLessons = <Lesson>[
       _question(
         'genre_8',
         'Qual gênero chama pessoas para um evento?',
-        ['Convite', 'Reportagem', 'Fábula'],
+        ['Convite', 'Reportagem', 'Fábula', 'Verbete'],
         'Convite',
         'portuguese',
         'genres',
@@ -225,7 +240,7 @@ final seedLessons = <Lesson>[
       _question(
         'genre_9',
         'Qual texto narra uma história curta com personagens?',
-        ['Conto', 'Manual', 'Verbete'],
+        ['Conto', 'Manual', 'Verbete', 'Bilhete'],
         'Conto',
         'portuguese',
         'genres',
@@ -233,7 +248,7 @@ final seedLessons = <Lesson>[
       _question(
         'genre_10',
         'Qual gênero aprofunda informações sobre um tema?',
-        ['Reportagem', 'Bilhete', 'Receita'],
+        ['Reportagem', 'Bilhete', 'Receita', 'Poema'],
         'Reportagem',
         'portuguese',
         'genres',
@@ -250,7 +265,7 @@ final seedLessons = <Lesson>[
       _question(
         'water_1',
         'Como se chama a passagem da água líquida para vapor?',
-        ['Evaporação', 'Precipitação', 'Solidificação'],
+        ['Evaporação', 'Precipitação', 'Solidificação', 'Condensação'],
         'Evaporação',
         'science',
         'water',
@@ -258,7 +273,7 @@ final seedLessons = <Lesson>[
       _question(
         'water_2',
         'Como se chama a formação de gotículas nas nuvens?',
-        ['Condensação', 'Fusão', 'Infiltração'],
+        ['Condensação', 'Fusão', 'Infiltração', 'Evaporação'],
         'Condensação',
         'science',
         'water',
@@ -266,7 +281,7 @@ final seedLessons = <Lesson>[
       _question(
         'water_3',
         'A queda de água das nuvens é chamada de:',
-        ['Precipitação', 'Evaporação', 'Transpiração'],
+        ['Precipitação', 'Evaporação', 'Transpiração', 'Infiltração'],
         'Precipitação',
         'science',
         'water',
@@ -274,7 +289,7 @@ final seedLessons = <Lesson>[
       _question(
         'water_4',
         'Qual fonte de energia impulsiona a evaporação?',
-        ['Sol', 'Lua', 'Solo'],
+        ['Sol', 'Lua', 'Solo', 'Vento'],
         'Sol',
         'science',
         'water',
@@ -282,7 +297,7 @@ final seedLessons = <Lesson>[
       _question(
         'water_5',
         'Quando a água entra no solo, ocorre:',
-        ['Infiltração', 'Condensação', 'Ebulição'],
+        ['Infiltração', 'Condensação', 'Ebulição', 'Precipitação'],
         'Infiltração',
         'science',
         'water',
@@ -290,7 +305,7 @@ final seedLessons = <Lesson>[
       _question(
         'water_6',
         'Em qual estado está o vapor de água?',
-        ['Gasoso', 'Sólido', 'Líquido'],
+        ['Gasoso', 'Sólido', 'Líquido', 'Plasma'],
         'Gasoso',
         'science',
         'water',
@@ -298,7 +313,7 @@ final seedLessons = <Lesson>[
       _question(
         'water_7',
         'O gelo é água em estado:',
-        ['Sólido', 'Gasoso', 'Líquido'],
+        ['Sólido', 'Gasoso', 'Líquido', 'Supercrítico'],
         'Sólido',
         'science',
         'water',
@@ -306,7 +321,12 @@ final seedLessons = <Lesson>[
       _question(
         'water_8',
         'Rios e lagos participam do ciclo como locais de:',
-        ['Acúmulo de água', 'Criação de água', 'Desaparecimento de água'],
+        [
+          'Acúmulo de água',
+          'Criação de água',
+          'Desaparecimento de água',
+          'Transformação em gás',
+        ],
         'Acúmulo de água',
         'science',
         'water',
@@ -314,7 +334,7 @@ final seedLessons = <Lesson>[
       _question(
         'water_9',
         'As plantas liberam vapor de água principalmente pela:',
-        ['Transpiração', 'Precipitação', 'Solidificação'],
+        ['Transpiração', 'Precipitação', 'Solidificação', 'Infiltração'],
         'Transpiração',
         'science',
         'water',
@@ -322,7 +342,12 @@ final seedLessons = <Lesson>[
       _question(
         'water_10',
         'Economizar água ajuda a:',
-        ['Preservar esse recurso', 'Interromper o ciclo', 'Impedir a chuva'],
+        [
+          'Preservar esse recurso',
+          'Interromper o ciclo',
+          'Impedir a chuva',
+          'Aumentar a evaporação',
+        ],
         'Preservar esse recurso',
         'science',
         'water',
@@ -347,4 +372,23 @@ Question _question(
   correctAnswer: correctAnswer,
   subjectId: subjectId,
   topicId: topicId,
+);
+
+/// Cria uma questão do tipo ligação com 5 pares.
+Question _matchingQuestion(
+  String id,
+  String prompt,
+  List<MatchingPair> pairs,
+  String subjectId,
+  String topicId,
+) => Question(
+  id: id,
+  prompt: prompt,
+  type: QuestionType.matching,
+  options: const [],
+  // Sentinela: a questão é marcada correta quando todos os pares são ligados.
+  correctAnswer: '__matching_done__',
+  subjectId: subjectId,
+  topicId: topicId,
+  pairs: pairs,
 );

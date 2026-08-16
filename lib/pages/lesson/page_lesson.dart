@@ -230,7 +230,7 @@ class _PageLessonState extends State<PageLesson> {
           ? AppStrings.correctFeedback
           : AppStrings.incorrectFeedback,
       content: correct
-          ? const Icon(Icons.celebration_rounded, size: UiSize.buttonHeightLg)
+          ? const Text('')
           : Text('${AppStrings.correctAnswer}: ${question.correctAnswer}'),
       isDismissible: false,
       enableDrag: false,

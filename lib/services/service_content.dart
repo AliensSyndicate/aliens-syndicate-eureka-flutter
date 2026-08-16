@@ -7,6 +7,7 @@ import '../enums/question_type.dart';
 import '../interfaces/repository_content.dart';
 import '../models/content/model_content_manifest.dart';
 import '../models/model_lesson.dart';
+import '../models/model_matching_pair.dart';
 import '../models/model_question.dart';
 import '../models/content/model_activity_reference.dart';
 import 'service_question_selection.dart';
@@ -164,19 +165,49 @@ class ContentService {
         .expand(
           (payload) => (payload['questions'] as List<dynamic>? ?? const [])
               .whereType<Map>()
-              .where((raw) => raw['enabled'] != false)
+              .where((raw) {
+                if (raw['enabled'] == false) return false;
+                // Questões multipleChoice devem ter exatamente 4 alternativas.
+                if (raw['type'] == 'multipleChoice') {
+                  final opts = raw['options'] as List?;
+                  return opts != null && opts.length == 4;
+                }
+                // Questões matching devem ter exatamente 5 pares.
+                if (raw['type'] == 'matching') {
+                  final prs = raw['pairs'] as List?;
+                  return prs != null && prs.length == 5;
+                }
+                return true;
+              })
               .map((raw) {
                 final map = Map<String, dynamic>.from(raw);
+                final type = QuestionType.values.byName(map['type'] as String);
+
+                // Parseia pares para questões de ligação.
+                List<MatchingPair>? pairs;
+                if (type == QuestionType.matching) {
+                  pairs = (map['pairs'] as List)
+                      .whereType<Map>()
+                      .map(
+                        (p) => MatchingPair(
+                          left: p['left'] as String,
+                          right: p['right'] as String,
+                        ),
+                      )
+                      .toList();
+                }
+
                 return Question(
                   id: map['id'] as String,
                   prompt: map['prompt'] as String,
-                  type: QuestionType.values.byName(map['type'] as String),
+                  type: type,
                   options: List<String>.from(
                     map['options'] as List? ?? const [],
                   ),
                   correctAnswer: map['correctAnswer'] as String,
                   subjectId: map['subjectId'] as String,
                   topicId: map['topicId'] as String,
+                  pairs: pairs,
                   difficulty: map['difficulty'] as int? ?? 1,
                   tags: List<String>.from(map['tags'] as List? ?? const []),
                   version: map['version'] as int? ?? 1,

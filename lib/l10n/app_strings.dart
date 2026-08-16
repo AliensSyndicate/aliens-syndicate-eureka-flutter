@@ -43,7 +43,9 @@ abstract final class AppStrings {
           'Os 20 minutos acabaram. Você pode tentar esta lição novamente.',
       answeredActivity = 'Atividade respondida',
       currentActivity = 'Atividade atual',
-      returnToCurrentActivity = 'Voltar à atividade atual';
+      returnToCurrentActivity = 'Voltar à atividade atual',
+      matchingPrompt = 'Toque os pares correspondentes',
+      matchingComplete = 'Todos os pares conectados!';
   static const xpLabel = 'Pontos de experiência';
   static const levelLabel = 'Nível atual';
   static String xpValue(int value) => '$value XP';

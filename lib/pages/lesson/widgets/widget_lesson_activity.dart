@@ -1,15 +1,19 @@
 import 'package:eureka/ui/ui_text.dart';
 import 'package:flutter/material.dart';
 
-import '../../../app/components/app_text_field.dart';
 import '../../../enums/question_type.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_spacing.dart';
-import 'widget_question_option.dart';
+import 'exercise_matching.dart';
+import 'exercise_multiple_choice.dart';
+import 'exercise_text_input.dart';
 
 enum LessonActivityStatus { active, answeredCorrect, answeredIncorrect }
+
+/// Token sentinela usado para sinalizar que o exercício de ligação foi concluído.
+const _kMatchingDone = '__matching_done__';
 
 class LessonActivity extends StatelessWidget {
   const LessonActivity({
@@ -45,7 +49,8 @@ class LessonActivity extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     label: isCurrent ? AppStrings.currentActivity : AppStrings.answeredActivity,
-    child: Padding(
+    child: SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.symmetric(
         horizontal: UiSpacing.pageHorizontal,
         vertical: UiSpacing.xs,
@@ -57,25 +62,45 @@ class LessonActivity extends StatelessWidget {
           const SizedBox(height: UiSpacing.xs),
           Text(question.prompt, style: UiText.h5.copyWith(color: primaryColor)),
           const SizedBox(height: UiSpacing.lg),
-          if (question.type == QuestionType.multipleChoice)
-            ...question.options.map(_option)
-          else if (isCurrent)
-            AppTextField(
-              hint: AppStrings.correctAnswer,
-              controller: textController,
-              showSearchIcon: false,
-              onChanged: onTextChanged,
+          if (question.type == QuestionType.matching) ...[
+            Text(
+              AppStrings.matchingPrompt,
+              style: UiText.p.copyWith(color: UiColor.textSecondary),
+            ),
+            const SizedBox(height: UiSpacing.sm),
+            if (isCurrent)
+              ExerciseMatching(
+                key: ValueKey('matching-${question.id}'),
+                pairs: question.pairs!,
+                primaryColor: primaryColor,
+                enabled: interactionEnabled,
+                onCompleted: (allCorrect) => onOptionSelected(
+                  allCorrect ? _kMatchingDone : '__matching_incorrect__',
+                ),
+              )
+            else
+              _MatchingDoneIndicator(correct: isCorrect),
+          ] else if (question.type == QuestionType.multipleChoice)
+            ExerciseMultipleChoice(
+              questionId: question.id,
+              options: question.options,
+              currentAnswer: currentAnswer,
+              submittedAnswer: submittedAnswer,
+              primaryColor: primaryColor,
+              isCurrent: isCurrent,
+              isCorrect: isCorrect,
+              interactionEnabled: interactionEnabled,
+              onOptionSelected: onOptionSelected,
             )
           else
-            QuestionOption(
-              label: submittedAnswer ?? '',
-              selected: true,
-              state: isCorrect
-                  ? QuestionOptionState.correct
-                  : QuestionOptionState.incorrect,
-              onTap: null,
+            ExerciseTextInput(
+              isCurrent: isCurrent,
+              isCorrect: isCorrect,
+              textController: textController,
+              submittedAnswer: submittedAnswer,
+              onTextChanged: onTextChanged,
             ),
-          if (!isCurrent) ...[
+          if (!isCurrent && question.type != QuestionType.matching) ...[
             const SizedBox(height: UiSpacing.xs),
             Text(
               isCorrect
@@ -90,27 +115,30 @@ class LessonActivity extends StatelessWidget {
       ),
     ),
   );
+}
 
-  Widget _option(String option) {
-    final selected = isCurrent
-        ? currentAnswer == option
-        : submittedAnswer == option;
-    final state = isCurrent
-        ? null
-        : selected
-        ? (isCorrect
-              ? QuestionOptionState.correct
-              : QuestionOptionState.incorrect)
-        : QuestionOptionState.disabled;
-    return QuestionOption(
-      key: ValueKey('lesson-option-${question.id}-$option'),
-      label: option,
-      selected: selected,
-      state: state,
-      bottomSpacing: UiSpacing.xs,
-      onTap: isCurrent && interactionEnabled
-          ? () => onOptionSelected(option)
-          : null,
+class _MatchingDoneIndicator extends StatelessWidget {
+  const _MatchingDoneIndicator({required this.correct});
+
+  final bool correct;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = correct ? UiColor.success : UiColor.error;
+    final icon = correct ? Icons.check_circle_rounded : Icons.cancel_rounded;
+    final label = correct
+        ? AppStrings.matchingComplete
+        : AppStrings.incorrectFeedback;
+
+    return Row(
+      children: [
+        Icon(icon, color: color, size: 20),
+        const SizedBox(width: UiSpacing.xs),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(color: color),
+        ),
+      ],
     );
   }
 }
