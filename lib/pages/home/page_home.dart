@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
 import '../../app/components/app_home_bar.dart';
-import '../../controllers/controller_home.dart';
 import '../../config/config_product.dart';
+import '../../controllers/controller_home.dart';
 import '../../enums/learning_mode.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/content/model_content_manifest.dart';
@@ -72,7 +72,6 @@ class _PageHomeState extends State<PageHome> {
                   }
                 }
               }
-              // Fallback visual temporário: não altera o progresso persistido.
               if (lastLesson == null) {
                 for (final subject in items) {
                   if (subject.id != 'mathematics') continue;

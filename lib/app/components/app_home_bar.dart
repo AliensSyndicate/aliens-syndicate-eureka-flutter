@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+
 import '../../l10n/app_strings.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_radius.dart';
@@ -26,13 +28,7 @@ class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) => AppBar(
     toolbarHeight: UiSize.homeAppBarHeight,
     titleSpacing: UiSpacing.pageHorizontal,
-    title: Text(
-      AppStrings.appName,
-      style: UiText.h3.copyWith(
-        color: UiColor.accent,
-        fontWeight: FontWeight.w800,
-      ),
-    ),
+    title: SvgPicture.asset('assets/icons/logo.svg', height: UiSize.logoSize),
     actionsPadding: const EdgeInsets.only(right: UiSpacing.pageHorizontal),
     actions: [
       _NumericButton(
