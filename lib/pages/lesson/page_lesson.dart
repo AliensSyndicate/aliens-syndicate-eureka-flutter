@@ -351,23 +351,26 @@ class LessonHeader extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          const SizedBox(width: UiSpacing.sm),
-          ValueListenableBuilder<Duration>(
-            valueListenable: remainingTime,
-            builder: (context, value, child) {
-              final formattedTime = AppStrings.lessonTime(value);
-              return Semantics(
-                label: AppStrings.lessonTimeRemaining,
-                value: formattedTime,
-                child: ExcludeSemantics(
-                  child: Text(
-                    formattedTime,
-                    key: const ValueKey('lesson-remaining-time'),
-                    style: UiText.h6,
+          const SizedBox(width: UiSpacing.lg),
+          SizedBox(
+            width: UiSize.lessonTimerWidth,
+            child: ValueListenableBuilder<Duration>(
+              valueListenable: remainingTime,
+              builder: (context, value, child) {
+                final formattedTime = AppStrings.lessonTime(value);
+                return Semantics(
+                  label: AppStrings.lessonTimeRemaining,
+                  value: formattedTime,
+                  child: ExcludeSemantics(
+                    child: Text(
+                      formattedTime,
+                      key: const ValueKey('lesson-remaining-time'),
+                      style: UiText.h6,
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
           const SizedBox(width: UiSpacing.sm),
         ],

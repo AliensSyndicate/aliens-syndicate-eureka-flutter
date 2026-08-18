@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
 import '../../enums/learning_mode.dart';
@@ -6,9 +7,8 @@ import '../../l10n/app_strings.dart';
 import '../../models/content/model_content_manifest.dart';
 import '../../models/model_lesson.dart';
 import '../../services/service_registry.dart';
-import '../../ui/ui_spacing.dart';
 import '../../ui/ui_color.dart';
-import '../../ui/ui_text.dart';
+import '../../ui/ui_spacing.dart';
 import '../lesson/page_lesson.dart';
 import 'widgets/widget_curriculum_year_section.dart';
 
@@ -39,8 +39,6 @@ class PageSubjectLessons extends StatelessWidget {
             vertical: UiSpacing.pageVertical,
           ),
           children: [
-            const _ComingSoonMessage(),
-            const SizedBox(height: UiSpacing.sectionSpacing),
             if (years.isEmpty)
               const Padding(
                 padding: EdgeInsets.all(UiSpacing.sectionSpacing),
@@ -57,7 +55,6 @@ class PageSubjectLessons extends StatelessWidget {
                 onLessonTap: (lesson) => _openLesson(context, lesson),
               ),
             ),
-            const _ComingSoonMessage(),
           ],
         ),
       ),
@@ -89,15 +86,4 @@ class PageSubjectLessons extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ComingSoonMessage extends StatelessWidget {
-  const _ComingSoonMessage();
-
-  @override
-  Widget build(BuildContext context) => const Text(
-    AppStrings.comingSoon,
-    textAlign: TextAlign.center,
-    style: UiText.disabledTitle,
-  );
 }

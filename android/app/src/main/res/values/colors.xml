@@ -2,4 +2,5 @@
 <resources>
     <color name="app_background">#2D2636</color>
     <color name="splash_icon_transparent">#00000000</color>
+	<color name="ic_launcher_background">#2D2636</color>
 </resources>
