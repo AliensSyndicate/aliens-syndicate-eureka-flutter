@@ -9,6 +9,6 @@ abstract final class UiSpacing {
   static const xxxl = 40.0;
   static const pageHorizontal = 20.0;
   static const pageVertical = 16.0;
-  static const cardPadding = 16.0;
+  static const cardPadding = 20.0;
   static const sectionSpacing = 24.0;
 }

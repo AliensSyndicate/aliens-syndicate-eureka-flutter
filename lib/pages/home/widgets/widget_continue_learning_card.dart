@@ -52,6 +52,7 @@ class ContinueLearningCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: Column(
@@ -60,8 +61,6 @@ class ContinueLearningCard extends StatelessWidget {
                           children: [
                             Text(
                               subject.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                               style: UiText.h5.copyWith(
                                 color: UiColor.background,
                                 fontWeight: FontWeight.w800,
@@ -70,8 +69,6 @@ class ContinueLearningCard extends StatelessWidget {
                             const SizedBox(height: UiSpacing.xxs),
                             Text(
                               lesson.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                               style: UiText.label.copyWith(
                                 color: UiColor.background.withValues(
                                   alpha: .72,
