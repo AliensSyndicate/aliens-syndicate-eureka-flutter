@@ -63,6 +63,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1039738812261',
     projectId: 'eureka-9675a',
     storageBucket: 'eureka-9675a.firebasestorage.app',
-    iosBundleId: 'br.com.eureka.eureka',
+    iosBundleId: 'com.aliens.syndicate.eureka',
   );
 }

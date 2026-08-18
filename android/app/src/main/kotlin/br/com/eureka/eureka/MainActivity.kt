@@ -1,4 +1,4 @@
-package br.com.eureka.eureka
+package com.aliens.syndicate.eureka
 
 import io.flutter.embedding.android.FlutterActivity
 
