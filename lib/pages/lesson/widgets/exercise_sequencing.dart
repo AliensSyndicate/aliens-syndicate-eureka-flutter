@@ -1,0 +1,165 @@
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+
+import '../../../ui/ui_color.dart';
+import '../../../ui/ui_option.dart';
+import '../../../ui/ui_size.dart';
+import '../../../ui/ui_spacing.dart';
+
+/// Exercício de ordenação de itens (linha do tempo / passos de um processo).
+///
+/// A lista começa embaralhada e a ordem atual é reportada continuamente, então
+/// o aluno pode confirmar sem precisar mover nada.
+class ExerciseSequencing extends StatefulWidget {
+  const ExerciseSequencing({
+    required this.items,
+    required this.primaryColor,
+    required this.onChanged,
+    this.initialAnswer,
+    this.enabled = true,
+    this.answeredCorrect,
+    super.key,
+  });
+
+  /// Separador usado para montar a resposta enviada ao gabarito.
+  static const separator = ' | ';
+
+  final List<String> items;
+  final Color primaryColor;
+  final ValueChanged<String> onChanged;
+
+  /// Resposta submetida anteriormente (histórico).
+  final String? initialAnswer;
+
+  final bool enabled;
+
+  /// Resultado da correção; `null` enquanto a atividade não foi respondida.
+  final bool? answeredCorrect;
+
+  @override
+  State<ExerciseSequencing> createState() => _ExerciseSequencingState();
+}
+
+class _ExerciseSequencingState extends State<ExerciseSequencing> {
+  late final List<String> _order;
+
+  @override
+  void initState() {
+    super.initState();
+    final previous = widget.initialAnswer;
+    _order = previous != null && previous.isNotEmpty
+        ? previous.split(ExerciseSequencing.separator)
+        : ([...widget.items]..shuffle(math.Random()));
+
+    // Sem resposta anterior: publica a ordem inicial para habilitar o envio.
+    if (previous == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) widget.onChanged(_assembled);
+      });
+    }
+  }
+
+  String get _assembled => _order.join(ExerciseSequencing.separator);
+
+  void _reorder(int oldIndex, int newIndex) {
+    if (!widget.enabled) return;
+    setState(() => _order.insert(newIndex, _order.removeAt(oldIndex)));
+    widget.onChanged(_assembled);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = switch (widget.answeredCorrect) {
+      true => UiColor.success,
+      false => UiColor.error,
+      null => widget.primaryColor,
+    };
+
+    return ReorderableListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      buildDefaultDragHandles: false,
+      itemCount: _order.length,
+      onReorderItem: _reorder,
+      proxyDecorator: (child, index, animation) =>
+          Material(color: Colors.transparent, child: child),
+      itemBuilder: (context, index) => Padding(
+        key: ValueKey('sequence-${_order[index]}'),
+        padding: const EdgeInsets.only(bottom: UiSpacing.xs),
+        child: _SequenceTile(
+          position: index + 1,
+          label: _order[index],
+          accent: accent,
+          answered: widget.answeredCorrect != null,
+          handle: widget.enabled
+              ? ReorderableDragStartListener(
+                  index: index,
+                  child: const Icon(
+                    Icons.drag_indicator_rounded,
+                    color: UiColor.textSecondary,
+                    size: UiSize.iconMd,
+                  ),
+                )
+              : null,
+        ),
+      ),
+    );
+  }
+}
+
+class _SequenceTile extends StatelessWidget {
+  const _SequenceTile({
+    required this.position,
+    required this.label,
+    required this.accent,
+    required this.answered,
+    required this.handle,
+  });
+
+  final int position;
+  final String label;
+  final Color accent;
+  final bool answered;
+  final Widget? handle;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    constraints: const BoxConstraints(minHeight: UiOption.minHeight),
+    padding: const EdgeInsets.symmetric(
+      horizontal: UiSpacing.sm,
+      vertical: UiSpacing.xs,
+    ),
+    decoration: BoxDecoration(
+      color: answered ? accent.withValues(alpha: .14) : UiColor.surface,
+      borderRadius: BorderRadius.circular(UiOption.radius),
+      border: Border.all(color: accent, width: UiOption.borderWidth),
+    ),
+    child: Row(
+      children: [
+        Container(
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: accent),
+          alignment: Alignment.center,
+          child: Text(
+            '$position',
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 13,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        const SizedBox(width: UiSpacing.sm),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          ),
+        ),
+        if (handle != null) ...[const SizedBox(width: UiSpacing.xs), handle!],
+      ],
+    ),
+  );
+}

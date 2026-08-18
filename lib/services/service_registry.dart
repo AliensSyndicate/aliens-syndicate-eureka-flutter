@@ -31,6 +31,7 @@ abstract final class ServiceRegistry {
   static ScoringService get scoring => ScoringService();
   static SimulationService get simulation => SimulationService();
   static RecommendationService get recommendation => RecommendationService();
+  // TODO: voltar para QuestionSelectionService() após validar os componentes.
   static QuestionSelectionService get questionSelection =>
-      QuestionSelectionService();
+      QuestionSelectionService(showcaseMode: true);
 }

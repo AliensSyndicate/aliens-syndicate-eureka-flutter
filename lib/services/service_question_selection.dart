@@ -4,18 +4,25 @@ import '../enums/question_type.dart';
 import '../models/model_question.dart';
 
 class QuestionSelectionService {
-  QuestionSelectionService({Random? random}) : _random = random ?? Random();
+  QuestionSelectionService({Random? random, this.showcaseMode = false})
+    : _random = random ?? Random();
 
   static const poolSize = 10;
   static const sessionSize = 5;
 
   final Random _random;
 
+  /// Modo vitrine: entrega o banco inteiro na ordem declarada para validar um
+  /// exercício de cada tipo. Usado apenas durante o teste dos componentes.
+  final bool showcaseMode;
+
   List<Question> select(
     List<Question> pool, {
     required int count,
     String? lastQuestionId,
   }) {
+    if (showcaseMode) return List.of(pool);
+
     final ordered = [...pool]..shuffle(_random);
     if (ordered.length > 1 && ordered.first.id == lastQuestionId) {
       ordered.add(ordered.removeAt(0));

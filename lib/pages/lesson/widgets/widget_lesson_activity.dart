@@ -6,15 +6,28 @@ import '../../../l10n/app_strings.dart';
 import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_spacing.dart';
+import 'exercise_essay.dart';
+import 'exercise_fill_blank.dart';
+import 'exercise_image_choice.dart';
 import 'exercise_matching.dart';
+import 'exercise_memory.dart';
 import 'exercise_multiple_choice.dart';
 import 'exercise_ordering.dart';
+import 'exercise_sequencing.dart';
 import 'exercise_text_input.dart';
+import 'exercise_true_false.dart';
+import 'exercise_word_completion.dart';
 
 enum LessonActivityStatus { active, answeredCorrect, answeredIncorrect }
 
-/// Token sentinela usado para sinalizar que o exercício de ligação foi concluído.
+/// Tokens sentinela usados por exercícios que se auto-corrigem ao concluir.
 const _kMatchingDone = '__matching_done__';
+const _kMatchingIncorrect = '__matching_incorrect__';
+const _kMemoryDone = '__memory_done__';
+const _kMemoryIncorrect = '__memory_incorrect__';
+
+/// Tipos que se corrigem sozinhos e, por isso, não exibem feedback textual.
+const _selfContainedTypes = {QuestionType.matching, QuestionType.memory};
 
 class LessonActivity extends StatelessWidget {
   const LessonActivity({
@@ -62,59 +75,8 @@ class LessonActivity extends StatelessWidget {
           const SizedBox(height: UiSpacing.xs),
           Text(question.prompt, style: UiText.h5.copyWith(color: primaryColor)),
           const SizedBox(height: UiSpacing.lg),
-          if (question.type == QuestionType.matching) ...[
-            Text(
-              AppStrings.matchingPrompt,
-              style: UiText.p.copyWith(color: UiColor.textSecondary),
-            ),
-            const SizedBox(height: UiSpacing.sm),
-            if (isCurrent)
-              ExerciseMatching(
-                key: ValueKey('matching-${question.id}'),
-                pairs: question.pairs!,
-                primaryColor: primaryColor,
-                enabled: interactionEnabled,
-                onCompleted: (allCorrect) => onOptionSelected(
-                  allCorrect ? _kMatchingDone : '__matching_incorrect__',
-                ),
-              )
-            else
-              _MatchingDoneIndicator(correct: isCorrect),
-          ] else if (question.type == QuestionType.ordering) ...[
-            Text(
-              AppStrings.orderingPrompt,
-              style: UiText.p.copyWith(color: UiColor.textSecondary),
-            ),
-            const SizedBox(height: UiSpacing.sm),
-            ExerciseOrdering(
-              key: ValueKey('ordering-${question.id}'),
-              words: question.options,
-              primaryColor: primaryColor,
-              enabled: interactionEnabled,
-              initialAnswer: submittedAnswer,
-              onChanged: onOptionSelected,
-            ),
-          ] else if (question.type == QuestionType.multipleChoice)
-            ExerciseMultipleChoice(
-              questionId: question.id,
-              options: question.options,
-              currentAnswer: currentAnswer,
-              submittedAnswer: submittedAnswer,
-              primaryColor: primaryColor,
-              isCurrent: isCurrent,
-              isCorrect: isCorrect,
-              interactionEnabled: interactionEnabled,
-              onOptionSelected: onOptionSelected,
-            )
-          else
-            ExerciseTextInput(
-              isCurrent: isCurrent,
-              isCorrect: isCorrect,
-              textController: textController,
-              submittedAnswer: submittedAnswer,
-              onTextChanged: onTextChanged,
-            ),
-          if (!isCurrent && question.type != QuestionType.matching) ...[
+          ..._exercise(),
+          if (!isCurrent && !_selfContainedTypes.contains(question.type)) ...[
             const SizedBox(height: UiSpacing.xs),
             Text(
               isCorrect
@@ -129,28 +91,192 @@ class LessonActivity extends StatelessWidget {
       ),
     ),
   );
+
+  List<Widget> _exercise() => switch (question.type) {
+    QuestionType.matching => [
+      _hint(AppStrings.matchingPrompt),
+      if (isCurrent)
+        ExerciseMatching(
+          key: ValueKey('matching-${question.id}'),
+          pairs: question.pairs!,
+          primaryColor: primaryColor,
+          enabled: interactionEnabled,
+          onCompleted: (allCorrect) => onOptionSelected(
+            allCorrect ? _kMatchingDone : _kMatchingIncorrect,
+          ),
+        )
+      else
+        _DoneIndicator(correct: isCorrect, label: AppStrings.matchingComplete),
+    ],
+
+    QuestionType.memory => [
+      _hint(AppStrings.memoryPrompt),
+      if (isCurrent)
+        ExerciseMemory(
+          key: ValueKey('memory-${question.id}'),
+          pairs: question.pairs!,
+          primaryColor: primaryColor,
+          enabled: interactionEnabled,
+          onCompleted: (allCorrect) =>
+              onOptionSelected(allCorrect ? _kMemoryDone : _kMemoryIncorrect),
+        )
+      else
+        _DoneIndicator(correct: isCorrect, label: AppStrings.memoryComplete),
+    ],
+
+    QuestionType.ordering => [
+      _hint(AppStrings.orderingPrompt),
+      ExerciseOrdering(
+        key: ValueKey('ordering-${question.id}'),
+        words: question.options,
+        primaryColor: primaryColor,
+        enabled: interactionEnabled,
+        initialAnswer: submittedAnswer,
+        onChanged: onOptionSelected,
+      ),
+    ],
+
+    QuestionType.sequencing => [
+      _hint(AppStrings.sequencingPrompt),
+      ExerciseSequencing(
+        key: ValueKey('sequencing-${question.id}'),
+        items: question.options,
+        primaryColor: primaryColor,
+        enabled: interactionEnabled,
+        initialAnswer: submittedAnswer,
+        answeredCorrect: isCurrent ? null : isCorrect,
+        onChanged: onOptionSelected,
+      ),
+    ],
+
+    QuestionType.multipleChoice => [
+      ExerciseMultipleChoice(
+        questionId: question.id,
+        options: question.options,
+        currentAnswer: currentAnswer,
+        submittedAnswer: submittedAnswer,
+        primaryColor: primaryColor,
+        isCurrent: isCurrent,
+        isCorrect: isCorrect,
+        interactionEnabled: interactionEnabled,
+        onOptionSelected: onOptionSelected,
+      ),
+    ],
+
+    QuestionType.trueFalse => [
+      _hint(AppStrings.trueFalsePrompt),
+      ExerciseTrueFalse(
+        options: question.options,
+        currentAnswer: currentAnswer,
+        submittedAnswer: submittedAnswer,
+        primaryColor: primaryColor,
+        isCurrent: isCurrent,
+        isCorrect: isCorrect,
+        interactionEnabled: interactionEnabled,
+        onOptionSelected: onOptionSelected,
+      ),
+    ],
+
+    QuestionType.imageChoice => [
+      ExerciseImageChoice(
+        options: question.options,
+        currentAnswer: currentAnswer,
+        submittedAnswer: submittedAnswer,
+        primaryColor: primaryColor,
+        isCurrent: isCurrent,
+        isCorrect: isCorrect,
+        interactionEnabled: interactionEnabled,
+        onOptionSelected: onOptionSelected,
+      ),
+    ],
+
+    QuestionType.fillBlank => [
+      ExerciseFillBlank(
+        sentence: question.template!,
+        options: question.options,
+        currentAnswer: currentAnswer,
+        submittedAnswer: submittedAnswer,
+        primaryColor: primaryColor,
+        isCurrent: isCurrent,
+        isCorrect: isCorrect,
+        interactionEnabled: interactionEnabled,
+        onOptionSelected: onOptionSelected,
+      ),
+    ],
+
+    QuestionType.wordCompletion => [
+      if (isCurrent)
+        ExerciseWordCompletion(
+          key: ValueKey('word-completion-${question.id}'),
+          template: question.template!,
+          letters: question.options,
+          primaryColor: primaryColor,
+          enabled: interactionEnabled,
+          onChanged: onOptionSelected,
+        )
+      else
+        ExerciseOption(
+          label: submittedAnswer ?? '',
+          selected: true,
+          state: isCorrect
+              ? ExerciseOptionState.correct
+              : ExerciseOptionState.incorrect,
+          accentColor: isCorrect ? UiColor.success : UiColor.error,
+          onTap: null,
+        ),
+    ],
+
+    QuestionType.essay => [
+      ExerciseEssay(
+        primaryColor: primaryColor,
+        textController: textController,
+        submittedAnswer: submittedAnswer,
+        isCurrent: isCurrent,
+        isCorrect: isCorrect,
+        enabled: interactionEnabled,
+        onTextChanged: onTextChanged,
+      ),
+    ],
+
+    QuestionType.textInput => [
+      ExerciseTextInput(
+        isCurrent: isCurrent,
+        isCorrect: isCorrect,
+        textController: textController,
+        submittedAnswer: submittedAnswer,
+        onTextChanged: onTextChanged,
+      ),
+    ],
+  };
+
+  Widget _hint(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: UiSpacing.sm),
+    child: Text(text, style: UiText.p.copyWith(color: UiColor.textSecondary)),
+  );
 }
 
-class _MatchingDoneIndicator extends StatelessWidget {
-  const _MatchingDoneIndicator({required this.correct});
+class _DoneIndicator extends StatelessWidget {
+  const _DoneIndicator({required this.correct, required this.label});
 
   final bool correct;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
     final color = correct ? UiColor.success : UiColor.error;
     final icon = correct ? Icons.check_circle_rounded : Icons.cancel_rounded;
-    final label = correct
-        ? AppStrings.matchingComplete
-        : AppStrings.incorrectFeedback;
 
     return Row(
       children: [
         Icon(icon, color: color, size: 20),
         const SizedBox(width: UiSpacing.xs),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(color: color),
+        Expanded(
+          child: Text(
+            correct ? label : AppStrings.incorrectFeedback,
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(color: color),
+          ),
         ),
       ],
     );

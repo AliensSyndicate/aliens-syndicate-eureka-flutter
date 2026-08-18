@@ -48,12 +48,14 @@ class ContinueLearningCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(UiSpacing.cardPadding),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Expanded(
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(

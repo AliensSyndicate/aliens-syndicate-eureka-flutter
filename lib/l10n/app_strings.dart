@@ -46,7 +46,14 @@ abstract final class AppStrings {
       returnToCurrentActivity = 'Voltar à atividade atual',
       matchingPrompt = 'Toque os pares correspondentes',
       matchingComplete = 'Todos os pares conectados!',
-      orderingPrompt = 'Monte a frase na ordem correta';
+      orderingPrompt = 'Monte a frase na ordem correta',
+      essayHint = 'Escreva sua explicação...',
+      sequencingPrompt = 'Arraste os itens para a ordem correta',
+      trueFalsePrompt = 'A afirmação é verdadeira ou falsa?',
+      trueLabel = 'Verdadeiro',
+      falseLabel = 'Falso',
+      memoryPrompt = 'Encontre os pares!',
+      memoryComplete = 'Todos os pares encontrados!';
   static const xpLabel = 'Pontos de experiência';
   static const levelLabel = 'Nível atual';
   static String xpValue(int value) => '$value XP';
@@ -60,6 +67,9 @@ abstract final class AppStrings {
       'Reforce $lesson e avance com confiança.';
   static String activityPosition(int current, int total) =>
       'Atividade $current de $total';
+  static String essayCounter(int length, int maxLength) =>
+      '$length/$maxLength';
+  static String memoryPairs(int found, int total) => '$found/$total';
   static String lessonTime(Duration value) {
     final minutes = value.inMinutes.toString().padLeft(2, '0');
     final seconds = (value.inSeconds % 60).toString().padLeft(2, '0');

@@ -69,6 +69,96 @@ final seedLessons = <Lesson>[
     subject: SubjectType.mathematics,
     topicId: 'fractions',
     questions: [
+      // ---------------------------------------------------------------------
+      // Vitrine temporária: um exercício de cada tipo para validar os
+      // componentes. Remover este bloco após o teste.
+      // ---------------------------------------------------------------------
+      Question(
+        id: 'fraction_true_false_1',
+        prompt: 'A fração 1/2 é maior que 1/4.',
+        type: QuestionType.trueFalse,
+        options: const ['Verdadeiro', 'Falso'],
+        correctAnswer: 'Verdadeiro',
+        subjectId: 'mathematics',
+        topicId: 'fractions',
+      ),
+      Question(
+        id: 'fraction_fill_blank_1',
+        prompt: 'Complete a frase com a fração correta.',
+        type: QuestionType.fillBlank,
+        template:
+            'Uma pizza cortada em 4 fatias iguais, com 3 fatias servidas, '
+            'corresponde a _ da pizza.',
+        options: const ['3/4', '1/4', '4/3', '1/3'],
+        correctAnswer: '3/4',
+        subjectId: 'mathematics',
+        topicId: 'fractions',
+      ),
+      Question(
+        id: 'fraction_image_choice_1',
+        prompt: 'Qual figura representa 3/4?',
+        type: QuestionType.imageChoice,
+        options: const ['🟦🟦🟦⬜', '🟦⬜⬜⬜', '🟦🟦⬜⬜', '🟦🟦🟦🟦'],
+        correctAnswer: '🟦🟦🟦⬜',
+        subjectId: 'mathematics',
+        topicId: 'fractions',
+      ),
+      Question(
+        id: 'fraction_word_completion_1',
+        prompt: 'Complete a palavra com as letras que faltam.',
+        type: QuestionType.wordCompletion,
+        template: 'N_MERAD_R',
+        options: const ['U', 'O', 'A', 'E'],
+        correctAnswer: 'NUMERADOR',
+        subjectId: 'mathematics',
+        topicId: 'fractions',
+      ),
+      Question(
+        id: 'fraction_sequencing_1',
+        prompt: 'Organize os passos na ordem em que acontecem.',
+        type: QuestionType.sequencing,
+        options: const [
+          'Confira se os denominadores são iguais',
+          'Some os numeradores: 1 + 2 = 3',
+          'Mantenha o denominador 4',
+          'Escreva o resultado: 3/4',
+        ],
+        correctAnswer:
+            'Confira se os denominadores são iguais | '
+            'Some os numeradores: 1 + 2 = 3 | '
+            'Mantenha o denominador 4 | '
+            'Escreva o resultado: 3/4',
+        subjectId: 'mathematics',
+        topicId: 'fractions',
+      ),
+      Question(
+        id: 'fraction_memory_1',
+        prompt: 'Jogo da memória: frações equivalentes',
+        type: QuestionType.memory,
+        options: const [],
+        correctAnswer: '__memory_done__',
+        pairs: const [
+          MatchingPair(left: '1/2', right: '2/4'),
+          MatchingPair(left: '1/3', right: '2/6'),
+          MatchingPair(left: '3/4', right: '6/8'),
+          MatchingPair(left: '1/5', right: '2/10'),
+          MatchingPair(left: '2/3', right: '4/6'),
+          MatchingPair(left: '1/4', right: '3/12'),
+        ],
+        subjectId: 'mathematics',
+        topicId: 'fractions',
+      ),
+      Question(
+        id: 'fraction_essay_1',
+        prompt: 'Explique com suas palavras o que é uma fração. Dê um exemplo.',
+        type: QuestionType.essay,
+        options: const [],
+        correctAnswer:
+            'Uma fração mostra quantas partes iguais de um todo estamos '
+            'usando. Exemplo: 1/2 é metade de uma pizza.',
+        subjectId: 'mathematics',
+        topicId: 'fractions',
+      ),
       // Exercício de ordenação: frase explicativa sobre frações
       _orderingQuestion(
         'fraction_ordering_1',
@@ -100,77 +190,14 @@ final seedLessons = <Lesson>[
         'mathematics',
         'fractions',
       ),
-      _question(
-        'fraction_2',
-        'Qual fração representa um quarto?',
-        ['1/4', '1/2', '3/4', '2/4'],
-        '1/4',
-        'mathematics',
-        'fractions',
-      ),
-      _question(
-        'fraction_3',
-        'Qual fração é equivalente a 1/2?',
-        ['2/4', '1/3', '3/4', '1/6'],
-        '2/4',
-        'mathematics',
-        'fractions',
-      ),
-      _question(
-        'fraction_4',
-        'Qual fração é maior?',
-        ['3/4', '1/4', '2/8', '1/8'],
-        '3/4',
-        'mathematics',
-        'fractions',
-      ),
-      _question(
-        'fraction_5',
-        'Duas partes de oito representam:',
-        ['2/8', '8/2', '1/8', '4/8'],
-        '2/8',
-        'mathematics',
-        'fractions',
-      ),
-      _question(
-        'fraction_6',
-        'Qual fração representa um inteiro?',
-        ['4/4', '3/4', '1/4', '2/4'],
-        '4/4',
-        'mathematics',
-        'fractions',
-      ),
-      _question(
-        'fraction_7',
-        'Qual é a menor fração?',
-        ['1/5', '2/5', '4/5', '3/5'],
-        '1/5',
-        'mathematics',
-        'fractions',
-      ),
-      _question(
-        'fraction_8',
-        'Metade de uma pizza dividida em 8 fatias corresponde a:',
-        ['4/8', '2/8', '6/8', '1/8'],
-        '4/8',
-        'mathematics',
-        'fractions',
-      ),
-      _question(
-        'fraction_9',
-        'Qual par contém frações equivalentes?',
-        ['1/2 e 3/6', '1/3 e 2/3', '1/4 e 3/4', '2/3 e 3/6'],
-        '1/2 e 3/6',
-        'mathematics',
-        'fractions',
-      ),
-      _question(
-        'fraction_10',
-        'Em 3/5, o número de partes escolhidas é:',
-        ['3', '5', '8', '2'],
-        '3',
-        'mathematics',
-        'fractions',
+      Question(
+        id: 'fraction_text_input_1',
+        prompt: 'Escreva a fração que representa metade.',
+        type: QuestionType.textInput,
+        options: const [],
+        correctAnswer: '1/2',
+        subjectId: 'mathematics',
+        topicId: 'fractions',
       ),
     ],
   ),
