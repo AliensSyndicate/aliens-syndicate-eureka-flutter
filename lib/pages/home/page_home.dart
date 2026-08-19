@@ -1,3 +1,4 @@
+import 'package:eureka/app/components/subject_card.dart';
 import 'package:flutter/material.dart';
 
 import '../../app/components/app_bottom_sheet.dart';
@@ -17,7 +18,6 @@ import '../subject/page_subject_lessons.dart';
 import 'widgets/widget_continue_learning_card.dart';
 import 'widgets/widget_home_cards_skeleton.dart';
 import 'widgets/widget_recommendation_card.dart';
-import 'widgets/widget_subject_card.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({super.key});
@@ -118,8 +118,6 @@ class _PageHomeState extends State<PageHome> {
                     const SizedBox(height: UiSpacing.sectionSpacing),
                   ],
                   Text(AppStrings.subjectsTitle, style: UiText.h4),
-                  const SizedBox(height: UiSpacing.xxs),
-                  const Text(AppStrings.journeySubtitle, style: UiText.p),
                   const SizedBox(height: UiSpacing.sm),
                   ...items.map((subject) {
                     final progressPercentage = ServiceRegistry.progress

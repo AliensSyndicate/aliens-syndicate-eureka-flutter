@@ -4,7 +4,6 @@ abstract final class AppStrings {
       subjectsTitle = 'Matérias',
       continueWhereStopped = 'Continuar de onde parou',
       recommendedForYou = 'Recomendado para você',
-      journeySubtitle = 'Sua próxima descoberta está logo adiante.',
       home = 'Home',
       social = 'Social',
       explore = 'Explorar',
@@ -67,8 +66,7 @@ abstract final class AppStrings {
       'Reforce $lesson e avance com confiança.';
   static String activityPosition(int current, int total) =>
       'Atividade $current de $total';
-  static String essayCounter(int length, int maxLength) =>
-      '$length/$maxLength';
+  static String essayCounter(int length, int maxLength) => '$length/$maxLength';
   static String memoryPairs(int found, int total) => '$found/$total';
   static String lessonTime(Duration value) {
     final minutes = value.inMinutes.toString().padLeft(2, '0');
