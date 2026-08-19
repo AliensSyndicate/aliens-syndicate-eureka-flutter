@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../l10n/app_strings.dart';
 import '../../pages/explore/page_explore.dart';
 import '../../pages/home/page_home.dart';
@@ -41,25 +42,23 @@ class _NavigationAppState extends State<NavigationApp> {
       child: NavigationBar(
         selectedIndex: index,
         onDestinationSelected: (value) => setState(() => index = value),
-        destinations: const [
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        destinations: [
+          NavigationDestination(icon: UiIcon.home(), label: AppStrings.home),
           NavigationDestination(
-            icon: Icon(UiIcon.home),
-            label: AppStrings.home,
-          ),
-          NavigationDestination(
-            icon: Icon(UiIcon.social),
+            icon: UiIcon.social(),
             label: AppStrings.social,
           ),
           NavigationDestination(
-            icon: Icon(UiIcon.explore),
+            icon: UiIcon.search(),
             label: AppStrings.explore,
           ),
           NavigationDestination(
-            icon: Icon(UiIcon.simulation),
+            icon: UiIcon.simulated(),
             label: AppStrings.simulation,
           ),
           NavigationDestination(
-            icon: Icon(UiIcon.profile),
+            icon: UiIcon.profile(),
             label: AppStrings.profile,
           ),
         ],

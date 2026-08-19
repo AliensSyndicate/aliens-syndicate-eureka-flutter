@@ -23,6 +23,6 @@ abstract final class UiSize {
 
   // Aliases semânticos preservados para componentes existentes.
   static const touchTarget = 48.0;
-  static const icon = iconMd;
+  static const icon = iconLg;
   static const avatar = avatarLg;
 }
