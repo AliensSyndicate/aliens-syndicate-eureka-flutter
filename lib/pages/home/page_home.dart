@@ -1,4 +1,6 @@
 import 'package:eureka/app/components/subject_card.dart';
+import 'package:eureka/pages/auth/page_auth.dart';
+import 'package:eureka/pages/home/widgets/widget_login.dart';
 import 'package:flutter/material.dart';
 
 import '../../app/components/app_bottom_sheet.dart';
@@ -90,11 +92,20 @@ class _PageHomeState extends State<PageHome> {
                 ServiceRegistry.progress.loadDifficultyScores(),
               );
               return ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: UiSpacing.pageHorizontal,
-                  vertical: UiSpacing.pageVertical,
+                padding: EdgeInsets.only(
+                  left: UiSpacing.pageHorizontal,
+                  right: UiSpacing.pageHorizontal,
+                  top: UiSpacing.sm,
+                  bottom: UiSpacing.pageVertical,
                 ),
                 children: [
+                  if (true) ...[
+                    LoginCard(
+                      onTap: () =>
+                          MaterialPageRoute(builder: (_) => PageAuth()),
+                    ),
+                    const SizedBox(height: UiSpacing.sectionSpacing),
+                  ],
                   if (recommendation != null) ...[
                     Text(AppStrings.recommendedForYou, style: UiText.h4),
                     const SizedBox(height: UiSpacing.sm),

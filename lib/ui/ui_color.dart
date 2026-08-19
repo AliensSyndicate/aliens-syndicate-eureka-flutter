@@ -47,6 +47,11 @@ abstract final class UiColor {
   static const continueStripe = Color(0xFFE9ECF0);
   static const continueBorder = Color(0xFFA9B0BA);
 
+  // Login / Conta
+  static const loginBase = accent;
+  static const loginStripe = Color(0xFFE2B2FD);
+  static const loginBorder = Color(0xFFB462E8);
+
   // Matérias
   static const mathematics = Color(0xFF1CB0F6);
   static const portuguese = Color(0xFFFF6B9D);
