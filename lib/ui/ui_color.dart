@@ -8,6 +8,7 @@ abstract final class UiColor {
   static const navigationBackground = background;
   static const accent = Color(0xFFD38DFD);
   static const text = Color(0xFFF9F4FC);
+  static const xp = Color(0xFFF7CA45);
 
   // Superfícies derivadas
   static const surface = Color(0xFF352C3A);

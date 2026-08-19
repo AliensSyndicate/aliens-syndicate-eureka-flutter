@@ -4,6 +4,7 @@ abstract final class UiSize {
   static const iconMd = 24.0;
   static const iconLg = 32.0;
   static const iconXl = 40.0;
+  static const iconNavigation = 30.0;
   static const buttonHeightSm = 44.0;
   static const buttonHeightMd = 52.0;
   static const buttonHeightLg = 56.0;
@@ -23,6 +24,6 @@ abstract final class UiSize {
 
   // Aliases semânticos preservados para componentes existentes.
   static const touchTarget = 48.0;
-  static const icon = iconLg;
+  static const icon = iconMd;
   static const avatar = avatarLg;
 }

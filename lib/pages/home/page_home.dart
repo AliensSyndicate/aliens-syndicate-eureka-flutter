@@ -21,6 +21,7 @@ import 'widgets/widget_subject_card.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({super.key});
+
   @override
   State<PageHome> createState() => _PageHomeState();
 }
@@ -39,14 +40,15 @@ class _PageHomeState extends State<PageHome> {
   @override
   Widget build(BuildContext context) {
     final progress = ServiceRegistry.progress.load();
+
     return Column(
       children: [
         AppHomeBar(
           xp: progress.xp,
-          level: progress.level,
+          seriesLabel: '1 EM',
           onXpTap: () =>
               _showValue(AppStrings.xpLabel, AppStrings.xpValue(progress.xp)),
-          onLevelTap: () => _showValue(
+          onSeriesTap: () => _showValue(
             AppStrings.levelLabel,
             AppStrings.levelValue(progress.level),
           ),
@@ -120,13 +122,13 @@ class _PageHomeState extends State<PageHome> {
                   const Text(AppStrings.journeySubtitle, style: UiText.p),
                   const SizedBox(height: UiSpacing.sm),
                   ...items.map((subject) {
-                    final progress = ServiceRegistry.progress
+                    final progressPercentage = ServiceRegistry.progress
                         .completionPercentage(
                           subject.lessonsForYear(schoolYear),
                         );
                     return SubjectCard(
                       subject: subject,
-                      progress: progress,
+                      progress: progressPercentage,
                       onTap: () async {
                         await Navigator.push(
                           context,

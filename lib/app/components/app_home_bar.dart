@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../l10n/app_strings.dart';
 import '../../ui/ui_color.dart';
+import '../../ui/ui_icon.dart';
 import '../../ui/ui_radius.dart';
 import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
@@ -11,71 +11,101 @@ import '../../ui/ui_text.dart';
 class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
   const AppHomeBar({
     required this.xp,
-    required this.level,
+    required this.seriesLabel,
     required this.onXpTap,
-    required this.onLevelTap,
+    required this.onSeriesTap,
     super.key,
   });
+
   final int xp;
-  final int level;
+  final String seriesLabel;
   final VoidCallback onXpTap;
-  final VoidCallback onLevelTap;
+  final VoidCallback onSeriesTap;
 
   @override
   Size get preferredSize => const Size.fromHeight(UiSize.homeAppBarHeight);
 
   @override
-  Widget build(BuildContext context) => AppBar(
-    toolbarHeight: UiSize.homeAppBarHeight,
-    titleSpacing: UiSpacing.pageHorizontal,
-    title: SvgPicture.asset('assets/icons/logo.svg', height: UiSize.logoSize),
-    actionsPadding: const EdgeInsets.only(right: UiSpacing.pageHorizontal),
-    actions: [
-      _NumericButton(
-        value: xp,
-        semanticLabel: AppStrings.xpLabel,
-        onTap: onXpTap,
+  Widget build(BuildContext context) => SizedBox(
+    height: preferredSize.height,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: UiSpacing.pageHorizontal),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          UiIcon.logo(size: UiSize.logoSize, onlyHeight: true),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _BadgeButton(
+                text: '$xp',
+                textColor: UiColor.text,
+                icon: UiIcon.diamontXp(size: UiSize.iconMd),
+                semanticLabel: AppStrings.xpLabel,
+                onTap: onXpTap,
+              ),
+              const SizedBox(width: UiSpacing.xs),
+              _BadgeButton(
+                text: seriesLabel,
+                textColor: UiColor.text,
+                icon: UiIcon.backpack1Em(size: UiSize.iconMd),
+                semanticLabel: AppStrings.levelLabel,
+                onTap: onSeriesTap,
+              ),
+            ],
+          ),
+        ],
       ),
-      const SizedBox(width: UiSpacing.xs),
-      _NumericButton(
-        value: level,
-        semanticLabel: AppStrings.levelLabel,
-        onTap: onLevelTap,
-      ),
-    ],
+    ),
   );
 }
 
-class _NumericButton extends StatelessWidget {
-  const _NumericButton({
-    required this.value,
+class _BadgeButton extends StatelessWidget {
+  const _BadgeButton({
+    required this.text,
+    required this.textColor,
+    required this.icon,
     required this.semanticLabel,
     required this.onTap,
   });
-  final int value;
+
+  final String text;
+  final Color textColor;
+  final Widget icon;
   final String semanticLabel;
   final VoidCallback onTap;
+
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
     label: semanticLabel,
-    value: '$value',
+    value: text,
     child: Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(UiRadius.pill),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(UiRadius.pill),
-        child: SizedBox(
-          width: UiSize.numericButtonWidth,
-          height: UiSize.buttonHeightSm,
-          child: Center(
-            child: Text(
-              '$value',
-              style: UiText.h6.copyWith(
-                color: UiColor.text,
-                fontWeight: FontWeight.w800,
-              ),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: UiSpacing.sm),
+          child: SizedBox(
+            height: UiSize.buttonHeightSm,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                icon,
+                const SizedBox(width: 4),
+                Text(
+                  text,
+                  style: UiText.h6.copyWith(
+                    color: textColor,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
