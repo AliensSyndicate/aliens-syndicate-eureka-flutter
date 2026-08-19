@@ -25,6 +25,24 @@ class _NavigationAppState extends State<NavigationApp> {
     PageSimulation(),
     PageProfile(),
   ];
+
+  // Helper para criar o ícone com o círculo de fundo dinâmico
+  Widget _buildNavIcon({required Widget icon, required bool isSelected}) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        // Quando selecionado, usa UiColor.accent com opacidade (ex: 0.2). Quando não, fica transparente.
+        color: isSelected
+            ? UiColor.accent.withValues(
+                alpha: 0.2,
+              ) // Ou .withOpacity(0.2) dependendo da sua versão do Flutter
+            : Colors.transparent,
+      ),
+      child: icon,
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     body: SafeArea(
@@ -43,22 +61,30 @@ class _NavigationAppState extends State<NavigationApp> {
         selectedIndex: index,
         onDestinationSelected: (value) => setState(() => index = value),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        // Removemos o indicador padrão oval/pílula do Material 3 deixando-o transparente
+        indicatorColor: Colors.transparent,
         destinations: [
-          NavigationDestination(icon: UiIcon.home(), label: AppStrings.home),
           NavigationDestination(
-            icon: UiIcon.social(),
+            icon: _buildNavIcon(icon: UiIcon.home(), isSelected: index == 0),
+            label: AppStrings.home,
+          ),
+          NavigationDestination(
+            icon: _buildNavIcon(icon: UiIcon.social(), isSelected: index == 1),
             label: AppStrings.social,
           ),
           NavigationDestination(
-            icon: UiIcon.search(),
+            icon: _buildNavIcon(icon: UiIcon.search(), isSelected: index == 2),
             label: AppStrings.explore,
           ),
           NavigationDestination(
-            icon: UiIcon.simulated(),
+            icon: _buildNavIcon(
+              icon: UiIcon.simulated(),
+              isSelected: index == 3,
+            ),
             label: AppStrings.simulation,
           ),
           NavigationDestination(
-            icon: UiIcon.profile(),
+            icon: _buildNavIcon(icon: UiIcon.profile(), isSelected: index == 4),
             label: AppStrings.profile,
           ),
         ],

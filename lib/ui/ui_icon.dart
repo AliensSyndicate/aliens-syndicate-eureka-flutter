@@ -4,10 +4,17 @@ import 'package:flutter_svg/svg.dart';
 
 abstract final class UiIcon {
   static Widget build({required String assetName, double size = UiSize.icon}) {
-    return SvgPicture.asset(
-      'assets/icons/$assetName.svg',
+    return SizedBox(
       width: size,
       height: size,
+      child: Center(
+        child: SvgPicture.asset(
+          'assets/icons/$assetName.svg',
+          width: size,
+          height: size,
+          fit: BoxFit.contain,
+        ),
+      ),
     );
   }
 
