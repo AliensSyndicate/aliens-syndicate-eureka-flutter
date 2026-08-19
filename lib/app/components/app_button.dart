@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../ui/ui_button.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_text.dart';
@@ -62,12 +63,7 @@ class AppButton extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(UiButton.radius),
                   ),
-                  textStyle: const TextStyle(
-                    fontFamily: UiText.fontFamily,
-                    fontSize: UiButton.fontSize,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: .5,
-                  ),
+                  textStyle: UiText.h5.copyWith(),
                 ),
                 child: isLoading
                     ? const SizedBox.square(

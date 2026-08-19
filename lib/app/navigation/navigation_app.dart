@@ -26,17 +26,13 @@ class _NavigationAppState extends State<NavigationApp> {
     PageProfile(),
   ];
 
-  // Helper para criar o ícone com o círculo de fundo dinâmico
   Widget _buildNavIcon({required Widget icon, required bool isSelected}) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        // Quando selecionado, usa UiColor.accent com opacidade (ex: 0.2). Quando não, fica transparente.
         color: isSelected
-            ? UiColor.accent.withValues(
-                alpha: 0.2,
-              ) // Ou .withOpacity(0.2) dependendo da sua versão do Flutter
+            ? UiColor.accent.withValues(alpha: 0.2)
             : Colors.transparent,
       ),
       child: icon,
@@ -52,7 +48,7 @@ class _NavigationAppState extends State<NavigationApp> {
       decoration: const BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: UiColor.divider,
+            color: UiColor.background,
             width: UiNavigation.topBorderWidth,
           ),
         ),
@@ -61,7 +57,6 @@ class _NavigationAppState extends State<NavigationApp> {
         selectedIndex: index,
         onDestinationSelected: (value) => setState(() => index = value),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-        // Removemos o indicador padrão oval/pílula do Material 3 deixando-o transparente
         indicatorColor: Colors.transparent,
         destinations: [
           NavigationDestination(

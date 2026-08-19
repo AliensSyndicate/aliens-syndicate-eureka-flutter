@@ -1,6 +1,9 @@
+import 'package:eureka/ui/ui_color.dart';
+import 'package:eureka/ui/ui_text.dart';
 import 'package:flutter/material.dart';
-import '../../ui/ui_spacing.dart';
+
 import '../../ui/ui_bottom_sheet.dart';
+import '../../ui/ui_spacing.dart';
 
 class AppBottomSheet {
   static Future<T?> show<T>(
@@ -29,7 +32,10 @@ class AppBottomSheet {
           children: [
             Semantics(
               header: true,
-              child: Text(title, style: Theme.of(context).textTheme.titleLarge),
+              child: Text(
+                title,
+                style: UiText.h4.copyWith(color: UiColor.accent),
+              ),
             ),
             const SizedBox(height: UiSpacing.md),
             content,
