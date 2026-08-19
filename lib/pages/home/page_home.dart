@@ -101,8 +101,10 @@ class _PageHomeState extends State<PageHome> {
                 children: [
                   if (true) ...[
                     LoginCard(
-                      onTap: () =>
-                          MaterialPageRoute(builder: (_) => PageAuth()),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const PageAuth()),
+                      ),
                     ),
                     const SizedBox(height: UiSpacing.sectionSpacing),
                   ],
