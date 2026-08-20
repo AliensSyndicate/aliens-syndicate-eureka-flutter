@@ -8,6 +8,7 @@ import '../../pages/auth/page_auth.dart';
 import '../../pages/explore/page_explore.dart';
 import '../../pages/home/page_home.dart';
 import '../../pages/lesson/page_lesson.dart';
+import '../../pages/lesson/page_lesson_loading.dart';
 import '../../pages/profile/page_profile.dart';
 import '../../pages/simulation/page_simulation.dart';
 import '../../pages/social/page_social.dart';
@@ -24,6 +25,7 @@ abstract final class AppRoute {
   static const auth = 'auth';
   static const subject = 'subject';
   static const lesson = 'lesson';
+  static const lessonLoading = 'lessonLoading';
 }
 
 class SubjectRouteArguments {
@@ -38,6 +40,13 @@ class SubjectRouteArguments {
 
 class LessonRouteArguments {
   const LessonRouteArguments({required this.lesson, required this.mode});
+
+  final Lesson lesson;
+  final LearningMode mode;
+}
+
+class LessonLoadingRouteArguments {
+  const LessonLoadingRouteArguments({required this.lesson, required this.mode});
 
   final Lesson lesson;
   final LearningMode mode;
@@ -115,6 +124,22 @@ final GoRouter appRouter = GoRouter(
           child: PageSubjectLessons(
             subject: arguments.subject,
             schoolYear: arguments.schoolYear,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/lesson/loading',
+      name: AppRoute.lessonLoading,
+      redirect: (context, state) =>
+          state.extra is LessonLoadingRouteArguments ? null : '/home',
+      pageBuilder: (context, state) {
+        final arguments = state.extra as LessonLoadingRouteArguments;
+        return _transitionPage(
+          state: state,
+          child: PageLessonLoading(
+            lesson: arguments.lesson,
+            mode: arguments.mode,
           ),
         );
       },

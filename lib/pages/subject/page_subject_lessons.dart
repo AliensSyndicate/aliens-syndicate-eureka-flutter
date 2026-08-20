@@ -89,25 +89,12 @@ class PageSubjectLessons extends StatelessWidget {
       );
 
   Future<void> _openLesson(BuildContext context, Lesson lesson) async {
-    final activity = await ServiceRegistry.content.loadActivity(lesson);
-    if (!context.mounted) return;
-    if (activity.questions.isEmpty) {
-      await AppBottomSheet.show<void>(
-        context,
-        title: lesson.title,
-        content: const Text(AppStrings.contentUnavailable),
-        actions: [
-          AppButton(
-            label: AppStrings.finish,
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      );
-      return;
-    }
     await context.pushNamed(
-      AppRoute.lesson,
-      extra: LessonRouteArguments(lesson: activity, mode: LearningMode.journey),
+      AppRoute.lessonLoading,
+      extra: LessonLoadingRouteArguments(
+        lesson: lesson,
+        mode: LearningMode.journey,
+      ),
     );
   }
 }

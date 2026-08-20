@@ -33,6 +33,7 @@ abstract final class AppStrings {
       contentUnavailable =
           'Esta atividade ainda não está disponível offline. Verifique sua conexão e tente novamente.',
       loadingContent = 'Carregando conteúdo',
+      preparingActivity = 'Preparando sua atividade',
       comingSoon = 'Em breve',
       lessonProgress = 'Progresso da atividade',
       closeActivity = 'Fechar atividade',

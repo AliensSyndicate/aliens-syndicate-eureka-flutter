@@ -1,7 +1,7 @@
 import 'package:eureka/enums/subject_type.dart';
 import 'package:eureka/app/components/app_button.dart';
 import 'package:eureka/l10n/app_strings.dart';
-import 'package:eureka/pages/lesson/page_lesson.dart';
+import 'package:eureka/pages/lesson/widgets/widget_lesson_app_bar.dart';
 import 'package:eureka/pages/lesson/widgets/widget_progress_bar.dart';
 import 'package:eureka/ui/ui_color.dart';
 import 'package:eureka/ui/ui_motion.dart';
@@ -20,7 +20,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          appBar: LessonHeader(
+          appBar: LessonAppBar(
             progress: .4,
             progressColor: subjectColor,
             remainingTime: remainingTime,

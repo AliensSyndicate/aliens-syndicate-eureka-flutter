@@ -63,7 +63,7 @@ class AppButton extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(UiButton.radius),
                   ),
-                  textStyle: UiText.h5.copyWith(),
+                  textStyle: UiText.h6.copyWith(),
                 ),
                 child: isLoading
                     ? const SizedBox.square(
