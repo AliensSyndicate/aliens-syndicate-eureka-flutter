@@ -26,19 +26,6 @@ class _NavigationAppState extends State<NavigationApp> {
     PageProfile(),
   ];
 
-  Widget _buildNavIcon({required Widget icon, required bool isSelected}) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isSelected
-            ? UiColor.accent.withValues(alpha: 0.2)
-            : Colors.transparent,
-      ),
-      child: icon,
-    );
-  }
-
   @override
   Widget build(BuildContext context) => Scaffold(
     body: SafeArea(
@@ -60,26 +47,27 @@ class _NavigationAppState extends State<NavigationApp> {
         indicatorColor: Colors.transparent,
         destinations: [
           NavigationDestination(
-            icon: _buildNavIcon(icon: UiIcon.home(), isSelected: index == 0),
+            icon: index == 0 ? UiIcon.navHomeSelected() : UiIcon.navHome(),
             label: AppStrings.home,
           ),
           NavigationDestination(
-            icon: _buildNavIcon(icon: UiIcon.social(), isSelected: index == 1),
+            icon: index == 1 ? UiIcon.navSocialSelected() : UiIcon.navSocial(),
             label: AppStrings.social,
           ),
           NavigationDestination(
-            icon: _buildNavIcon(icon: UiIcon.search(), isSelected: index == 2),
+            icon: index == 2 ? UiIcon.navSearchSelected() : UiIcon.navSearch(),
             label: AppStrings.explore,
           ),
           NavigationDestination(
-            icon: _buildNavIcon(
-              icon: UiIcon.simulated(),
-              isSelected: index == 3,
-            ),
+            icon: index == 3
+                ? UiIcon.navSimulatedSelected()
+                : UiIcon.navSimulated(),
             label: AppStrings.simulation,
           ),
           NavigationDestination(
-            icon: _buildNavIcon(icon: UiIcon.profile(), isSelected: index == 4),
+            icon: index == 4
+                ? UiIcon.navProfileSelected()
+                : UiIcon.navProfile(),
             label: AppStrings.profile,
           ),
         ],

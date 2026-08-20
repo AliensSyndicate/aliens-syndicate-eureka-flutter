@@ -33,7 +33,7 @@ class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          UiIcon.logo(size: UiSize.logoSize, onlyHeight: true),
+          UiIcon.logo(size: UiSize.logoSize),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [

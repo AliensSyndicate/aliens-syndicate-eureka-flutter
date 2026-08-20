@@ -24,23 +24,23 @@ class SubjectCard extends StatelessWidget {
   Widget _getSubjectIcon(Color color) {
     switch (subject.type) {
       case SubjectType.mathematics:
-        return UiIcon.subjectMath(size: UiSize.icon, onlyHeight: true);
+        return UiIcon.subjectMath(size: UiSize.icon);
       case SubjectType.geography:
-        return UiIcon.subjectGeography(size: UiSize.icon, onlyHeight: true);
+        return UiIcon.subjectGeography(size: UiSize.icon);
       case SubjectType.science:
-        return UiIcon.subjectScience(size: UiSize.icon, onlyHeight: true);
+        return UiIcon.subjectScience(size: UiSize.icon);
       case SubjectType.biology:
-        return UiIcon.subjectBiology(size: UiSize.icon, onlyHeight: true);
+        return UiIcon.subjectBiology(size: UiSize.icon);
       case SubjectType.physics:
-        return UiIcon.subjectPhysics(size: UiSize.icon, onlyHeight: true);
+        return UiIcon.subjectPhysics(size: UiSize.icon);
       case SubjectType.history:
-        return UiIcon.subjectHistory(size: UiSize.icon, onlyHeight: true);
+        return UiIcon.subjectHistory(size: UiSize.icon);
       case SubjectType.english:
-        return UiIcon.subjectEnglish(size: UiSize.icon, onlyHeight: true);
+        return UiIcon.subjectEnglish(size: UiSize.icon);
       case SubjectType.spanish:
-        return UiIcon.subjectSpanish(size: UiSize.icon, onlyHeight: true);
+        return UiIcon.subjectSpanish(size: UiSize.icon);
       default:
-        return UiIcon.subjectPortuguese(size: UiSize.icon, onlyHeight: true);
+        return UiIcon.subjectPortuguese(size: UiSize.icon);
     }
   }
 

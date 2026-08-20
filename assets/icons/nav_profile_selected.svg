@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 175 176" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1,0,0,1,-1178.308812,-26.282903)">
-        <g>
+<svg width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-1095.308812,-49.282903)">
+        <g transform="matrix(0.574226,0,0,0.570412,418.692742,34.290816)">
             <g transform="matrix(1,0,0,1,-18,-72)">
                 <path d="M1337,254.09C1332.72,249.48 1328.4,245.69 1324.04,242.71C1318.41,238.86 1312.03,236.54 1304.89,235.75C1304.6,235.72 1304.32,235.57 1304.13,235.33C1303.86,235 1303.48,234.73 1303,234.52" style="fill:none;"/>
             </g>
