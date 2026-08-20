@@ -34,6 +34,9 @@ abstract final class AppStrings {
           'Esta atividade ainda não está disponível offline. Verifique sua conexão e tente novamente.',
       loadingContent = 'Carregando conteúdo',
       preparingActivity = 'Preparando sua atividade',
+      lessonLoadingTitle = "A chama do\nconhecimento\nestá acesa.",
+      lessonCampfireIllustration =
+          'Ilustração de uma chama acesa sobre dois troncos.',
       comingSoon = 'Em breve',
       closeActivity = 'Fechar atividade',
       back = 'Voltar',
@@ -43,8 +46,7 @@ abstract final class AppStrings {
       lessonElapsedTimeLabel = 'Tempo decorrido da aula',
       lessonPaginationLabel = 'Página da atividade',
       lessonTimeUp = 'O tempo da aula terminou',
-      lessonTimeUpMessage =
-          'Os 20 minutos acabaram. Você pode tentar esta lição novamente.',
+      lessonTimeUpMessage = 'Os 20 minutos acabaram. Você pode tentar esta lição novamente.',
       answeredActivity = 'Atividade respondida',
       currentActivity = 'Atividade atual',
       returnToCurrentActivity = 'Voltar à atividade atual',

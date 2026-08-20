@@ -1,19 +1,17 @@
+import 'package:eureka/ui/ui_size.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../app/components/app_bottom_sheet.dart';
-import '../../app/components/app_button.dart';
-import '../../app/navigation/navigation_router.dart';
 import '../../controllers/controller_lesson_preparation.dart';
 import '../../enums/learning_mode.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/model_lesson.dart';
-import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
+import '../../ui/ui_icon.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
+import 'widgets/widget_lesson_campfire.dart';
 
-class PageLessonLoading extends StatefulWidget {
+class PageLessonLoading extends StatelessWidget {
   const PageLessonLoading({
     required this.lesson,
     required this.mode,
@@ -26,89 +24,43 @@ class PageLessonLoading extends StatefulWidget {
   final LessonPreparationController? controller;
 
   @override
-  State<PageLessonLoading> createState() => _PageLessonLoadingState();
-}
-
-class _PageLessonLoadingState extends State<PageLessonLoading> {
-  late final LessonPreparationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller =
-        widget.controller ??
-        LessonPreparationController(
-          loadActivity: ServiceRegistry.content.loadActivity,
-        );
-    _prepare();
-  }
-
-  Future<void> _prepare() async {
-    Lesson? lesson;
-    try {
-      lesson = await controller.prepare(widget.lesson);
-    } on Object {
-      lesson = null;
-    }
-    if (!mounted) return;
-    if (lesson == null) {
-      await AppBottomSheet.show<void>(
-        context,
-        title: widget.lesson.title,
-        content: const Text(AppStrings.contentUnavailable),
-        actions: [
-          AppButton(
-            label: AppStrings.finish,
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      );
-      if (mounted) context.pop();
-      return;
-    }
-    context.replaceNamed(
-      AppRoute.lesson,
-      extra: LessonRouteArguments(lesson: lesson, mode: widget.mode),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final color = UiColor.forSubject(widget.lesson.subject);
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final compact = textScale > 1.5;
+
     return Scaffold(
-      appBar: AppBar(),
       body: SafeArea(
-        child: Center(
-          child: Semantics(
-            container: true,
-            liveRegion: true,
-            label: AppStrings.preparingActivity,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: UiSpacing.pageHorizontal,
-                vertical: UiSpacing.pageVertical,
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  UiSpacing.pageHorizontal,
+                  UiSpacing.xl,
+                  UiSpacing.pageHorizontal,
+                  0,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: UiIcon.logo(size: UiSize.iconMd),
+                ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ExcludeSemantics(
-                    child: CircularProgressIndicator(color: color),
-                  ),
-                  const SizedBox(height: UiSpacing.xl),
-                  Text(
-                    AppStrings.preparingActivity,
-                    textAlign: TextAlign.center,
-                    style: UiText.h4,
-                  ),
-                  const SizedBox(height: UiSpacing.sm),
-                  Text(
-                    widget.lesson.title,
-                    textAlign: TextAlign.center,
-                    style: UiText.p.copyWith(color: UiColor.textSecondary),
-                  ),
-                ],
+              SizedBox(height: compact ? UiSpacing.sm : UiSpacing.xxxl),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: UiSpacing.pageHorizontal,
+                ),
+                child: Text(
+                  AppStrings.lessonLoadingTitle,
+                  key: const Key('lesson-loading-title'),
+                  style: UiText.h2.copyWith(color: UiColor.textPrimary),
+                ),
               ),
-            ),
+              SizedBox(height: compact ? UiSpacing.xs : UiSpacing.lg),
+              const Expanded(child: WidgetLessonCampfire()),
+            ],
           ),
         ),
       ),
