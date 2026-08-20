@@ -4,8 +4,6 @@ abstract final class UiMotion {
   static const screenTransitionDuration = Duration(milliseconds: 300);
   static const screenTransitionCurve = Curves.easeOutCubic;
   static const screenTransitionOffset = Offset(0.08, 0);
-  static const lessonProgressDuration = Duration(milliseconds: 350);
-  static const lessonProgressCurve = Curves.easeOutCubic;
   static const lessonActivityDuration = Duration(milliseconds: 420);
   static const lessonActivityCurve = Curves.easeOutCubic;
   static const lessonActivitySlideOffset = 80.0;

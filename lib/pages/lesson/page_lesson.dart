@@ -63,12 +63,12 @@ class _PageLessonState extends State<PageLesson> {
 
   @override
   Widget build(BuildContext context) {
-    final progress = started ? controller.completionProgress : 0.0;
     return Scaffold(
       appBar: LessonAppBar(
-        progress: progress,
-        progressColor: subjectColor,
         remainingTime: lessonTimer,
+        lessonDuration: lessonTimer.duration,
+        currentPage: displayedPageIndex + 1,
+        totalPages: controller.totalQuestions + 1,
       ),
       body: SafeArea(bottom: false, child: _lessonPages(context)),
       bottomNavigationBar: _bottomAction(),

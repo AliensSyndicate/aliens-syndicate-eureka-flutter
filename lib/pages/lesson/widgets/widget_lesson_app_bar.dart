@@ -8,26 +8,26 @@ import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
 import '../../../ui/ui_text.dart';
-import 'widget_progress_bar.dart';
 
 class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
   const LessonAppBar({
-    required this.progress,
-    required this.progressColor,
     required this.remainingTime,
+    required this.lessonDuration,
+    required this.currentPage,
+    required this.totalPages,
     super.key,
   });
 
-  final double progress;
-  final Color progressColor;
   final ValueListenable<Duration> remainingTime;
+  final Duration lessonDuration;
+  final int currentPage;
+  final int totalPages;
 
   @override
   Size get preferredSize => const Size.fromHeight(UiSize.homeAppBarHeight);
 
   @override
   Widget build(BuildContext context) {
-    final normalizedProgress = progress.clamp(0.0, 1.0);
     return AppBar(
       backgroundColor: UiColor.background,
       foregroundColor: UiColor.textPrimary,
@@ -51,38 +51,38 @@ class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
             onPressed: () => Navigator.maybePop(context),
             icon: UiIcon.close(size: UiSize.iconLg),
           ),
-          const SizedBox(width: UiSpacing.sm),
-          Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: LessonProgressBar(
-                value: normalizedProgress,
-                progressColor: progressColor,
+          const Spacer(),
+          ValueListenableBuilder<Duration>(
+            valueListenable: remainingTime,
+            builder: (context, value, child) {
+              final elapsed = lessonDuration - value;
+              final formattedTime = AppStrings.lessonElapsedTime(elapsed);
+              return Semantics(
+                label: AppStrings.lessonElapsedTimeLabel,
+                value: formattedTime,
+                child: ExcludeSemantics(
+                  child: Text(
+                    formattedTime,
+                    key: const ValueKey('lesson-elapsed-time'),
+                    style: UiText.h6,
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: UiSpacing.xxxl),
+          Semantics(
+            label: AppStrings.lessonPaginationLabel,
+            value: AppStrings.lessonPagination(currentPage, totalPages),
+            child: ExcludeSemantics(
+              child: Text(
+                AppStrings.lessonPagination(currentPage, totalPages),
+                key: const ValueKey('lesson-pagination'),
+                style: UiText.h6,
               ),
             ),
           ),
-          const SizedBox(width: UiSpacing.lg),
-          SizedBox(
-            width: UiSize.lessonTimerWidth,
-            child: ValueListenableBuilder<Duration>(
-              valueListenable: remainingTime,
-              builder: (context, value, child) {
-                final formattedTime = AppStrings.lessonTime(value);
-                return Semantics(
-                  label: AppStrings.lessonTimeRemaining,
-                  value: formattedTime,
-                  child: ExcludeSemantics(
-                    child: Text(
-                      formattedTime,
-                      key: const ValueKey('lesson-remaining-time'),
-                      style: UiText.h6,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: UiSpacing.sm),
+          const SizedBox(width: UiSpacing.md),
         ],
       ),
     );

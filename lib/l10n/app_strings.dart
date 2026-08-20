@@ -35,13 +35,13 @@ abstract final class AppStrings {
       loadingContent = 'Carregando conteúdo',
       preparingActivity = 'Preparando sua atividade',
       comingSoon = 'Em breve',
-      lessonProgress = 'Progresso da atividade',
       closeActivity = 'Fechar atividade',
       back = 'Voltar',
       reportError = 'Reportar erro',
       reportErrorUnavailable = 'O envio de relatos estará disponível em breve.',
       completeAllLessons = 'Complete todas as aulas',
-      lessonTimeRemaining = 'Tempo restante da aula',
+      lessonElapsedTimeLabel = 'Tempo decorrido da aula',
+      lessonPaginationLabel = 'Página da atividade',
       lessonTimeUp = 'O tempo da aula terminou',
       lessonTimeUpMessage =
           'Os 20 minutos acabaram. Você pode tentar esta lição novamente.',
@@ -77,5 +77,17 @@ abstract final class AppStrings {
     final minutes = value.inMinutes.toString().padLeft(2, '0');
     final seconds = (value.inSeconds % 60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
+  }
+
+  static String lessonElapsedTime(Duration value) {
+    final minutes = value.inMinutes.toString().padLeft(2, '0');
+    final seconds = (value.inSeconds % 60).toString().padLeft(2, '0');
+    return '${minutes}m${seconds}s';
+  }
+
+  static String lessonPagination(int current, int total) {
+    final page = current.clamp(1, total).toString().padLeft(2, '0');
+    final pageTotal = total.toString().padLeft(2, '0');
+    return 'pag. $page/$pageTotal';
   }
 }
