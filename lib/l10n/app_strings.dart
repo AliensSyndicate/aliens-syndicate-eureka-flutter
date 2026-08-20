@@ -34,7 +34,7 @@ abstract final class AppStrings {
           'Esta atividade ainda não está disponível offline. Verifique sua conexão e tente novamente.',
       loadingContent = 'Carregando conteúdo',
       preparingActivity = 'Preparando sua atividade',
-      lessonLoadingTitle = "A chama do\nconhecimento\nestá acesa.",
+      lessonLoadingTitle = "A chama do conhecimento\nestá acesa.",
       lessonCampfireIllustration =
           'Ilustração de uma chama acesa sobre dois troncos.',
       comingSoon = 'Em breve',
