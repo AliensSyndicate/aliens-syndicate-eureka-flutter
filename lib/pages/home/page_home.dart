@@ -98,7 +98,7 @@ class _PageHomeState extends State<PageHome> {
                   bottom: UiSpacing.pageVertical,
                 ),
                 children: [
-                  if (true) ...[
+                  if (!ServiceRegistry.user.isAuthenticated) ...[
                     LoginCard(onTap: () => context.pushNamed(AppRoute.auth)),
                     const SizedBox(height: UiSpacing.sectionSpacing),
                   ],

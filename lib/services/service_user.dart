@@ -17,4 +17,6 @@ class UserService {
     _box.put(_key, temporaryUser.toMap());
     return temporaryUser;
   }
+
+  bool get isAuthenticated => !loadCurrentUser().isTemporary;
 }
