@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../ui/ui_color.dart';
+import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
@@ -95,8 +96,7 @@ class _ExerciseSequencingState extends State<ExerciseSequencing> {
           handle: widget.enabled
               ? ReorderableDragStartListener(
                   index: index,
-                  child: const Icon(
-                    Icons.drag_indicator_rounded,
+                  child: UiIcon.drag(
                     color: UiColor.textSecondary,
                     size: UiSize.iconMd,
                   ),

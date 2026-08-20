@@ -46,7 +46,7 @@ void main() {
     expect(find.bySemanticsLabel(AppStrings.lessonProgress), findsOneWidget);
     expect(find.byTooltip(AppStrings.closeActivity), findsOneWidget);
 
-    final closeCenter = tester.getCenter(find.byIcon(Icons.close_rounded));
+    final closeCenter = tester.getCenter(find.byType(IconButton));
     final progressCenter = tester.getCenter(
       find.byType(LinearProgressIndicator),
     );

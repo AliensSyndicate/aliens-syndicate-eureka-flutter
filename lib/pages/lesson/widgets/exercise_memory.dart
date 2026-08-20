@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../models/model_matching_pair.dart';
 import '../../../ui/ui_color.dart';
+import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
@@ -132,12 +133,18 @@ class _ExerciseMemoryState extends State<ExerciseMemory> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _Stat(
-              icon: Icons.timer_outlined,
+              icon: UiIcon.timer(
+                color: UiColor.textSecondary,
+                size: UiSize.iconSm,
+              ),
               value: AppStrings.lessonTime(_elapsed),
               color: UiColor.textSecondary,
             ),
             _Stat(
-              icon: Icons.star_rounded,
+              icon: UiIcon.star(
+                color: _missed ? UiColor.warning : UiColor.success,
+                size: UiSize.iconSm,
+              ),
               value: AppStrings.memoryPairs(foundPairs, widget.pairs.length),
               color: _missed ? UiColor.warning : UiColor.success,
             ),
@@ -211,8 +218,7 @@ class _FlipCard extends StatelessWidget {
                 accent: UiColor.outline,
                 filled: false,
                 onTap: onTap,
-                child: Icon(
-                  Icons.auto_awesome,
+                child: UiIcon.sparkles(
                   color: accentColor.withValues(alpha: .8),
                   size: UiSize.iconMd,
                 ),
@@ -257,7 +263,7 @@ class _CardFace extends StatelessWidget {
 class _Stat extends StatelessWidget {
   const _Stat({required this.icon, required this.value, required this.color});
 
-  final IconData icon;
+  final Widget icon;
   final String value;
   final Color color;
 
@@ -265,7 +271,7 @@ class _Stat extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Icon(icon, color: color, size: UiSize.iconSm),
+      icon,
       const SizedBox(width: UiSpacing.xxs),
       Text(value, style: UiText.label.copyWith(color: color)),
     ],

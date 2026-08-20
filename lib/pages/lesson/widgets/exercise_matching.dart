@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../models/model_matching_pair.dart';
 import '../../../ui/ui_color.dart';
+import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_spacing.dart';
 
@@ -121,8 +122,7 @@ class _ExerciseMatchingState extends State<ExerciseMatching>
 
   Future<void> _checkPair(String left, String right) async {
     _busy = true;
-    final correct =
-        widget.pairs.any((p) => p.left == left && p.right == right);
+    final correct = widget.pairs.any((p) => p.left == left && p.right == right);
 
     setState(() {
       if (correct) {
@@ -247,11 +247,8 @@ class _Chip extends StatelessWidget {
         feedback == _Feedback.correct || feedback == _Feedback.incorrect;
     final bool interactive = !isLocked;
 
-    final IconData? statusIcon = switch (feedback) {
-      _Feedback.correct => Icons.check_circle_rounded,
-      _Feedback.incorrect => Icons.cancel_rounded,
-      _ => null,
-    };
+    final showStatus =
+        feedback == _Feedback.correct || feedback == _Feedback.incorrect;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: UiSpacing.xs),
@@ -274,8 +271,10 @@ class _Chip extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (statusIcon != null) ...[
-                  Icon(statusIcon, color: border, size: 16),
+                if (showStatus) ...[
+                  feedback == _Feedback.correct
+                      ? UiIcon.correct(color: border, size: 16)
+                      : UiIcon.incorrect(color: border, size: 16),
                   const SizedBox(width: 6),
                 ],
                 Flexible(

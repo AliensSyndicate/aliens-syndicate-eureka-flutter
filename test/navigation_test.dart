@@ -1,8 +1,10 @@
 import 'package:eureka/app/navigation/navigation_router.dart';
 import 'package:eureka/l10n/app_strings.dart';
 import 'package:eureka/ui/ui_motion.dart';
-import 'package:flutter/animation.dart';
+import 'package:eureka/ui/ui_theme.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 void main() {
   test('mantém a ordem obrigatória da navegação principal', () {
@@ -36,5 +38,19 @@ void main() {
     );
     expect(UiMotion.screenTransitionCurve, Curves.easeOutCubic);
     expect(UiMotion.screenTransitionOffset, const Offset(0.08, 0));
+  });
+
+  testWidgets('usa HugeIcons na seta automática de voltar do AppBar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: UiTheme.dark,
+        home: Scaffold(appBar: AppBar(leading: const BackButton())),
+      ),
+    );
+
+    final icon = tester.widget<HugeIcon>(find.byType(HugeIcon));
+    expect(icon.icon, same(HugeIcons.strokeRoundedArrowLeft02));
   });
 }

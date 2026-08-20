@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../ui/ui_radius.dart';
+import '../../ui/ui_icon.dart';
 import '../../ui/ui_size.dart';
 
 class AppTextField extends StatelessWidget {
@@ -23,7 +24,7 @@ class AppTextField extends StatelessWidget {
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: hint,
-        prefixIcon: showSearchIcon ? const Icon(Icons.search) : null,
+        prefixIcon: showSearchIcon ? UiIcon.search() : null,
         filled: true,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(UiRadius.input),

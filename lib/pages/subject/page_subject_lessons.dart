@@ -1,3 +1,4 @@
+import 'package:eureka/ui/ui_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,7 +33,7 @@ class PageSubjectLessons extends StatelessWidget {
         .toSet();
     final color = UiColor.forSubject(subject.type);
     return Scaffold(
-      appBar: AppBar(title: Text(subject.title)),
+      appBar: AppBar(title: Text(subject.title, style: UiText.h4)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(

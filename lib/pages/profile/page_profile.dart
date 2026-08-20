@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/app_strings.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
+import '../../ui/ui_icon.dart';
 import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
 
@@ -21,11 +22,7 @@ class PageProfile extends StatelessWidget {
           child: CircleAvatar(
             radius: UiSize.avatar / 2,
             backgroundColor: UiColor.primary.withValues(alpha: .15),
-            child: const Icon(
-              Icons.face_rounded,
-              size: UiSize.avatarMd,
-              color: UiColor.primary,
-            ),
+            child: UiIcon.user(size: UiSize.avatarMd, color: UiColor.primary),
           ),
         ),
         const SizedBox(height: UiSpacing.md),
@@ -40,12 +37,12 @@ class PageProfile extends StatelessWidget {
         ),
         const SizedBox(height: UiSpacing.xl),
         ListTile(
-          leading: const Icon(Icons.bolt_rounded),
+          leading: UiIcon.flash(),
           title: Text('${progress.xp} XP'),
           subtitle: Text(AppStrings.level(progress.level)),
         ),
         ListTile(
-          leading: const Icon(Icons.check_circle_rounded),
+          leading: UiIcon.correct(),
           title: Text(
             AppStrings.completedLessons(progress.completedLessonIds.length),
           ),

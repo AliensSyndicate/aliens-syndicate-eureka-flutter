@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ui_color.dart';
+import 'ui_icon.dart';
 import 'ui_radius.dart';
 import 'ui_size.dart';
 import 'ui_text.dart';
@@ -67,6 +68,10 @@ abstract final class UiTheme {
       backgroundColor: UiColor.navigationBackground,
       indicatorColor: UiColor.surfaceElevated,
       labelTextStyle: WidgetStatePropertyAll(UiText.label),
+    ),
+    actionIconTheme: ActionIconThemeData(
+      backButtonIconBuilder: (context) => UiIcon.back(),
+      closeButtonIconBuilder: (context) => UiIcon.close(),
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: UiColor.background,

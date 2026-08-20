@@ -6,6 +6,7 @@ import 'package:eureka/pages/lesson/widgets/exercise_word_completion.dart';
 import 'package:eureka/ui/ui_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 Future<void> host(WidgetTester tester, Widget child) async {
   await tester.pumpWidget(
@@ -75,7 +76,12 @@ void main() {
       items.toSet(),
     );
 
-    final handle = find.byIcon(Icons.drag_indicator_rounded).first;
+    final handle = find
+        .descendant(
+          of: find.byType(ReorderableDragStartListener),
+          matching: find.byType(HugeIcon),
+        )
+        .first;
     final gesture = await tester.startGesture(tester.getCenter(handle));
     await tester.pump(const Duration(milliseconds: 200));
     await gesture.moveBy(const Offset(0, 120));

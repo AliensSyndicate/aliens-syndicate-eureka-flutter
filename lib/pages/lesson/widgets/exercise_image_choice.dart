@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../ui/ui_color.dart';
+import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
@@ -89,13 +90,12 @@ class ExerciseImageChoice extends StatelessWidget {
                       Positioned(
                         top: UiSpacing.xs,
                         right: UiSpacing.xs,
-                        child: Icon(
-                          isCorrect
-                              ? Icons.check_circle_rounded
-                              : Icons.cancel_rounded,
-                          color: accent,
-                          size: UiSize.iconSm,
-                        ),
+                        child: isCorrect
+                            ? UiIcon.correct(color: accent, size: UiSize.iconSm)
+                            : UiIcon.incorrect(
+                                color: accent,
+                                size: UiSize.iconSm,
+                              ),
                       ),
                   ],
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../ui/ui_color.dart';
+import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
@@ -78,11 +79,7 @@ class _StatementButton extends StatelessWidget {
         ? (correct ? UiColor.success : UiColor.error)
         : accentColor;
 
-    final statusIcon = !answered || !selected
-        ? null
-        : correct
-        ? Icons.check_circle_rounded
-        : Icons.cancel_rounded;
+    final showStatus = answered && selected;
 
     return Semantics(
       selected: selected,
@@ -106,8 +103,10 @@ class _StatementButton extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (statusIcon != null) ...[
-                    Icon(statusIcon, color: accent, size: UiSize.iconSm),
+                  if (showStatus) ...[
+                    correct
+                        ? UiIcon.correct(color: accent, size: UiSize.iconSm)
+                        : UiIcon.incorrect(color: accent, size: UiSize.iconSm),
                     const SizedBox(width: UiSpacing.xs),
                   ],
                   Text(

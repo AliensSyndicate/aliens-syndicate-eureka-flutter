@@ -1,8 +1,50 @@
 import 'package:eureka/ui/ui_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 abstract final class UiIcon {
+  static Widget huge({
+    required List<List<dynamic>> icon,
+    double size = UiSize.icon,
+    Color? color,
+  }) => HugeIcon(icon: icon, size: size, color: color, strokeWidth: 2.5);
+
+  // ações gerais
+  static Widget back({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedArrowLeft02, size: size, color: color);
+  static Widget close({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedCancel01, size: size, color: color);
+  static Widget share({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedShare01, size: size, color: color);
+  static Widget search({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedSearch01, size: size, color: color);
+  static Widget next({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedArrowRight01, size: size, color: color);
+  static Widget correct({double size = UiSize.icon, Color? color}) => huge(
+    icon: HugeIcons.strokeRoundedCheckmarkCircle02,
+    size: size,
+    color: color,
+  );
+  static Widget incorrect({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedCancelCircle, size: size, color: color);
+  static Widget check({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedTick02, size: size, color: color);
+  static Widget drag({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedDrag01, size: size, color: color);
+  static Widget trophy({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedChampion, size: size, color: color);
+  static Widget user({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedUserCircle, size: size, color: color);
+  static Widget flash({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedFlash, size: size, color: color);
+  static Widget timer({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedTimer02, size: size, color: color);
+  static Widget star({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedStar, size: size, color: color);
+  static Widget sparkles({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedSparkles, size: size, color: color);
+
   static Widget build({required String assetName, double size = UiSize.icon}) {
     return SizedBox(
       child: Center(

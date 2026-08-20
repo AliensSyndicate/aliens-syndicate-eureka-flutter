@@ -3,6 +3,7 @@ import 'package:eureka/pages/lesson/widgets/exercise_matching.dart';
 import 'package:eureka/ui/ui_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 void main() {
   const testPairs = [
@@ -47,7 +48,14 @@ void main() {
     // Opções incorretas continuam na tela e com ícone de erro
     expect(find.text('1/4'), findsOneWidget);
     expect(find.text('Dois terços'), findsOneWidget);
-    expect(find.byIcon(Icons.cancel_rounded), findsNWidgets(2));
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is HugeIcon &&
+            identical(widget.icon, HugeIcons.strokeRoundedCancelCircle),
+      ),
+      findsNWidgets(2),
+    );
 
     // Clicar novamente em uma opção travada não altera estado
     await tester.tap(find.text('1/4'));

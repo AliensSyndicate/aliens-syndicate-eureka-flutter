@@ -5,6 +5,7 @@ import '../../../enums/question_type.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
+import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_spacing.dart';
 import 'exercise_essay.dart';
 import 'exercise_fill_blank.dart';
@@ -264,11 +265,11 @@ class _DoneIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = correct ? UiColor.success : UiColor.error;
-    final icon = correct ? Icons.check_circle_rounded : Icons.cancel_rounded;
-
     return Row(
       children: [
-        Icon(icon, color: color, size: 20),
+        correct
+            ? UiIcon.correct(color: color, size: 20)
+            : UiIcon.incorrect(color: color, size: 20),
         const SizedBox(width: UiSpacing.xs),
         Expanded(
           child: Text(

@@ -12,6 +12,7 @@ import '../../models/model_lesson.dart';
 import '../../services/service_lesson_timer.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
+import '../../ui/ui_icon.dart';
 import '../../ui/ui_motion.dart';
 import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
@@ -339,7 +340,7 @@ class LessonHeader extends StatelessWidget implements PreferredSizeWidget {
               height: UiSize.touchTarget,
             ),
             onPressed: () => Navigator.maybePop(context),
-            icon: const Icon(Icons.close_rounded, size: UiSize.iconLg),
+            icon: UiIcon.close(size: UiSize.iconLg),
           ),
           const SizedBox(width: UiSpacing.sm),
           Expanded(

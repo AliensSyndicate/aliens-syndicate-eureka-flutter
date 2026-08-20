@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../models/content/model_content_manifest.dart';
 import '../../../models/model_lesson.dart';
 import '../../../ui/ui_color.dart';
+import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_radius.dart';
 import '../../../ui/ui_spacing.dart';
 import '../../../ui/ui_text.dart';
@@ -121,8 +122,7 @@ class _TrailItem extends StatelessWidget {
                       ),
                     ),
                     child: isCompleted
-                        ? Icon(
-                            Icons.check_rounded,
+                        ? UiIcon.check(
                             size: UiSpacing.md,
                             color: UiColor.background,
                           )

@@ -5,6 +5,7 @@ import '../../../models/model_lesson.dart';
 import '../../../ui/ui_card.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_gradient.dart';
+import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_radius.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
@@ -79,8 +80,7 @@ class ContinueLearningCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: UiSpacing.sm),
-                      const Icon(
-                        Icons.chevron_right_rounded,
+                      UiIcon.next(
                         size: UiSize.iconLg,
                         color: UiColor.background,
                       ),
