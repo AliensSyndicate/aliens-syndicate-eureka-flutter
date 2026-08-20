@@ -49,8 +49,8 @@ class SubjectLessonsAppBar extends StatelessWidget
       foregroundColor: UiColor.textPrimary,
       surfaceTintColor: Colors.transparent,
       shadowColor: Colors.transparent,
-      systemOverlayStyle: SystemUiOverlayStyle(
-        statusBarColor: color,
+      systemOverlayStyle: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
       ),
@@ -80,11 +80,12 @@ class SubjectLessonsAppBar extends StatelessWidget
                   tooltip: AppStrings.reportError,
                   onPressed: onReport,
                   icon: UiIcon.report(color: UiColor.textPrimary),
+                  // TODO: criar reporte
                 ),
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(left: UiSpacing.sm),
+              padding: const EdgeInsets.symmetric(horizontal: UiSpacing.sm),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

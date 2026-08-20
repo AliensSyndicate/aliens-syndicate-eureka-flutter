@@ -62,6 +62,11 @@ void main() {
     expect(find.text('2/5'), findsOneWidget);
     expect(find.text('40%'), findsNothing);
     expect(find.byType(HugeIcon), findsNWidgets(2));
+    final screenWidth = tester.getSize(find.byType(Scaffold)).width;
+    final progressCard = tester.getRect(
+      find.byKey(const ValueKey('subject-progress-card')),
+    );
+    expect(progressCard.left, screenWidth - progressCard.right);
 
     await tester.tap(find.byTooltip(AppStrings.back));
     await tester.tap(find.byTooltip(AppStrings.reportError));
