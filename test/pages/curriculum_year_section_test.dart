@@ -7,12 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('trilha recebe altura finita dentro de uma lista', (
+  testWidgets('agrupa conteúdos em uma única borda sem trilha de progresso', (
     tester,
   ) async {
-    final lesson = Lesson(
+    final firstLesson = Lesson(
       id: 'mathematics_ef_1_1',
       title: 'Contagem e números naturais',
+      summary: '',
+      subject: SubjectType.mathematics,
+      questions: const [],
+    );
+    final secondLesson = Lesson(
+      id: 'mathematics_ef_1_2',
+      title: 'Adição e subtração',
       summary: '',
       subject: SubjectType.mathematics,
       questions: const [],
@@ -22,7 +29,7 @@ void main() {
       year: 1,
       title: '1º ano EF',
       order: 0,
-      lessons: [lesson],
+      lessons: [firstLesson, secondLesson],
     );
 
     await tester.pumpWidget(
@@ -33,7 +40,7 @@ void main() {
               CurriculumYearSection(
                 year: year,
                 color: UiColor.mathematics,
-                completedLessonIds: const {},
+                completedLessonIds: const {'mathematics_ef_1_1'},
                 onLessonTap: (_) {},
               ),
             ],
@@ -44,6 +51,15 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('Contagem e números naturais'), findsOneWidget);
-    expect(find.text('0%'), findsNWidgets(2));
+    expect(find.text('Adição e subtração'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('curriculum-content-mathematics_ef_1')),
+      findsOneWidget,
+    );
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(find.byType(Divider), findsOneWidget);
+    expect(find.text('100%'), findsOneWidget);
+    expect(find.text('0%'), findsOneWidget);
+    expect(find.text('50%'), findsOneWidget);
   });
 }

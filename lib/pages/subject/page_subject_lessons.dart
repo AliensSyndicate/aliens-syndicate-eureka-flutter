@@ -1,4 +1,3 @@
-import 'package:eureka/ui/ui_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,6 +12,7 @@ import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_spacing.dart';
 import 'widgets/widget_curriculum_year_section.dart';
+import 'widgets/widget_subject_lessons_app_bar.dart';
 
 class PageSubjectLessons extends StatelessWidget {
   const PageSubjectLessons({
@@ -32,8 +32,20 @@ class PageSubjectLessons extends StatelessWidget {
         .completedLessonIds
         .toSet();
     final color = UiColor.forSubject(subject.type);
+    final allLessons = subject.lessons;
+    final completedCount = allLessons
+        .where((lesson) => completed.contains(lesson.id))
+        .length;
     return Scaffold(
-      appBar: AppBar(title: Text(subject.title, style: UiText.h4)),
+      appBar: SubjectLessonsAppBar(
+        title: subject.title,
+        color: color,
+        subject: subject.type,
+        completedLessons: completedCount,
+        totalLessons: allLessons.length,
+        onBack: context.pop,
+        onReport: () => _showReportError(context),
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(
@@ -62,6 +74,19 @@ class PageSubjectLessons extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _showReportError(BuildContext context) =>
+      AppBottomSheet.show<void>(
+        context,
+        title: AppStrings.reportError,
+        content: const Text(AppStrings.reportErrorUnavailable),
+        actions: [
+          AppButton(
+            label: AppStrings.finish,
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      );
 
   Future<void> _openLesson(BuildContext context, Lesson lesson) async {
     final activity = await ServiceRegistry.content.loadActivity(lesson);

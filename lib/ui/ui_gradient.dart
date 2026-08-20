@@ -48,7 +48,7 @@ abstract final class UiGradient {
 
   static LinearGradient forSubject(SubjectType subject) {
     final base = UiColor.forSubject(subject);
-    final stripe = UiColor.subjectStripe(subject);
+    final stripe = Color.lerp(base, UiColor.text, .24)!;
     return LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,

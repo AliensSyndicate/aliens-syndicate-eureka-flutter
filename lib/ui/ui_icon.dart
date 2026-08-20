@@ -17,6 +17,8 @@ abstract final class UiIcon {
       huge(icon: HugeIcons.strokeRoundedCancel01, size: size, color: color);
   static Widget share({double size = UiSize.icon, Color? color}) =>
       huge(icon: HugeIcons.strokeRoundedShare01, size: size, color: color);
+  static Widget report({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedFlag02, size: size, color: color);
   static Widget search({double size = UiSize.icon, Color? color}) =>
       huge(icon: HugeIcons.strokeRoundedSearch01, size: size, color: color);
   static Widget next({double size = UiSize.icon, Color? color}) =>

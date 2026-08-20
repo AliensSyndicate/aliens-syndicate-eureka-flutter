@@ -36,6 +36,10 @@ abstract final class AppStrings {
       comingSoon = 'Em breve',
       lessonProgress = 'Progresso da atividade',
       closeActivity = 'Fechar atividade',
+      back = 'Voltar',
+      reportError = 'Reportar erro',
+      reportErrorUnavailable = 'O envio de relatos estará disponível em breve.',
+      completeAllLessons = 'Complete todas as aulas',
       lessonTimeRemaining = 'Tempo restante da aula',
       lessonTimeUp = 'O tempo da aula terminou',
       lessonTimeUpMessage =
