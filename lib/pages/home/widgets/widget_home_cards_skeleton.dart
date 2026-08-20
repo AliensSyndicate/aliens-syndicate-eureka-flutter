@@ -10,7 +10,7 @@ import '../../../ui/ui_spacing.dart';
 class HomeCardsSkeleton extends StatelessWidget {
   const HomeCardsSkeleton({super.key});
 
-  static const subjectCount = 5;
+  static const subjectCount = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -24,17 +24,14 @@ class HomeCardsSkeleton extends StatelessWidget {
             vertical: UiSpacing.pageVertical,
           ),
           children: [
-            const _SectionTitleSkeleton(),
-            const SizedBox(height: UiSpacing.sm),
-            const _CardSkeleton(height: 97),
-            const SizedBox(height: UiSpacing.sectionSpacing),
             const _SectionTitleSkeleton(width: 238),
             const SizedBox(height: UiSpacing.sm),
-            const _CardSkeleton(height: UiCard.continueMinHeight),
+            const _CardSkeleton(
+              key: ValueKey('home-feature-skeleton'),
+              height: UiCard.continueMinHeight,
+            ),
             const SizedBox(height: UiSpacing.sectionSpacing),
             const _SectionTitleSkeleton(width: 104),
-            const SizedBox(height: UiSpacing.xxs),
-            const AppSkeleton(height: 18, width: 276),
             const SizedBox(height: UiSpacing.sm),
             for (var index = 0; index < subjectCount; index++) ...[
               _CardSkeleton(
