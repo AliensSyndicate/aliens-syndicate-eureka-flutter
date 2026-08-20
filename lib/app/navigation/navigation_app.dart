@@ -1,36 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_strings.dart';
-import '../../pages/explore/page_explore.dart';
-import '../../pages/home/page_home.dart';
-import '../../pages/profile/page_profile.dart';
-import '../../pages/simulation/page_simulation.dart';
-import '../../pages/social/page_social.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_icon.dart';
 import '../../ui/ui_navigation.dart';
 
-class NavigationApp extends StatefulWidget {
-  const NavigationApp({super.key});
-  @override
-  State<NavigationApp> createState() => _NavigationAppState();
-}
+class NavigationApp extends StatelessWidget {
+  const NavigationApp({required this.navigationShell, super.key});
 
-class _NavigationAppState extends State<NavigationApp> {
-  int index = 0;
-  static const pages = [
-    PageHome(),
-    PageSocial(),
-    PageExplore(),
-    PageSimulation(),
-    PageProfile(),
-  ];
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
-      child: IndexedStack(index: index, children: pages),
-    ),
+    body: SafeArea(child: navigationShell),
     bottomNavigationBar: DecoratedBox(
       decoration: const BoxDecoration(
         border: Border(
@@ -41,31 +24,40 @@ class _NavigationAppState extends State<NavigationApp> {
         ),
       ),
       child: NavigationBar(
-        selectedIndex: index,
-        onDestinationSelected: (value) => setState(() => index = value),
+        selectedIndex: navigationShell.currentIndex,
+        onDestinationSelected: (value) => navigationShell.goBranch(
+          value,
+          initialLocation: value == navigationShell.currentIndex,
+        ),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
         indicatorColor: Colors.transparent,
         destinations: [
           NavigationDestination(
-            icon: index == 0 ? UiIcon.navHomeSelected() : UiIcon.navHome(),
+            icon: navigationShell.currentIndex == 0
+                ? UiIcon.navHomeSelected()
+                : UiIcon.navHome(),
             label: AppStrings.home,
           ),
           NavigationDestination(
-            icon: index == 1 ? UiIcon.navSocialSelected() : UiIcon.navSocial(),
+            icon: navigationShell.currentIndex == 1
+                ? UiIcon.navSocialSelected()
+                : UiIcon.navSocial(),
             label: AppStrings.social,
           ),
           NavigationDestination(
-            icon: index == 2 ? UiIcon.navSearchSelected() : UiIcon.navSearch(),
+            icon: navigationShell.currentIndex == 2
+                ? UiIcon.navSearchSelected()
+                : UiIcon.navSearch(),
             label: AppStrings.explore,
           ),
           NavigationDestination(
-            icon: index == 3
+            icon: navigationShell.currentIndex == 3
                 ? UiIcon.navSimulatedSelected()
                 : UiIcon.navSimulated(),
             label: AppStrings.simulation,
           ),
           NavigationDestination(
-            icon: index == 4
+            icon: navigationShell.currentIndex == 4
                 ? UiIcon.navProfileSelected()
                 : UiIcon.navProfile(),
             label: AppStrings.profile,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
+import '../../app/navigation/navigation_router.dart';
 import '../../enums/learning_mode.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/content/model_content_manifest.dart';
@@ -9,7 +11,6 @@ import '../../models/model_lesson.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_spacing.dart';
-import '../lesson/page_lesson.dart';
 import 'widgets/widget_curriculum_year_section.dart';
 
 class PageSubjectLessons extends StatelessWidget {
@@ -78,12 +79,9 @@ class PageSubjectLessons extends StatelessWidget {
       );
       return;
     }
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            PageLesson(lesson: activity, mode: LearningMode.journey),
-      ),
+    await context.pushNamed(
+      AppRoute.lesson,
+      extra: LessonRouteArguments(lesson: activity, mode: LearningMode.journey),
     );
   }
 }

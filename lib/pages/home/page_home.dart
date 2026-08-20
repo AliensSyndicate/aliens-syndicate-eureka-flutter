@@ -1,11 +1,12 @@
 import 'package:eureka/app/components/subject_card.dart';
-import 'package:eureka/pages/auth/page_auth.dart';
 import 'package:eureka/pages/home/widgets/widget_login.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
 import '../../app/components/app_home_bar.dart';
+import '../../app/navigation/navigation_router.dart';
 import '../../config/config_product.dart';
 import '../../controllers/controller_home.dart';
 import '../../enums/learning_mode.dart';
@@ -15,8 +16,6 @@ import '../../models/model_lesson.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
-import '../lesson/page_lesson.dart';
-import '../subject/page_subject_lessons.dart';
 import 'widgets/widget_continue_learning_card.dart';
 import 'widgets/widget_home_cards_skeleton.dart';
 import 'widgets/widget_recommendation_card.dart';
@@ -100,12 +99,7 @@ class _PageHomeState extends State<PageHome> {
                 ),
                 children: [
                   if (true) ...[
-                    LoginCard(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const PageAuth()),
-                      ),
-                    ),
+                    LoginCard(onTap: () => context.pushNamed(AppRoute.auth)),
                     const SizedBox(height: UiSpacing.sectionSpacing),
                   ],
                   if (recommendation != null) ...[
@@ -141,13 +135,11 @@ class _PageHomeState extends State<PageHome> {
                       subject: subject,
                       progress: progressPercentage,
                       onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => PageSubjectLessons(
-                              subject: subject,
-                              schoolYear: schoolYear,
-                            ),
+                        await context.pushNamed(
+                          AppRoute.subject,
+                          extra: SubjectRouteArguments(
+                            subject: subject,
+                            schoolYear: schoolYear,
                           ),
                         );
                         if (mounted) setState(() {});
@@ -193,12 +185,9 @@ class _PageHomeState extends State<PageHome> {
       );
       return;
     }
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            PageLesson(lesson: activity, mode: LearningMode.journey),
-      ),
+    await context.pushNamed(
+      AppRoute.lesson,
+      extra: LessonRouteArguments(lesson: activity, mode: LearningMode.journey),
     );
     if (mounted) setState(() {});
   }

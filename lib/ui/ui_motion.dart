@@ -1,6 +1,9 @@
 import 'package:flutter/animation.dart';
 
 abstract final class UiMotion {
+  static const screenTransitionDuration = Duration(milliseconds: 300);
+  static const screenTransitionCurve = Curves.easeOutCubic;
+  static const screenTransitionOffset = Offset(0.08, 0);
   static const lessonProgressDuration = Duration(milliseconds: 350);
   static const lessonProgressCurve = Curves.easeOutCubic;
   static const lessonActivityDuration = Duration(milliseconds: 420);

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
 import '../../app/components/app_card.dart';
+import '../../app/navigation/navigation_router.dart';
 import '../../enums/learning_mode.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/model_lesson.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_spacing.dart';
-import '../lesson/page_lesson.dart';
 
 class PageSimulation extends StatefulWidget {
   const PageSimulation({super.key});
@@ -119,11 +120,11 @@ class _PageSimulationState extends State<PageSimulation> {
       questions: available.expand((lesson) => lesson.questions).toList(),
     );
     if (mounted) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) =>
-              PageLesson(lesson: simulation, mode: LearningMode.simulation),
+      await context.pushNamed(
+        AppRoute.lesson,
+        extra: LessonRouteArguments(
+          lesson: simulation,
+          mode: LearningMode.simulation,
         ),
       );
     }

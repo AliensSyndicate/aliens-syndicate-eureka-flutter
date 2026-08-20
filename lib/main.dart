@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'app/navigation/navigation_app.dart';
+import 'app/navigation/navigation_router.dart';
 import 'l10n/app_strings.dart';
 import 'services/service_firebase.dart';
 import 'services/service_registry.dart';
@@ -37,12 +37,10 @@ Future<void> main() async {
 class EurekaApp extends StatelessWidget {
   const EurekaApp({super.key});
   @override
-  Widget build(BuildContext context) => MaterialApp(
+  Widget build(BuildContext context) => MaterialApp.router(
     title: AppStrings.appName,
     debugShowCheckedModeBanner: false,
     theme: UiTheme.dark,
-    home: const NavigationApp(),
+    routerConfig: appRouter,
   );
 }
-
-// TODO: trabalhar com go_router e transicao de tela

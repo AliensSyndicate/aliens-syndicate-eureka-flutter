@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../app/navigation/navigation_router.dart';
 import '../../app/components/app_text_field.dart';
 import '../../l10n/app_strings.dart';
 import '../../services/service_registry.dart';
 import '../../enums/learning_mode.dart';
 import '../../ui/ui_spacing.dart';
 import '../home/widgets/widget_lesson_card.dart';
-import '../lesson/page_lesson.dart';
 import '../../models/model_lesson.dart';
 import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
@@ -90,13 +91,11 @@ class _PageExploreState extends State<PageExplore> {
                     );
                     return;
                   }
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PageLesson(
-                        lesson: activity,
-                        mode: LearningMode.explore,
-                      ),
+                  await context.pushNamed(
+                    AppRoute.lesson,
+                    extra: LessonRouteArguments(
+                      lesson: activity,
+                      mode: LearningMode.explore,
                     ),
                   );
                 },
