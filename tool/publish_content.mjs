@@ -1,151 +1,136 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { compileContent, validateRelease } from './content_pipeline.mjs';
 
-const validateOnly = process.argv.includes('--validate-only');
-const projectId = process.argv.slice(2).find((argument) => !argument.startsWith('--')) ?? 'eureka-9675a';
-const base = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
-let token;
-
-function readJson(path) {
-  return JSON.parse(readFileSync(path, 'utf8'));
+function parseArguments(argv) {
+  const result = { validateOnly: false };
+  for (let index = 0; index < argv.length; index += 1) {
+    const argument = argv[index];
+    if (argument === '--validate-only') result.validateOnly = true;
+    else if (argument === '--project') result.projectId = argv[++index];
+    else if (argument === '--release') result.releaseDirectory = argv[++index];
+    else if (argument === '--source') result.sourceDirectory = argv[++index];
+    else if (argument === '--output') result.outputDirectory = argv[++index];
+    else if (!argument.startsWith('--') && !result.projectId) result.projectId = argument;
+    else throw new Error(`Argumento desconhecido: ${argument}`);
+  }
+  return result;
 }
 
-function value(input) {
+function firestoreValue(input) {
   if (input === null) return { nullValue: null };
   if (typeof input === 'string') return { stringValue: input };
   if (typeof input === 'boolean') return { booleanValue: input };
   if (Number.isInteger(input)) return { integerValue: String(input) };
   if (typeof input === 'number') return { doubleValue: input };
-  if (Array.isArray(input)) return { arrayValue: { values: input.map(value) } };
-  return { mapValue: { fields: fields(input) } };
+  if (Array.isArray(input)) return { arrayValue: { values: input.map(firestoreValue) } };
+  return { mapValue: { fields: firestoreFields(input) } };
 }
 
-function fields(input) {
-  return Object.fromEntries(
-    Object.entries(input).map(([key, item]) => [key, value(item)]),
-  );
+function firestoreFields(input) {
+  return Object.fromEntries(Object.entries(input).map(([key, item]) => [key, firestoreValue(item)]));
 }
 
-async function publish(collection, id, document) {
-  const body = JSON.stringify({ fields: fields(document) });
-  if (Buffer.byteLength(body) > 900_000) {
-    throw new Error(`${collection}/${id} excede o limite seguro de 900 KB.`);
+function field(document, name) {
+  const value = document?.fields?.[name];
+  if (!value) return undefined;
+  if ('integerValue' in value) return Number(value.integerValue);
+  if ('stringValue' in value) return value.stringValue;
+  if ('booleanValue' in value) return value.booleanValue;
+  return undefined;
+}
+
+async function request(url, options = {}, expected = [200]) {
+  const response = await fetch(url, options);
+  if (!expected.includes(response.status)) {
+    throw new Error(`${options.method ?? 'GET'} ${url}: ${response.status} ${await response.text()}`);
   }
-  const response = await fetch(`${base}/${collection}/${id}`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body,
+  return response.status === 204 ? null : response.json();
+}
+
+function encodedBody(document) {
+  const body = JSON.stringify({ fields: firestoreFields(document) });
+  if (Buffer.byteLength(body) > 900_000) throw new Error(`${document.id}: excede o limite seguro de 900 KB.`);
+  return body;
+}
+
+async function getDocument(base, token, collection, id) {
+  const response = await fetch(`${base}/${collection}/${encodeURIComponent(id)}`, {
+    headers: { Authorization: `Bearer ${token}` },
   });
-  if (!response.ok) {
-    throw new Error(
-      `${collection}/${id}: ${response.status} ${await response.text()}`,
-    );
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`GET ${collection}/${id}: ${response.status} ${await response.text()}`);
+  return response.json();
+}
+
+async function createImmutable(base, token, collection, document) {
+  const existing = await getDocument(base, token, collection, document.id);
+  if (existing) {
+    if (field(existing, 'checksum') !== document.checksum) {
+      throw new Error(`${collection}/${document.id} já existe com conteúdo diferente; IDs de release são imutáveis.`);
+    }
+    process.stdout.write(`Verificado: ${collection}/${document.id}\n`);
+    return;
   }
-  process.stdout.write(`Publicado: ${collection}/${id}\n`);
+  const url = `${base}/${collection}?documentId=${encodeURIComponent(document.id)}`;
+  await request(url, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: encodedBody(document),
+  });
+  process.stdout.write(`Publicado: ${collection}/${document.id}\n`);
 }
 
-const manifestDocument = readJson('firebase/content/content_manifest.json');
-const manifest = manifestDocument.payload;
-const enabledSubjects = [];
-const enabledLessons = [];
+async function promoteCurrent(base, token, manifest, current) {
+  const currentUrl = `${base}/content_manifests/current`;
+  const precondition = current
+    ? `currentDocument.updateTime=${encodeURIComponent(current.updateTime)}`
+    : 'currentDocument.exists=false';
+  const promoted = { ...manifest, releaseId: manifest.id };
+  await request(`${currentUrl}?${precondition}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: encodedBody(promoted),
+  });
+  process.stdout.write(`Promovido: content_manifests/current -> ${manifest.id}\n`);
+}
 
-for (const subject of manifest.subjects) {
-  const schoolYears = subject.schoolYears.filter((year) => year.enabled);
-  if (schoolYears.length === 0) continue;
-  const subjectDocument = {
-    id: subject.id,
-    published: true,
-    enabled: true,
-    schemaVersion: manifest.schemaVersion,
-    contentVersion: manifest.contentVersion,
-    updatedAt: manifest.updatedAt,
-    payload: {
-      id: subject.id,
-      title: subject.title,
-      type: subject.type,
-      order: subject.order,
-      schoolYears: schoolYears.map((year) => year.id),
-    },
-  };
-  enabledSubjects.push(subjectDocument);
-
-  for (const schoolYear of schoolYears) {
-    for (const lesson of schoolYear.lessons) {
-      enabledLessons.push({
-        id: lesson.id,
-        published: true,
-        enabled: true,
-        schemaVersion: manifest.schemaVersion,
-        contentVersion: manifest.contentVersion,
-        updatedAt: manifest.updatedAt,
-        payload: {
-          ...lesson,
-          id: lesson.id,
-          subjectId: subject.id,
-          schoolYearId: schoolYear.id,
-          schoolYear: schoolYear.year,
-          educationStage: schoolYear.educationStage,
-          order: schoolYear.lessons.indexOf(lesson),
-        },
-      });
-    }
+async function main() {
+  const args = parseArguments(process.argv.slice(2));
+  let releaseDirectory = args.releaseDirectory ? resolve(args.releaseDirectory) : null;
+  if (!releaseDirectory) {
+    const compiled = compileContent({
+      sourceDirectory: resolve(args.sourceDirectory ?? 'firebase/content/source/grade05'),
+      outputDirectory: resolve(args.outputDirectory ?? 'firebase/content/releases'),
+    });
+    releaseDirectory = compiled.releaseDirectory;
   }
-}
+  const { release, manifest, activities } = validateRelease(releaseDirectory);
+  process.stdout.write(`Release v${release.contentVersion} válida: ${activities.length} atividade(s).\n`);
+  if (args.validateOnly) return;
+  if (!args.projectId) throw new Error('Informe o projeto explicitamente com --project <project-id>.');
 
-const subjectIds = new Set(enabledSubjects.map((subject) => subject.id));
-const lessonIds = new Set(enabledLessons.map((lesson) => lesson.id));
-if (subjectIds.size !== enabledSubjects.length) throw new Error('IDs de matéria duplicados.');
-if (lessonIds.size !== enabledLessons.length) throw new Error('IDs de conteúdo duplicados.');
-
-const activityIds = new Set();
-const activityDocuments = [];
-for (const lesson of enabledLessons) {
-  for (const reference of lesson.payload.activities) {
-    if (activityIds.has(reference.id)) throw new Error(`Atividade duplicada: ${reference.id}`);
-    const document = readJson(`firebase/content/${reference.id}.json`);
-    if (document.id !== reference.id || document.payload.id !== reference.id) {
-      throw new Error(`ID divergente na atividade ${reference.id}.`);
-    }
-    if (document.payload.lessonId !== lesson.id) {
-      throw new Error(`lessonId divergente na atividade ${reference.id}.`);
-    }
-    if (document.payload.subjectId !== lesson.payload.subjectId) {
-      throw new Error(`subjectId divergente na atividade ${reference.id}.`);
-    }
-    if (document.payload.activityVersion !== reference.version) {
-      throw new Error(`Versão divergente na atividade ${reference.id}.`);
-    }
-    const questions = document.payload.questions.filter(
-      (question) => question.enabled,
-    );
-    if (questions.length !== 10) {
-      throw new Error(`Atividade ${reference.id} deve ter 10 questões habilitadas.`);
-    }
-    if (new Set(questions.map((question) => question.id)).size !== 10) {
-      throw new Error(`Atividade ${reference.id} possui IDs de questão duplicados.`);
-    }
-    activityIds.add(reference.id);
-    activityDocuments.push(document);
+  const token = execFileSync('gcloud', ['auth', 'print-access-token'], { encoding: 'utf8' }).trim();
+  if (!token) throw new Error('gcloud não retornou um token de acesso.');
+  const base = `https://firestore.googleapis.com/v1/projects/${args.projectId}/databases/(default)/documents`;
+  const current = await getDocument(base, token, 'content_manifests', 'current');
+  const currentVersion = field(current, 'contentVersion');
+  const currentChecksum = field(current, 'checksum');
+  if (currentVersion === release.contentVersion && currentChecksum === manifest.checksum) {
+    process.stdout.write(`Release v${release.contentVersion} já está promovida.\n`);
+    return;
   }
+  if (Number.isInteger(currentVersion) && release.contentVersion <= currentVersion) {
+    throw new Error(`contentVersion ${release.contentVersion} deve ser maior que a versão publicada ${currentVersion}.`);
+  }
+
+  // Nada é promovido antes de todos os blobs imutáveis estarem disponíveis.
+  for (const activity of activities) await createImmutable(base, token, 'content_activities', activity);
+  await createImmutable(base, token, 'content_manifests', manifest);
+  await promoteCurrent(base, token, manifest, current);
 }
 
-if (validateOnly) {
-  process.stdout.write(
-    `Catálogo válido: ${enabledSubjects.length} matérias, ${enabledLessons.length} conteúdos e ${activityDocuments.length} atividades.\n`,
-  );
-  process.exit(0);
-}
-
-token = execFileSync('gcloud', ['auth', 'print-access-token'], {
-  encoding: 'utf8',
-}).trim();
-
-for (const subject of enabledSubjects) await publish('subjects', subject.id, subject);
-for (const lesson of enabledLessons) await publish('lessons', lesson.id, lesson);
-for (const activity of activityDocuments) {
-  await publish('content_activities', activity.id, activity);
-}
-await publish('content_manifests', 'current', manifestDocument);
+main().catch((error) => {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+});

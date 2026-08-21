@@ -7,7 +7,7 @@ class QuestionSelectionService {
   QuestionSelectionService({Random? random, this.showcaseMode = false})
     : _random = random ?? Random();
 
-  static const poolSize = 10;
+  static const poolSize = 8;
   static const sessionSize = 5;
 
   final Random _random;

@@ -11,6 +11,7 @@ import '../../enums/subject_type.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/model_lesson.dart';
 import '../../models/model_question.dart';
+import '../../models/content/model_content_page.dart';
 import '../../services/service_lesson_narration.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
@@ -44,7 +45,7 @@ class _PageLessonState extends State<PageLesson> {
 
   Color get subjectColor => UiColor.forSubject(widget.lesson.subject);
   int get currentPage => controller.currentPage;
-  int get totalPages => controller.totalQuestions + 2;
+  int get totalPages => controller.summaryPage + 1;
   int get availablePages =>
       controller.canOpenSummary ? totalPages : controller.summaryPage;
 
@@ -98,7 +99,7 @@ class _PageLessonState extends State<PageLesson> {
             itemCount: availablePages,
             onPageChanged: (page) {
               unawaited(controller.selectPage(page));
-              if (page != 0) unawaited(narrationController.stop());
+              unawaited(narrationController.stop());
               setState(() {});
             },
             itemBuilder: (context, index) => _lessonPage(index),
@@ -169,12 +170,15 @@ class _PageLessonState extends State<PageLesson> {
 
   Widget _lessonPage(int page) {
     final isSummary = page == controller.summaryPage;
-    final question = page == 0 || isSummary
+    final isContent = controller.isContentPage(page);
+    final question = isContent || isSummary
         ? null
-        : controller.visibleQuestions[page - 1];
+        : controller.visibleQuestions[page - controller.firstQuestionPage];
     return SingleChildScrollView(
-      key: page == 0
-          ? const ValueKey('lesson-description-page')
+      key: isContent
+          ? page == 0
+                ? const ValueKey('lesson-description-page')
+                : ValueKey('lesson-description-page-$page')
           : isSummary
           ? const ValueKey('lesson-summary-page')
           : ValueKey('lesson-activity-page-${question!.id}'),
@@ -189,8 +193,8 @@ class _PageLessonState extends State<PageLesson> {
             fixedHeaderHeight,
         bottom: UiSpacing.pageVertical,
       ),
-      child: page == 0
-          ? _contentPage()
+      child: isContent
+          ? _contentPage(page)
           : isSummary
           ? _summaryPage()
           : _activityPage(question!),
@@ -214,18 +218,31 @@ class _PageLessonState extends State<PageLesson> {
     setState(() {});
   }
 
-  Widget _contentPage() => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: UiSpacing.pageHorizontal),
-    child: ExerciseContent(
-      title: widget.lesson.title,
-      description: widget.lesson.summary,
-      primaryColor: subjectColor,
-      narrationController: narrationController,
-      notice: widget.mode != LearningMode.journey
-          ? AppStrings.noXpOutsideJourney
-          : null,
-    ),
-  );
+  Widget _contentPage(int page) {
+    final structured = widget.lesson.contentPages.isEmpty
+        ? null
+        : widget.lesson.contentPages[page];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: UiSpacing.pageHorizontal),
+      child: ExerciseContent(
+        title: structured?.title ?? widget.lesson.title,
+        description: _contentDescription(structured),
+        primaryColor: subjectColor,
+        narrationController: narrationController,
+        notice: widget.mode != LearningMode.journey
+            ? AppStrings.noXpOutsideJourney
+            : null,
+      ),
+    );
+  }
+
+  String _contentDescription(ContentPage? page) {
+    if (page == null) return widget.lesson.summary;
+    return [
+      page.text,
+      if (page.keyConcept.trim().isNotEmpty) page.keyConcept,
+    ].join('\n\n');
+  }
 
   Widget _activityPage(Question question) {
     final result = controller.resultFor(question);
@@ -331,7 +348,10 @@ class _PageLessonState extends State<PageLesson> {
   }
 
   List<LessonPageIndicatorStatus> _indicatorStatuses() => [
-    LessonPageIndicatorStatus.content,
+    ...List.filled(
+      controller.contentPageCount,
+      LessonPageIndicatorStatus.content,
+    ),
     ...controller.visibleQuestions.map((question) {
       final result = controller.resultFor(question);
       return result == null
@@ -346,9 +366,15 @@ class _PageLessonState extends State<PageLesson> {
   ];
 
   String _pageName(int page) {
-    if (page == 0) return AppStrings.lessonContent;
+    if (controller.isContentPage(page)) {
+      return widget.lesson.contentPages.isEmpty
+          ? AppStrings.lessonContent
+          : widget.lesson.contentPages[page].title;
+    }
     if (page == controller.summaryPage) return AppStrings.activitiesSummary;
-    return _activityName(controller.visibleQuestions[page - 1].type);
+    return _activityName(
+      controller.visibleQuestions[page - controller.firstQuestionPage].type,
+    );
   }
 
   String _activityName(QuestionType type) => switch (type) {

@@ -29,6 +29,21 @@ void main() {
     expect(question.incorrectFeedback, question.explanation);
   });
 
+  test('aceita respostas alternativas declaradas no conteúdo remoto', () {
+    final question = Question(
+      id: 'water',
+      prompt: 'Qual é o estado da água congelada?',
+      type: QuestionType.textInput,
+      options: const [],
+      correctAnswer: 'sólido',
+      acceptedAnswers: const ['gelo'],
+      subjectId: 'science',
+      topicId: 'water',
+    );
+
+    expect(AnswerService().isCorrect(question, 'gelo'), isTrue);
+  });
+
   test('entrada de texto exige uma unica palavra identica com acento', () {
     final question = Question(
       id: 'accent_test',
@@ -45,6 +60,26 @@ void main() {
     expect(service.isCorrect(question, 'fracao'), isFalse);
     expect(service.isCorrect(question, 'Fração'), isFalse);
     expect(service.isCorrect(question, 'fração correta'), isFalse);
+  });
+
+  test('entrada de texto aceita frases e respeita caixa e acentos', () {
+    final question = Question(
+      id: 'normalized_text',
+      prompt: 'Responda.',
+      type: QuestionType.textInput,
+      options: const [],
+      correctAnswer: 'A água é sólida',
+      acceptedAnswers: const ['A água virou gelo'],
+      caseSensitive: false,
+      ignoreAccents: true,
+      subjectId: 'science',
+      topicId: 'water',
+    );
+    final service = AnswerService();
+
+    expect(service.isCorrect(question, 'a agua e solida'), isTrue);
+    expect(service.isCorrect(question, 'A AGUA VIROU GELO'), isTrue);
+    expect(service.isCorrect(question, 'água líquida'), isFalse);
   });
 
   test('associação só corrige a resposta completa ao verificar', () {

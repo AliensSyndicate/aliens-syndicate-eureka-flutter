@@ -3,6 +3,11 @@ import 'dart:math';
 import 'package:eureka/controllers/controller_lesson.dart';
 import 'package:eureka/data/seed/seed_content.dart';
 import 'package:eureka/enums/learning_mode.dart';
+import 'package:eureka/enums/question_type.dart';
+import 'package:eureka/enums/subject_type.dart';
+import 'package:eureka/models/model_lesson.dart';
+import 'package:eureka/models/model_question.dart';
+import 'package:eureka/models/content/model_content_page.dart';
 import 'package:eureka/services/service_answer.dart';
 import 'package:eureka/services/service_progress.dart';
 import 'package:eureka/services/service_question_selection.dart';
@@ -111,4 +116,83 @@ void main() {
       expect(controller.canOpenSummary, isFalse);
     },
   );
+
+  test('jornada usa práticas e modos externos usam somente extras', () {
+    final questions = [
+      for (var index = 0; index < 8; index++)
+        Question(
+          id: 'runtime_$index',
+          prompt: 'Questão $index',
+          type: QuestionType.multipleChoice,
+          options: const ['A', 'B', 'C', 'D'],
+          correctAnswer: 'A',
+          subjectId: 'mathematics',
+          topicId: 'fractions',
+          usage: index < 5
+              ? QuestionUsage.practice
+              : QuestionUsage.simulatorExplore,
+        ),
+    ];
+    final lesson = Lesson(
+      id: 'runtime_usage',
+      title: 'Uso das questões',
+      summary: 'Resumo',
+      subject: SubjectType.mathematics,
+      questions: questions,
+    );
+    LessonController build(LearningMode mode) => LessonController(
+      lesson: lesson,
+      mode: mode,
+      answerService: AnswerService(),
+      scoringService: ScoringService(),
+      progressService: ProgressService(box),
+      questionSelectionService: QuestionSelectionService(random: Random(1)),
+    );
+
+    expect(build(LearningMode.journey).visibleQuestions, hasLength(5));
+    expect(build(LearningMode.explore).visibleQuestions, hasLength(3));
+    expect(build(LearningMode.simulation).visibleQuestions, hasLength(3));
+  });
+
+  test('páginas estruturadas aparecem antes da primeira questão', () {
+    final lesson = Lesson(
+      id: 'structured_pages',
+      title: 'Aula estruturada',
+      summary: 'Fallback',
+      subject: SubjectType.science,
+      contentPages: const [
+        ContentPage(page: 1, type: 'hook', title: 'Gancho', text: 'Observe.'),
+        ContentPage(
+          page: 2,
+          type: 'explanation',
+          title: 'Explicação',
+          text: 'Entenda.',
+        ),
+      ],
+      questions: [
+        for (var index = 0; index < 5; index++)
+          Question(
+            id: 'structured_$index',
+            prompt: 'Questão $index',
+            type: QuestionType.multipleChoice,
+            options: const ['A', 'B', 'C', 'D'],
+            correctAnswer: 'A',
+            subjectId: 'science',
+            topicId: 'water',
+          ),
+      ],
+    );
+    final structured = LessonController(
+      lesson: lesson,
+      mode: LearningMode.journey,
+      answerService: AnswerService(),
+      scoringService: ScoringService(),
+      progressService: ProgressService(box),
+      questionSelectionService: QuestionSelectionService(random: Random(1)),
+    );
+
+    expect(structured.contentPageCount, 2);
+    expect(structured.firstQuestionPage, 2);
+    expect(structured.summaryPage, 7);
+  });
 }

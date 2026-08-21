@@ -11,21 +11,39 @@ class AnswerService {
       return answer.trim().length >= essayMinLength;
     }
     if (question.type == QuestionType.textInput) {
-      final submitted = answer.trim();
-      final expected = question.correctAnswer.trim();
-      return _isSingleWord(submitted) &&
-          _isSingleWord(expected) &&
-          submitted == expected;
+      final submitted = _normalize(question, answer);
+      final accepted = <String>{
+        question.correctAnswer,
+        ...question.acceptedAnswers,
+      };
+      return accepted.any(
+        (expected) => submitted == _normalize(question, expected),
+      );
     }
     if (question.type == QuestionType.matching) {
       return _matchingIsCorrect(question, answer);
     }
-    return answer.trim().toLowerCase() ==
-        question.correctAnswer.trim().toLowerCase();
+    final submitted = answer.trim().toLowerCase();
+    return <String>{
+      question.correctAnswer,
+      ...question.acceptedAnswers,
+    }.any((expected) => submitted == expected.trim().toLowerCase());
   }
 
-  bool _isSingleWord(String value) =>
-      value.isNotEmpty && !RegExp(r'\s').hasMatch(value);
+  String _normalize(Question question, String value) {
+    var normalized = value.trim();
+    if (!question.caseSensitive) normalized = normalized.toLowerCase();
+    if (question.ignoreAccents) {
+      normalized = normalized
+          .replaceAll(RegExp('[áàâãä]'), 'a')
+          .replaceAll(RegExp('[éèêë]'), 'e')
+          .replaceAll(RegExp('[íìîï]'), 'i')
+          .replaceAll(RegExp('[óòôõö]'), 'o')
+          .replaceAll(RegExp('[úùûü]'), 'u')
+          .replaceAll('ç', 'c');
+    }
+    return normalized;
+  }
 
   bool _matchingIsCorrect(Question question, String answer) {
     try {

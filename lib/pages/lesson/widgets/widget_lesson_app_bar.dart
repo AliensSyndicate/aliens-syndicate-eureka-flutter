@@ -16,32 +16,42 @@ class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(UiSize.homeAppBarHeight);
 
   @override
-  Widget build(BuildContext context) => AppBar(
-    backgroundColor: UiColor.background,
-    surfaceTintColor: UiColor.background,
-    shadowColor: UiColor.background,
-    elevation: 0,
-    scrolledUnderElevation: 0,
-    forceMaterialTransparency:
-        false, // Alterado para false para respeitar a cor de fundo
-    foregroundColor: UiColor.textPrimary,
-    systemOverlayStyle: const SystemUiOverlayStyle(
-      statusBarColor: UiColor.background,
-      statusBarIconBrightness: Brightness.light,
-      statusBarBrightness: Brightness.dark,
-    ),
-    automaticallyImplyLeading: false,
-    leadingWidth: UiSize.touchTarget + UiSpacing.xxs,
-    leading: Padding(
-      padding: const EdgeInsets.only(left: UiSpacing.xxs),
-      child: SizedBox.square(
-        dimension: UiSize.touchTarget,
-        child: IconButton(
-          tooltip: AppStrings.closeActivity,
-          onPressed: onClose,
-          icon: UiIcon.close(size: UiSize.iconLg),
+  Widget build(BuildContext context) {
+    const double sideWidth = UiSize.touchTarget + (UiSpacing.xxs * 2);
+
+    return AppBar(
+      backgroundColor: UiColor.background,
+      surfaceTintColor: UiColor.background,
+      shadowColor: UiColor.background,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      forceMaterialTransparency: false,
+      foregroundColor: UiColor.textPrimary,
+      systemOverlayStyle: const SystemUiOverlayStyle(
+        statusBarColor: UiColor.background,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+      automaticallyImplyLeading: false,
+      centerTitle: true,
+      titleSpacing: 0,
+      leadingWidth: sideWidth,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: UiSpacing.xxs),
+        child: Center(
+          child: SizedBox.square(
+            dimension: UiSize.touchTarget,
+            child: IconButton(
+              tooltip: AppStrings.closeActivity,
+              onPressed: onClose,
+              icon: UiIcon.close(size: UiSize.iconLg),
+            ),
+          ),
         ),
       ),
-    ),
-  );
+      title: const SizedBox.shrink(),
+      actionsPadding: const EdgeInsets.only(right: UiSpacing.xxs),
+      actions: const [SizedBox(width: sideWidth - UiSpacing.xxs)],
+    );
+  }
 }

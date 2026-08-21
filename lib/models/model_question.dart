@@ -1,6 +1,8 @@
 import '../enums/question_type.dart';
 import 'model_matching_pair.dart';
 
+enum QuestionUsage { practice, simulatorExplore }
+
 class Question {
   Question({
     required this.id,
@@ -16,6 +18,11 @@ class Question {
     this.difficulty = 1,
     this.tags = const [],
     this.version = 1,
+    this.usage = QuestionUsage.practice,
+    this.instruction = '',
+    this.acceptedAnswers = const [],
+    this.caseSensitive = true,
+    this.ignoreAccents = false,
   }) : assert(
          type != QuestionType.multipleChoice || options.length == 4,
          'Questão "$id": multipleChoice deve ter exatamente 4 alternativas, '
@@ -50,6 +57,11 @@ class Question {
   static const blankToken = '_';
 
   final String id, prompt, correctAnswer, subjectId, topicId;
+  final QuestionUsage usage;
+  final String instruction;
+  final List<String> acceptedAnswers;
+  final bool caseSensitive;
+  final bool ignoreAccents;
 
   /// Explicação pedagógica exibida após uma tentativa incorreta.
   final String explanation;

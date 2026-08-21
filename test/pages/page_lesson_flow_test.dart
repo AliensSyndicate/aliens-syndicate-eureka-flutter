@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:eureka/app/components/app_button.dart';
 import 'package:eureka/data/seed/seed_content.dart';
 import 'package:eureka/enums/learning_mode.dart';
+import 'package:eureka/enums/question_type.dart';
 import 'package:eureka/enums/subject_type.dart';
 import 'package:eureka/l10n/app_strings.dart';
+import 'package:eureka/models/content/model_content_page.dart';
 import 'package:eureka/models/model_lesson.dart';
+import 'package:eureka/models/model_question.dart';
 import 'package:eureka/pages/lesson/page_lesson.dart';
 import 'package:eureka/pages/lesson/widgets/widget_question_option.dart';
 import 'package:eureka/ui/ui_theme.dart';
@@ -131,4 +134,143 @@ void main() {
     expect(tester.getTopLeft(find.text(longContent)).dy, lessThan(initialTop));
     expect(tester.getTopLeft(indicator).dy, initialIndicatorTop);
   });
+
+  testWidgets(
+    'renderiza paginas estruturadas antes das cinco praticas com labels corretos',
+    (tester) async {
+      final lesson = _structuredLesson();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: UiTheme.dark,
+          home: PageLesson(lesson: lesson, mode: LearningMode.journey),
+        ),
+      );
+
+      final pager = tester.widget<PageView>(find.byType(PageView));
+      expect(pager.childrenDelegate.estimatedChildCount, 7);
+      expect(find.text('Gancho da água'), findsOneWidget);
+      expect(find.text('1 de 8 - Gancho da água'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('lesson-page-indicator-7')),
+        findsOneWidget,
+      );
+
+      tester
+          .widget<InkWell>(
+            find.byKey(const ValueKey('lesson-page-indicator-1')),
+          )
+          .onTap!();
+      await tester.pumpAndSettle();
+      expect(find.text('Descoberta'), findsOneWidget);
+      expect(find.text('2 de 8 - Descoberta'), findsOneWidget);
+
+      tester
+          .widget<InkWell>(
+            find.byKey(const ValueKey('lesson-page-indicator-2')),
+          )
+          .onTap!();
+      await tester.pumpAndSettle();
+      expect(find.text('Prática 0'), findsOneWidget);
+      expect(find.text('3 de 8 - Escolha uma resposta'), findsOneWidget);
+    },
+  );
+
+  testWidgets('mantem summary legado como unica pagina de conteudo', (
+    tester,
+  ) async {
+    final lesson = Lesson(
+      id: 'legacy_summary_widget',
+      title: 'Conteúdo legado',
+      summary: 'Este resumo continua disponível.',
+      subject: SubjectType.history,
+      questions: [_question('legacy_practice', QuestionUsage.practice)],
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: UiTheme.dark,
+        home: PageLesson(lesson: lesson, mode: LearningMode.journey),
+      ),
+    );
+
+    expect(find.text('Este resumo continua disponível.'), findsOneWidget);
+    expect(find.text('1 de 3 - ${AppStrings.lessonContent}'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('lesson-page-indicator-0')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('lesson-page-indicator-1')),
+      findsOneWidget,
+    );
+  });
+
+  for (final mode in [LearningMode.explore, LearningMode.simulation]) {
+    testWidgets('$mode mostra somente as tres questoes extras', (tester) async {
+      final lesson = _structuredLesson();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: UiTheme.dark,
+          home: PageLesson(lesson: lesson, mode: mode),
+        ),
+      );
+
+      final pager = tester.widget<PageView>(find.byType(PageView));
+      expect(pager.childrenDelegate.estimatedChildCount, 5);
+      expect(
+        find.byKey(const ValueKey('lesson-page-indicator-5')),
+        findsOneWidget,
+      );
+      tester
+          .widget<InkWell>(
+            find.byKey(const ValueKey('lesson-page-indicator-2')),
+          )
+          .onTap!();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Extra 0'), findsOneWidget);
+      expect(find.text('Prática 0'), findsNothing);
+      expect(find.text(AppStrings.noXpOutsideJourney), findsNothing);
+    });
+  }
 }
+
+Lesson _structuredLesson() => Lesson(
+  id: 'structured_widget',
+  title: 'Ciclo da água',
+  summary: 'Resumo legado que não deve substituir páginas.',
+  subject: SubjectType.science,
+  contentPages: const [
+    ContentPage(
+      page: 1,
+      type: 'hook',
+      title: 'Gancho da água',
+      text: 'Para onde vai a água da poça?',
+    ),
+    ContentPage(
+      page: 2,
+      type: 'discovery',
+      title: 'Descoberta',
+      text: 'O calor transforma a água.',
+      keyConcept: 'A água muda de estado.',
+    ),
+  ],
+  questions: [
+    for (var index = 0; index < 5; index++)
+      _question('practice_$index', QuestionUsage.practice),
+    for (var index = 0; index < 3; index++)
+      _question('extra_$index', QuestionUsage.simulatorExplore),
+  ],
+);
+
+Question _question(String id, QuestionUsage usage) => Question(
+  id: id,
+  prompt: usage == QuestionUsage.practice
+      ? 'Prática ${id.split('_').last}'
+      : 'Extra ${id.split('_').last}',
+  type: QuestionType.multipleChoice,
+  options: const ['A', 'B', 'C', 'D'],
+  correctAnswer: 'A',
+  subjectId: 'science',
+  topicId: 'water_cycle',
+  usage: usage,
+);

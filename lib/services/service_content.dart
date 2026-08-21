@@ -1,14 +1,12 @@
 import '../data/local/hive_content_activity_cache.dart';
 import '../data/local/hive_content_manifest_cache.dart';
+import '../data/codecs/content_activity_codec.dart';
 import '../config/config_product.dart';
 import '../data/seed/seed_content.dart';
 import '../data/seed/seed_content_manifest.dart';
-import '../enums/question_type.dart';
 import '../interfaces/repository_content.dart';
 import '../models/content/model_content_manifest.dart';
 import '../models/model_lesson.dart';
-import '../models/model_matching_pair.dart';
-import '../models/model_question.dart';
 import '../models/content/model_activity_reference.dart';
 import 'service_question_selection.dart';
 
@@ -161,61 +159,11 @@ class ContentService {
     Lesson lesson,
     List<Map<String, dynamic>> payloads,
   ) {
-    final questions = payloads
-        .expand(
-          (payload) => (payload['questions'] as List<dynamic>? ?? const [])
-              .whereType<Map>()
-              .where((raw) {
-                if (raw['enabled'] == false) return false;
-                // Questões multipleChoice devem ter exatamente 4 alternativas.
-                if (raw['type'] == 'multipleChoice') {
-                  final opts = raw['options'] as List?;
-                  return opts != null && opts.length == 4;
-                }
-                // Questões matching devem ter exatamente 5 pares.
-                if (raw['type'] == 'matching') {
-                  final prs = raw['pairs'] as List?;
-                  return prs != null && prs.length == 5;
-                }
-                return true;
-              })
-              .map((raw) {
-                final map = Map<String, dynamic>.from(raw);
-                final type = QuestionType.values.byName(map['type'] as String);
-
-                // Parseia pares para questões de ligação.
-                List<MatchingPair>? pairs;
-                if (type == QuestionType.matching) {
-                  pairs = (map['pairs'] as List)
-                      .whereType<Map>()
-                      .map(
-                        (p) => MatchingPair(
-                          left: p['left'] as String,
-                          right: p['right'] as String,
-                        ),
-                      )
-                      .toList();
-                }
-
-                return Question(
-                  id: map['id'] as String,
-                  prompt: map['prompt'] as String,
-                  type: type,
-                  options: List<String>.from(
-                    map['options'] as List? ?? const [],
-                  ),
-                  correctAnswer: map['correctAnswer'] as String,
-                  explanation: map['explanation'] as String? ?? '',
-                  subjectId: map['subjectId'] as String,
-                  topicId: map['topicId'] as String,
-                  pairs: pairs,
-                  difficulty: map['difficulty'] as int? ?? 1,
-                  tags: List<String>.from(map['tags'] as List? ?? const []),
-                  version: map['version'] as int? ?? 1,
-                );
-              }),
-        )
+    final decoded = payloads
+        .map(ContentActivityCodec.decode)
+        .whereType<DecodedContentActivity>()
         .toList();
+    final questions = decoded.expand((activity) => activity.questions).toList();
     final uniqueQuestionIds = questions.map((question) => question.id).toSet();
     if (questions.length < QuestionSelectionService.poolSize ||
         uniqueQuestionIds.length != questions.length) {
@@ -224,7 +172,9 @@ class ContentService {
     return Lesson(
       id: lesson.id,
       title: lesson.title,
-      summary: payloads.first['summary'] as String? ?? lesson.summary,
+      summary: decoded.first.summary.isEmpty
+          ? lesson.summary
+          : decoded.first.summary,
       subject: lesson.subject,
       questions: questions,
       schoolYear: lesson.schoolYear,
@@ -235,6 +185,16 @@ class ContentService {
       activityVersion: lesson.activityVersion,
       activityChecksum: lesson.activityChecksum,
       activities: lesson.activities,
+      unit: decoded.first.unit,
+      topic: decoded.first.topic,
+      shortDescription: decoded.first.shortDescription,
+      bnccCodes: decoded.first.bnccCodes,
+      skills: decoded.first.skills,
+      learningObjectives: decoded.first.learningObjectives,
+      estimatedMinutes: decoded.first.estimatedMinutes,
+      contentPages: decoded
+          .expand((activity) => activity.contentPages)
+          .toList(),
     );
   }
 
@@ -252,6 +212,14 @@ class ContentService {
     activityVersion: lesson.activityVersion,
     activityChecksum: lesson.activityChecksum,
     activities: lesson.activities,
+    unit: lesson.unit,
+    topic: lesson.topic,
+    shortDescription: lesson.shortDescription,
+    bnccCodes: lesson.bnccCodes,
+    skills: lesson.skills,
+    learningObjectives: lesson.learningObjectives,
+    estimatedMinutes: lesson.estimatedMinutes,
+    contentPages: lesson.contentPages,
   );
 
   bool _isValid(ContentManifest manifest) {

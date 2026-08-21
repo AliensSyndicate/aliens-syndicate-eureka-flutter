@@ -18,11 +18,11 @@ class LessonController {
   }) : _answerService = answerService,
        _scoringService = scoringService,
        _progressService = progressService,
-       _questions = mode == LearningMode.simulation
-           ? List.unmodifiable(lesson.questions)
+       _questions = mode != LearningMode.journey
+           ? List.unmodifiable(lesson.extraQuestions)
            : List.unmodifiable(
                questionSelectionService.select(
-                 lesson.questions,
+                 lesson.practiceQuestions,
                  count: QuestionSelectionService.sessionSize,
                ),
              ) {
@@ -31,7 +31,7 @@ class LessonController {
     _results.addAll(saved.results);
     currentPage = saved.currentPage.clamp(
       0,
-      canOpenSummary ? summaryPage : _questions.length,
+      canOpenSummary ? summaryPage : summaryPage - 1,
     );
   }
   final Lesson lesson;
@@ -43,7 +43,12 @@ class LessonController {
   final Map<String, String> _answers = {};
   final Map<String, bool> _results = {};
   int currentPage = 0;
-  int get currentIndex => (currentPage - 1).clamp(0, _questions.length - 1);
+  int get contentPageCount =>
+      lesson.contentPages.isEmpty ? 1 : lesson.contentPages.length;
+  int get firstQuestionPage => contentPageCount;
+  bool isContentPage(int page) => page >= 0 && page < contentPageCount;
+  int get currentIndex =>
+      (currentPage - firstQuestionPage).clamp(0, _questions.length - 1);
   Question get currentQuestion => _questions[currentIndex];
   List<Question> get visibleQuestions => List.unmodifiable(_questions);
   int get totalQuestions => _questions.length;
@@ -51,7 +56,7 @@ class LessonController {
   bool get hasSubmittedCurrent => _results.containsKey(currentQuestion.id);
   int get answeredQuestions => _results.length;
   bool get canOpenSummary => answeredQuestions == totalQuestions;
-  int get summaryPage => totalQuestions + 1;
+  int get summaryPage => contentPageCount + totalQuestions;
   double get completionProgress =>
       totalQuestions == 0 ? 0 : answeredQuestions / totalQuestions;
   String? answerFor(Question question) => _answers[question.id];
@@ -66,10 +71,7 @@ class LessonController {
       ? _scoringService.calculateJourneyXp(correctAnswers: correctAnswers)
       : 0;
   Future<void> selectPage(int page) async {
-    currentPage = page.clamp(
-      0,
-      canOpenSummary ? summaryPage : _questions.length,
-    );
+    currentPage = page.clamp(0, canOpenSummary ? summaryPage : summaryPage - 1);
     await _persist();
   }
 
@@ -98,7 +100,7 @@ class LessonController {
 
   List<int> get incorrectPages => _questions.indexed
       .where((entry) => _results[entry.$2.id] == false)
-      .map((entry) => entry.$1 + 1)
+      .map((entry) => entry.$1 + firstQuestionPage)
       .toList();
 
   Future<void> _persist() => _progressService.saveLessonSession(
@@ -119,7 +121,7 @@ class LessonController {
   Future<void> retry() async {
     _answers.clear();
     _results.clear();
-    currentPage = _questions.isEmpty ? 0 : 1;
+    currentPage = _questions.isEmpty ? 0 : firstQuestionPage;
     await _persist();
   }
 }

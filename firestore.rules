@@ -2,10 +2,6 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // Conteúdo pedagógico publicado é público e somente o backend pode alterá-lo.
-    match /{collection}/{document} {
-      allow read: if collection in ['subjects', 'units', 'topics', 'skills', 'lessons', 'questions'] && resource.data.published == true;
-      allow write: if false;
-    }
     match /content_manifests/{document} {
       allow read: if resource.data.published == true;
       allow write: if false;
