@@ -8,16 +8,9 @@ import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
 
 class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const LessonAppBar({
-    required this.onClose,
-    required this.onReport,
-    required this.indicators,
-    super.key,
-  });
+  const LessonAppBar({required this.onClose, super.key});
 
   final VoidCallback onClose;
-  final VoidCallback onReport;
-  final Widget indicators;
 
   @override
   Size get preferredSize => const Size.fromHeight(UiSize.homeAppBarHeight);
@@ -38,35 +31,17 @@ class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
       statusBarBrightness: Brightness.dark,
     ),
     automaticallyImplyLeading: false,
-    centerTitle: true,
-    titleSpacing: 0,
     leadingWidth: UiSize.touchTarget + UiSpacing.xxs,
     leading: Padding(
       padding: const EdgeInsets.only(left: UiSpacing.xxs),
-      child: Center(
-        child: SizedBox.square(
-          dimension: UiSize.touchTarget,
-          child: IconButton(
-            tooltip: AppStrings.closeActivity,
-            onPressed: onClose,
-            icon: UiIcon.close(size: UiSize.iconLg),
-          ),
+      child: SizedBox.square(
+        dimension: UiSize.touchTarget,
+        child: IconButton(
+          tooltip: AppStrings.closeActivity,
+          onPressed: onClose,
+          icon: UiIcon.close(size: UiSize.iconLg),
         ),
       ),
     ),
-    title: indicators,
-    actionsPadding: const EdgeInsets.only(right: UiSpacing.xxs),
-    actions: [
-      Center(
-        child: SizedBox.square(
-          dimension: UiSize.touchTarget,
-          child: IconButton(
-            tooltip: AppStrings.reportError,
-            onPressed: onReport,
-            icon: UiIcon.report(size: UiSize.iconMd),
-          ),
-        ),
-      ),
-    ],
   );
 }

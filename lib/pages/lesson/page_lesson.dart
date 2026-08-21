@@ -88,18 +88,7 @@ class _PageLessonState extends State<PageLesson> {
     },
     child: Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: LessonAppBar(
-        onClose: () => Navigator.maybePop(context),
-        onReport: () => _reportError(),
-        indicators: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: UiSpacing.xs),
-          child: LessonPageIndicators(
-            currentPage: currentPage,
-            statuses: _indicatorStatuses(),
-            onSelected: _goToPage,
-          ),
-        ),
-      ),
+      appBar: LessonAppBar(onClose: () => Navigator.maybePop(context)),
       body: Stack(
         children: [
           PageView.builder(
@@ -115,10 +104,7 @@ class _PageLessonState extends State<PageLesson> {
             itemBuilder: (context, index) => _lessonPage(index),
           ),
           Positioned(
-            top:
-                MediaQuery.paddingOf(context).top +
-                UiSize.homeAppBarHeight -
-                UiSpacing.md,
+            top: MediaQuery.paddingOf(context).top + UiSize.homeAppBarHeight,
             left: 0,
             right: 0,
             child: _fixedHeader(),
@@ -148,9 +134,20 @@ class _PageLessonState extends State<PageLesson> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: UiSpacing.pageHorizontal,
+            ),
+            child: LessonPageIndicators(
+              currentPage: currentPage,
+              statuses: _indicatorStatuses(),
+              onSelected: _goToPage,
+            ),
+          ),
+          const SizedBox(height: UiSpacing.lg),
+          Padding(
             padding: const EdgeInsets.fromLTRB(
               UiSpacing.pageHorizontal,
-              UiSpacing.sm,
+              0,
               UiSpacing.pageHorizontal,
               UiSpacing.lg,
             ),
@@ -189,8 +186,7 @@ class _PageLessonState extends State<PageLesson> {
         top:
             MediaQuery.paddingOf(context).top +
             UiSize.homeAppBarHeight +
-            fixedHeaderHeight -
-            UiSpacing.md,
+            fixedHeaderHeight,
         bottom: UiSpacing.pageVertical,
       ),
       child: page == 0

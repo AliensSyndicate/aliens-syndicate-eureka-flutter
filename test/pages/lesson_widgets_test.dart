@@ -165,6 +165,31 @@ void main() {
     expect(decorationAt(0).border, isNull);
   });
 
+  testWidgets('indicadores se adaptam sem overflow em largura reduzida', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.topLeft,
+            child: SizedBox(
+              width: 83,
+              child: LessonPageIndicators(
+                currentPage: 0,
+                statuses: List.filled(7, LessonPageIndicatorStatus.unanswered),
+                onSelected: (_) {},
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('atividade ativa emite selecao e respondida fica bloqueada', (
     tester,
   ) async {
