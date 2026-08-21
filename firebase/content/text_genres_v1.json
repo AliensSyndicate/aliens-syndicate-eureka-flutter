@@ -5,7 +5,7 @@
   "payload": {
     "id": "text_genres_v1",
     "schemaVersion": 1,
-    "activityVersion": 2,
+    "activityVersion": 3,
     "lessonId": "portuguese_ef_5_6",
     "subjectId": "portuguese",
     "topicId": "genres",
@@ -24,6 +24,7 @@
           "Notícia"
         ],
         "correctAnswer": "Receita",
+        "explanation": "A receita apresenta ingredientes e um modo de preparo em etapas. Ela orienta como fazer um alimento, por isso tem uma finalidade prática e instrucional.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "portuguese",
@@ -41,6 +42,7 @@
           "Bilhete"
         ],
         "correctAnswer": "Notícia",
+        "explanation": "A notícia comunica um fato recente de interesse público. Ela costuma informar o que aconteceu, onde, quando e quem participou.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "portuguese",
@@ -58,6 +60,7 @@
           "Reportagem"
         ],
         "correctAnswer": "Poema",
+        "explanation": "O poema costuma organizar o texto em versos e estrofes. Ele também pode explorar ritmo, imagens e diferentes sentidos das palavras.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "portuguese",
@@ -75,6 +78,7 @@
           "Entrevista"
         ],
         "correctAnswer": "Manual",
+        "explanation": "O manual explica como usar, montar ou cuidar de algo. Suas instruções costumam aparecer em uma ordem que ajuda o leitor a agir.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "portuguese",
@@ -92,6 +96,7 @@
           "Crônica"
         ],
         "correctAnswer": "Bilhete",
+        "explanation": "O bilhete é adequado para uma mensagem curta e direta. Geralmente indica para quem é o recado e quem o escreveu.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "portuguese",
@@ -109,6 +114,7 @@
           "Poema"
         ],
         "correctAnswer": "Entrevista",
+        "explanation": "A entrevista é construída por perguntas e respostas. Uma pessoa pergunta para conhecer as ideias ou experiências de outra.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "portuguese",
@@ -126,6 +132,7 @@
           "Convite"
         ],
         "correctAnswer": "Verbete",
+        "explanation": "O verbete explica o significado de uma palavra ou apresenta informações sobre um assunto. É comum encontrá-lo em dicionários e enciclopédias.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "portuguese",
@@ -143,6 +150,7 @@
           "Fábula"
         ],
         "correctAnswer": "Convite",
+        "explanation": "O convite chama alguém para participar de um evento. Por isso, costuma informar o motivo, a data, o horário e o local.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "portuguese",
@@ -160,6 +168,7 @@
           "Verbete"
         ],
         "correctAnswer": "Conto",
+        "explanation": "O conto narra uma história geralmente curta, com personagens, acontecimentos, tempo e lugar. Seu objetivo principal é envolver o leitor na narrativa.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "portuguese",
@@ -177,6 +186,7 @@
           "Receita"
         ],
         "correctAnswer": "Reportagem",
+        "explanation": "A reportagem investiga e desenvolve um tema com mais profundidade. Ela pode reunir entrevistas, dados e diferentes pontos de vista.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "portuguese",

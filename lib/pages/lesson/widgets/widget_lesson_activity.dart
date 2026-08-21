@@ -20,7 +20,6 @@ import 'exercise_word_completion.dart';
 
 enum LessonActivityStatus { active, answeredCorrect, answeredIncorrect }
 
-/// Tokens sentinela usados por exercícios que se auto-corrigem ao concluir.
 const _kMatchingDone = '__matching_done__';
 const _kMatchingIncorrect = '__matching_incorrect__';
 const _kMemoryDone = '__memory_done__';
@@ -67,19 +66,14 @@ class LessonActivity extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(AppStrings.activityPosition(position, total), style: UiText.p),
-          const SizedBox(height: UiSpacing.xs),
-          Text(question.prompt, style: UiText.h5),
-          const SizedBox(height: UiSpacing.lg),
-          ..._exercise(),
-        ],
+        children: _exercise(),
       ),
     ),
   );
 
   List<Widget> _exercise() => switch (question.type) {
     QuestionType.matching => [
+      _questionPrompt(),
       _hint(AppStrings.matchingPrompt),
       if (isCurrent)
         ExerciseMatching(
@@ -96,6 +90,7 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.memory => [
+      _questionPrompt(),
       _hint(AppStrings.memoryPrompt),
       if (isCurrent)
         ExerciseMemory(
@@ -111,6 +106,7 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.ordering => [
+      _questionPrompt(),
       _hint(AppStrings.orderingPrompt),
       ExerciseOrdering(
         key: ValueKey('ordering-${question.id}'),
@@ -123,6 +119,7 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.sequencing => [
+      _questionPrompt(),
       _hint(AppStrings.sequencingPrompt),
       ExerciseSequencing(
         key: ValueKey('sequencing-${question.id}'),
@@ -136,6 +133,7 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.multipleChoice => [
+      _questionPrompt(),
       ExerciseMultipleChoice(
         questionId: question.id,
         options: question.options,
@@ -150,7 +148,7 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.trueFalse => [
-      _hint(AppStrings.trueFalsePrompt),
+      _questionPrompt(),
       ExerciseTrueFalse(
         options: question.options,
         currentAnswer: currentAnswer,
@@ -164,6 +162,7 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.imageChoice => [
+      _questionPrompt(),
       ExerciseImageChoice(
         options: question.options,
         currentAnswer: currentAnswer,
@@ -177,6 +176,7 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.fillBlank => [
+      _questionPrompt(),
       ExerciseFillBlank(
         sentence: question.template!,
         options: question.options,
@@ -191,6 +191,7 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.wordCompletion => [
+      _questionPrompt(),
       if (isCurrent)
         ExerciseWordCompletion(
           key: ValueKey('word-completion-${question.id}'),
@@ -213,6 +214,7 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.essay => [
+      _questionPrompt(),
       ExerciseEssay(
         primaryColor: primaryColor,
         textController: textController,
@@ -225,6 +227,7 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.textInput => [
+      _questionPrompt(),
       ExerciseTextInput(
         isCurrent: isCurrent,
         isCorrect: isCorrect,
@@ -234,6 +237,14 @@ class LessonActivity extends StatelessWidget {
       ),
     ],
   };
+
+  Widget _questionPrompt() => Padding(
+    padding: const EdgeInsets.only(bottom: UiSpacing.lg),
+    child: Text(
+      question.prompt,
+      style: UiText.h5.copyWith(color: primaryColor),
+    ),
+  );
 
   Widget _hint(String text) => Padding(
     padding: const EdgeInsets.only(bottom: UiSpacing.sm),

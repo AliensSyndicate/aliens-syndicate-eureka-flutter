@@ -12,6 +12,7 @@ import '../../l10n/app_strings.dart';
 import '../../models/model_lesson.dart';
 import '../../models/model_question.dart';
 import '../../services/service_registry.dart';
+import '../../services/service_lesson_narration.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_motion.dart';
 import '../../ui/ui_spacing.dart';
@@ -32,9 +33,9 @@ class PageLesson extends StatefulWidget {
 class _PageLessonState extends State<PageLesson> {
   late final LessonController controller;
   late final PageController pageController;
+  late final LessonNarrationService narrationController;
   final Map<String, TextEditingController> textControllers = {};
   bool submitting = false;
-  bool closing = false;
 
   Color get subjectColor => UiColor.forSubject(widget.lesson.subject);
   int get currentPage => controller.currentPage;
@@ -52,6 +53,7 @@ class _PageLessonState extends State<PageLesson> {
       questionSelectionService: ServiceRegistry.questionSelection,
     );
     pageController = PageController(initialPage: currentPage);
+    narrationController = LessonNarrationService();
     for (final question in controller.visibleQuestions) {
       textControllers[question.id] = TextEditingController(
         text: controller.answerFor(question) ?? '',
@@ -62,6 +64,7 @@ class _PageLessonState extends State<PageLesson> {
   @override
   void dispose() {
     pageController.dispose();
+    narrationController.dispose();
     for (final item in textControllers.values) {
       item.dispose();
     }
@@ -70,12 +73,17 @@ class _PageLessonState extends State<PageLesson> {
 
   @override
   Widget build(BuildContext context) => PopScope(
-    canPop: false,
+    canPop: true,
     onPopInvokedWithResult: (didPop, result) {
-      if (!didPop) unawaited(_requestClose());
+      if (didPop && controller.answeredQuestions == controller.totalQuestions) {
+        unawaited(controller.complete());
+      }
     },
     child: Scaffold(
-      appBar: LessonAppBar(onClose: _requestClose, onReport: _reportError),
+      appBar: LessonAppBar(
+        onClose: () => Navigator.maybePop(context),
+        onReport: _reportError,
+      ),
       body: SafeArea(
         top: false,
         child: Column(
@@ -117,6 +125,7 @@ class _PageLessonState extends State<PageLesson> {
                 itemCount: totalPages,
                 onPageChanged: (page) {
                   unawaited(controller.selectPage(page));
+                  if (page != 0) unawaited(narrationController.stop());
                   setState(() {});
                 },
                 itemBuilder: (context, index) => index == 0
@@ -132,6 +141,10 @@ class _PageLessonState extends State<PageLesson> {
 
   Widget _contentPage() => SingleChildScrollView(
     key: const ValueKey('lesson-description-page'),
+    primary: false,
+    scrollDirection: Axis.vertical,
+    physics: const AlwaysScrollableScrollPhysics(),
+    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
     padding: const EdgeInsets.fromLTRB(
       UiSpacing.pageHorizontal,
       0,
@@ -142,6 +155,7 @@ class _PageLessonState extends State<PageLesson> {
       title: widget.lesson.title,
       description: widget.lesson.summary,
       primaryColor: subjectColor,
+      narrationController: narrationController,
       notice: widget.mode != LearningMode.journey
           ? AppStrings.noXpOutsideJourney
           : null,
@@ -153,6 +167,10 @@ class _PageLessonState extends State<PageLesson> {
     final answer = controller.answerFor(question) ?? '';
     return SingleChildScrollView(
       key: ValueKey('lesson-activity-page-${question.id}'),
+      primary: false,
+      scrollDirection: Axis.vertical,
+      physics: const AlwaysScrollableScrollPhysics(),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: const EdgeInsets.only(bottom: UiSpacing.pageVertical),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -214,50 +232,9 @@ class _PageLessonState extends State<PageLesson> {
       content: Text(
         correct
             ? 'Muito bem! Continue explorando no seu ritmo.'
-            : 'A resposta correta é: ${question.correctAnswer}',
+            : question.incorrectFeedback,
       ),
     );
-  }
-
-  Future<void> _requestClose() async {
-    if (closing || !mounted) return;
-    closing = true;
-    final errors = controller.incorrectPages.length;
-    final shouldReview = await AppBottomSheet.show<bool>(
-      context,
-      title: AppStrings.lessonExitTitle,
-      content: Text(
-        controller.answeredQuestions == 0
-            ? AppStrings.lessonExitEmpty
-            : AppStrings.lessonExitSummary(
-                controller.answeredQuestions,
-                errors,
-              ),
-      ),
-      actions: [
-        if (errors > 0)
-          AppButton(
-            label: AppStrings.reviewNow,
-            color: UiColor.error,
-            onPressed: () => Navigator.pop(context, true),
-          ),
-        if (errors > 0) const SizedBox(height: UiSpacing.sm),
-        AppButton(
-          label: AppStrings.finishForNow,
-          onPressed: () => Navigator.pop(context, false),
-        ),
-      ],
-    );
-    closing = false;
-    if (!mounted || shouldReview == null) return;
-    if (shouldReview && errors > 0) {
-      _goToPage(controller.incorrectPages.first);
-      return;
-    }
-    if (controller.answeredQuestions == controller.totalQuestions) {
-      await controller.complete();
-    }
-    if (mounted) Navigator.pop(context, true);
   }
 
   Future<void> _reportError() => AppBottomSheet.show<void>(

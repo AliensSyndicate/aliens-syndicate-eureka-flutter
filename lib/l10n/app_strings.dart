@@ -43,10 +43,8 @@ abstract final class AppStrings {
       reportError = 'Reportar erro',
       reportErrorUnavailable = 'O envio de relatos estará disponível em breve.',
       lessonContent = 'Conteúdo',
-      lessonExitTitle = 'Encerrar estudo?',
-      lessonExitEmpty = 'Você pode continuar esta aula quando quiser.',
-      reviewNow = 'Revisar agora',
-      finishForNow = 'Encerrar por enquanto',
+      playLessonAudio = 'Ouvir conteúdo da aula',
+      pauseLessonAudio = 'Pausar leitura da aula',
       completeAllLessons = 'Complete todas as aulas',
       lessonElapsedTimeLabel = 'Tempo decorrido da aula',
       lessonPaginationLabel = 'Página da atividade',
@@ -60,15 +58,12 @@ abstract final class AppStrings {
       orderingPrompt = 'Monte a frase na ordem correta',
       essayHint = 'Escreva sua explicação...',
       sequencingPrompt = 'Arraste os itens para a ordem correta',
-      trueFalsePrompt = 'A afirmação é verdadeira ou falsa?',
       trueLabel = 'Verdadeiro',
       falseLabel = 'Falso',
       memoryPrompt = 'Encontre os pares!',
       memoryComplete = 'Todos os pares encontrados!';
   static String lessonPage(int current, int total, String label) =>
       '$current de $total - $label';
-  static String lessonExitSummary(int answered, int errors) =>
-      'Você respondeu $answered atividades e errou $errors.';
   static const xpLabel = 'Pontos de experiência';
   static const levelLabel = 'Nível atual';
   static String xpValue(int value) => '$value XP';

@@ -205,6 +205,7 @@ class ContentService {
                     map['options'] as List? ?? const [],
                   ),
                   correctAnswer: map['correctAnswer'] as String,
+                  explanation: map['explanation'] as String? ?? '',
                   subjectId: map['subjectId'] as String,
                   topicId: map['topicId'] as String,
                   pairs: pairs,

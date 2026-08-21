@@ -2,9 +2,11 @@ import 'package:eureka/data/seed/seed_content.dart';
 import 'package:eureka/pages/lesson/widgets/widget_lesson_activity.dart';
 import 'package:eureka/pages/lesson/widgets/exercise_content.dart';
 import 'package:eureka/pages/lesson/widgets/widget_question_option.dart';
+import 'package:eureka/services/service_lesson_narration.dart';
 import 'package:eureka/ui/ui_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 void main() {
   testWidgets('descricao reutilizavel mostra titulo resumo e destaque', (
@@ -28,6 +30,57 @@ void main() {
       tester.widget<Text>(find.text('Título')).style?.color,
       UiColor.science,
     );
+  });
+
+  testWidgets('alinha leitura ao titulo e alterna play e pause', (
+    tester,
+  ) async {
+    final narration = _FakeLessonNarrationController();
+    addTearDown(narration.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ExerciseContent(
+            title: 'Frações',
+            description: 'Uma fração representa partes iguais de um todo.',
+            primaryColor: UiColor.mathematics,
+            narrationController: narration,
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester
+          .widget<HugeIcon>(
+            find.descendant(
+              of: find.byKey(const ValueKey('lesson-narration-toggle')),
+              matching: find.byType(HugeIcon),
+            ),
+          )
+          .icon,
+      same(HugeIcons.strokeRoundedPlayCircle),
+    );
+    await tester.tap(find.byKey(const ValueKey('lesson-narration-toggle')));
+    await tester.pump();
+
+    expect(narration.lastContent, contains('partes iguais'));
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(
+      tester
+          .widget<HugeIcon>(
+            find.descendant(
+              of: find.byKey(const ValueKey('lesson-narration-toggle')),
+              matching: find.byType(HugeIcon),
+            ),
+          )
+          .icon,
+      same(HugeIcons.strokeRoundedPauseCircle),
+    );
+
+    await tester.tap(find.byKey(const ValueKey('lesson-narration-toggle')));
+    await tester.pump();
+    expect(narration.state, LessonNarrationState.paused);
   });
 
   testWidgets('atividade ativa emite selecao e respondida fica bloqueada', (
@@ -54,6 +107,11 @@ void main() {
     );
 
     await tester.pumpWidget(activity(LessonActivityStatus.active));
+    expect(find.text(question.prompt), findsOneWidget);
+    expect(
+      tester.widget<Text>(find.text(question.prompt)).style?.color,
+      UiColor.science,
+    );
     tester.widget<QuestionOption>(find.byType(QuestionOption).first).onTap!();
     expect(selected, question.options.first);
 
@@ -63,4 +121,28 @@ void main() {
     final inkWells = tester.widgetList<InkWell>(find.byType(InkWell));
     expect(inkWells.every((item) => item.onTap == null), isTrue);
   });
+}
+
+class _FakeLessonNarrationController extends ChangeNotifier
+    implements LessonNarrationController {
+  @override
+  LessonNarrationState state = LessonNarrationState.stopped;
+  String? lastContent;
+
+  @override
+  Future<void> toggle(String content) async {
+    lastContent = content;
+    if (state == LessonNarrationState.playing) {
+      state = LessonNarrationState.paused;
+    } else {
+      state = LessonNarrationState.playing;
+    }
+    notifyListeners();
+  }
+
+  @override
+  Future<void> stop() async {
+    state = LessonNarrationState.stopped;
+    notifyListeners();
+  }
 }

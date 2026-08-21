@@ -22,13 +22,14 @@ class LessonHeader extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(subject, style: UiText.label.copyWith(color: subjectColor)),
-        const SizedBox(height: UiSpacing.xxs),
-        Text(title, style: UiText.h6),
+        Text(
+          '$subject - $title',
+          style: UiText.small.copyWith(color: UiColor.textPrimary),
+        ),
         const SizedBox(height: UiSpacing.xxs),
         Text(
           pageLabel,
-          style: UiText.label.copyWith(color: UiColor.textSecondary),
+          style: UiText.small.copyWith(color: UiColor.textSecondary),
         ),
       ],
     ),

@@ -23,6 +23,10 @@ abstract final class UiIcon {
       huge(icon: HugeIcons.strokeRoundedSearch01, size: size, color: color);
   static Widget next({double size = UiSize.icon, Color? color}) =>
       huge(icon: HugeIcons.strokeRoundedArrowRight01, size: size, color: color);
+  static Widget play({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedVolumeHigh, size: size, color: color);
+  static Widget pause({double size = UiSize.icon, Color? color}) =>
+      huge(icon: HugeIcons.strokeRoundedVolumeMute02, size: size, color: color);
   static Widget correct({double size = UiSize.icon, Color? color}) => huge(
     icon: HugeIcons.strokeRoundedCheckmarkCircle02,
     size: size,

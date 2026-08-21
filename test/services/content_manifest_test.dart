@@ -15,7 +15,7 @@ void main() {
       Map<String, dynamic>.from(document['payload'] as Map),
     );
     expect(document['enabled'], isTrue);
-    expect(manifest.contentVersion, 7);
+    expect(manifest.contentVersion, 8);
     expect(manifest.subjects, hasLength(12));
     expect(manifest.subjectsForYear(5).map((subject) => subject.title), [
       'Ciências',
@@ -91,7 +91,7 @@ void main() {
       expect(document['enabled'], isA<bool>(), reason: file.path);
       final payload = document['payload'] as Map<String, dynamic>;
       final questions = payload['questions'] as List<dynamic>;
-      expect(payload['activityVersion'], 2, reason: file.path);
+      expect(payload['activityVersion'], 3, reason: file.path);
       expect(questions, hasLength(10), reason: file.path);
       expect(
         questions.every(
@@ -99,6 +99,17 @@ void main() {
         ),
         isTrue,
         reason: file.path,
+      );
+      expect(
+        questions.every(
+          (question) =>
+              ((question as Map<String, dynamic>)['explanation'] as String?)
+                  ?.trim()
+                  .isNotEmpty ==
+              true,
+        ),
+        isTrue,
+        reason: '${file.path}: toda questão precisa ensinar após o erro',
       );
       expect(
         questions

@@ -5,182 +5,82 @@
   "payload": {
     "id": "fractions_intro_v1",
     "schemaVersion": 1,
-    "activityVersion": 2,
+    "activityVersion": 3,
     "lessonId": "mathematics_ef_5_2",
     "subjectId": "mathematics",
     "topicId": "fractions",
     "schoolYear": 5,
-    "summary": "Uma fração mostra quantas partes iguais de um todo estamos usando.",
+    "summary": "Imagine uma pizza dividida igualmente entre quatro pessoas. Cada pessoa recebe uma das quatro partes. Essa parte é 1/4 da pizza.\n\nUma fração representa uma ou mais partes iguais de um todo. No número 3/4, o 4 indica em quantas partes iguais o todo foi dividido. Ele é o denominador. O 3 mostra quantas dessas partes foram consideradas. Ele é o numerador.\n\nFrações diferentes podem representar a mesma quantidade. Se metade de uma pizza corresponde a 2 de 4 fatias, então 1/2 e 2/4 são frações equivalentes. Podemos encontrar frações equivalentes multiplicando ou dividindo o numerador e o denominador pelo mesmo número, diferente de zero.\n\nPara comparar frações com o mesmo denominador, observe o numerador: quanto mais partes foram consideradas, maior é a fração. Por exemplo, 3/5 é maior que 1/5.\n\nQuando os denominadores são diferentes, imagine as partes do mesmo todo ou transforme as frações em equivalentes com o mesmo denominador. Assim, 1/2 equivale a 2/4 e é maior que 1/4.\n\nLembre-se: as partes precisam ser iguais e o todo usado na comparação precisa ter o mesmo tamanho.",
     "questions": [
       {
-        "id": "fraction_1",
-        "enabled": true,
-        "version": 1,
-        "type": "multipleChoice",
-        "prompt": "Qual fração representa metade?",
-        "options": [
-          "1/2",
-          "1/3",
-          "2/3"
-        ],
-        "correctAnswer": "1/2",
-        "difficulty": 1,
-        "tags": [],
-        "subjectId": "mathematics",
-        "topicId": "fractions"
+        "id": "fraction_1", "enabled": true, "version": 1,
+        "type": "multipleChoice", "prompt": "Qual fração representa metade?",
+        "options": ["1/2", "1/3", "2/3", "3/3"], "correctAnswer": "1/2",
+        "explanation": "Metade significa dividir o todo em 2 partes iguais e considerar 1 delas. Por isso, a representação é 1/2: 1 parte considerada de um total de 2.",
+        "difficulty": 1, "tags": [], "subjectId": "mathematics", "topicId": "fractions"
       },
       {
-        "id": "fraction_2",
-        "enabled": true,
-        "version": 1,
-        "type": "multipleChoice",
-        "prompt": "Qual fração representa um quarto?",
-        "options": [
-          "1/4",
-          "1/2",
-          "3/4"
-        ],
-        "correctAnswer": "1/4",
-        "difficulty": 1,
-        "tags": [],
-        "subjectId": "mathematics",
-        "topicId": "fractions"
+        "id": "fraction_2", "enabled": true, "version": 1,
+        "type": "multipleChoice", "prompt": "Qual fração representa um quarto?",
+        "options": ["1/4", "1/2", "3/4", "4/1"], "correctAnswer": "1/4",
+        "explanation": "Um quarto é 1 das 4 partes iguais de um todo. O numerador 1 mostra a parte considerada, e o denominador 4 mostra o total de partes iguais.",
+        "difficulty": 1, "tags": [], "subjectId": "mathematics", "topicId": "fractions"
       },
       {
-        "id": "fraction_3",
-        "enabled": true,
-        "version": 1,
-        "type": "multipleChoice",
-        "prompt": "Qual fração é equivalente a 1/2?",
-        "options": [
-          "2/4",
-          "1/3",
-          "3/4"
-        ],
-        "correctAnswer": "2/4",
-        "difficulty": 1,
-        "tags": [],
-        "subjectId": "mathematics",
-        "topicId": "fractions"
+        "id": "fraction_3", "enabled": true, "version": 1,
+        "type": "multipleChoice", "prompt": "Qual fração é equivalente a 1/2?",
+        "options": ["2/4", "1/3", "3/4", "2/3"], "correctAnswer": "2/4",
+        "explanation": "Ao multiplicar o numerador e o denominador de 1/2 por 2, obtemos 2/4. As duas frações representam a mesma quantidade: metade do todo.",
+        "difficulty": 1, "tags": [], "subjectId": "mathematics", "topicId": "fractions"
       },
       {
-        "id": "fraction_4",
-        "enabled": true,
-        "version": 1,
-        "type": "multipleChoice",
-        "prompt": "Qual fração é maior?",
-        "options": [
-          "3/4",
-          "1/4",
-          "2/8"
-        ],
-        "correctAnswer": "3/4",
-        "difficulty": 1,
-        "tags": [],
-        "subjectId": "mathematics",
-        "topicId": "fractions"
+        "id": "fraction_4", "enabled": true, "version": 1,
+        "type": "multipleChoice", "prompt": "Qual fração representa a maior quantidade?",
+        "options": ["3/4", "1/4", "2/8", "1/2"], "correctAnswer": "3/4",
+        "explanation": "Pense no mesmo todo dividido em quartos. Temos 3/4, 1/4, 2/8 que equivale a 1/4, e 1/2 que equivale a 2/4. A maior quantidade é 3/4.",
+        "difficulty": 2, "tags": [], "subjectId": "mathematics", "topicId": "fractions"
       },
       {
-        "id": "fraction_5",
-        "enabled": true,
-        "version": 1,
-        "type": "multipleChoice",
-        "prompt": "Duas partes de oito representam:",
-        "options": [
-          "2/8",
-          "8/2",
-          "1/8"
-        ],
-        "correctAnswer": "2/8",
-        "difficulty": 1,
-        "tags": [],
-        "subjectId": "mathematics",
-        "topicId": "fractions"
+        "id": "fraction_5", "enabled": true, "version": 1,
+        "type": "multipleChoice", "prompt": "Uma barra foi dividida em 8 partes iguais. Duas partes foram usadas. Qual fração representa essa quantidade?",
+        "options": ["2/8", "8/2", "1/8", "6/8"], "correctAnswer": "2/8",
+        "explanation": "O todo tem 8 partes iguais, então 8 fica no denominador. Como 2 partes foram usadas, 2 fica no numerador. A fração é 2/8.",
+        "difficulty": 1, "tags": [], "subjectId": "mathematics", "topicId": "fractions"
       },
       {
-        "id": "fraction_6",
-        "enabled": true,
-        "version": 1,
-        "type": "multipleChoice",
-        "prompt": "Qual fração representa um inteiro?",
-        "options": [
-          "4/4",
-          "3/4",
-          "1/4"
-        ],
-        "correctAnswer": "4/4",
-        "difficulty": 1,
-        "tags": [],
-        "subjectId": "mathematics",
-        "topicId": "fractions"
+        "id": "fraction_6", "enabled": true, "version": 1,
+        "type": "multipleChoice", "prompt": "Qual fração representa um inteiro?",
+        "options": ["4/4", "3/4", "1/4", "4/8"], "correctAnswer": "4/4",
+        "explanation": "Quando consideramos todas as partes em que o todo foi dividido, formamos um inteiro. Em 4/4, as 4 partes de um total de 4 foram consideradas.",
+        "difficulty": 1, "tags": [], "subjectId": "mathematics", "topicId": "fractions"
       },
       {
-        "id": "fraction_7",
-        "enabled": true,
-        "version": 1,
-        "type": "multipleChoice",
-        "prompt": "Qual é a menor fração?",
-        "options": [
-          "1/5",
-          "2/5",
-          "4/5"
-        ],
-        "correctAnswer": "1/5",
-        "difficulty": 1,
-        "tags": [],
-        "subjectId": "mathematics",
-        "topicId": "fractions"
+        "id": "fraction_7", "enabled": true, "version": 1,
+        "type": "multipleChoice", "prompt": "Qual é a menor fração?",
+        "options": ["1/5", "2/5", "4/5", "5/5"], "correctAnswer": "1/5",
+        "explanation": "As frações têm o mesmo denominador, então as partes têm o mesmo tamanho. Basta comparar os numeradores: 1 é o menor número, por isso 1/5 é a menor fração.",
+        "difficulty": 1, "tags": [], "subjectId": "mathematics", "topicId": "fractions"
       },
       {
-        "id": "fraction_8",
-        "enabled": true,
-        "version": 1,
-        "type": "multipleChoice",
-        "prompt": "Metade de uma pizza dividida em 8 fatias corresponde a:",
-        "options": [
-          "4/8",
-          "2/8",
-          "6/8"
-        ],
-        "correctAnswer": "4/8",
-        "difficulty": 1,
-        "tags": [],
-        "subjectId": "mathematics",
-        "topicId": "fractions"
+        "id": "fraction_8", "enabled": true, "version": 1,
+        "type": "multipleChoice", "prompt": "Metade de uma pizza dividida em 8 fatias iguais corresponde a quantas fatias?",
+        "options": ["4/8", "2/8", "6/8", "8/8"], "correctAnswer": "4/8",
+        "explanation": "Metade de 8 fatias são 4 fatias. Assim, 4 de 8 partes iguais foram consideradas: 4/8, que representa a mesma quantidade que 1/2.",
+        "difficulty": 2, "tags": [], "subjectId": "mathematics", "topicId": "fractions"
       },
       {
-        "id": "fraction_9",
-        "enabled": true,
-        "version": 1,
-        "type": "multipleChoice",
-        "prompt": "Qual par contém frações equivalentes?",
-        "options": [
-          "1/2 e 3/6",
-          "1/3 e 2/3",
-          "1/4 e 3/4"
-        ],
-        "correctAnswer": "1/2 e 3/6",
-        "difficulty": 1,
-        "tags": [],
-        "subjectId": "mathematics",
-        "topicId": "fractions"
+        "id": "fraction_9", "enabled": true, "version": 1,
+        "type": "multipleChoice", "prompt": "Qual par contém frações equivalentes?",
+        "options": ["1/2 e 3/6", "1/3 e 2/3", "1/4 e 3/4", "2/5 e 3/5"], "correctAnswer": "1/2 e 3/6",
+        "explanation": "Multiplicando o numerador e o denominador de 1/2 por 3, obtemos 3/6. As duas frações representam metade do mesmo todo.",
+        "difficulty": 2, "tags": [], "subjectId": "mathematics", "topicId": "fractions"
       },
       {
-        "id": "fraction_10",
-        "enabled": true,
-        "version": 1,
-        "type": "multipleChoice",
-        "prompt": "Em 3/5, o número de partes escolhidas é:",
-        "options": [
-          "3",
-          "5",
-          "8"
-        ],
-        "correctAnswer": "3",
-        "difficulty": 1,
-        "tags": [],
-        "subjectId": "mathematics",
-        "topicId": "fractions"
+        "id": "fraction_10", "enabled": true, "version": 1,
+        "type": "multipleChoice", "prompt": "Na fração 3/5, qual número indica as partes consideradas?",
+        "options": ["3", "5", "8", "2"], "correctAnswer": "3",
+        "explanation": "O numerador fica na parte de cima da fração e mostra quantas partes foram consideradas. Em 3/5, o numerador é 3. O 5 é o denominador.",
+        "difficulty": 1, "tags": [], "subjectId": "mathematics", "topicId": "fractions"
       }
     ]
   }

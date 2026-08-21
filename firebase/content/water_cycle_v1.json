@@ -5,7 +5,7 @@
   "payload": {
     "id": "water_cycle_v1",
     "schemaVersion": 1,
-    "activityVersion": 2,
+    "activityVersion": 3,
     "lessonId": "science_ef_5_2",
     "subjectId": "science",
     "topicId": "water",
@@ -24,6 +24,7 @@
           "Solidificação"
         ],
         "correctAnswer": "Evaporação",
+        "explanation": "Quando a água líquida recebe calor, parte dela passa para o estado gasoso e se mistura ao ar. Essa mudança é chamada de evaporação.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "science",
@@ -41,6 +42,7 @@
           "Infiltração"
         ],
         "correctAnswer": "Condensação",
+        "explanation": "Ao esfriar, o vapor de água se transforma em pequenas gotas líquidas. Essa mudança forma gotículas nas nuvens e recebe o nome de condensação.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "science",
@@ -58,6 +60,7 @@
           "Transpiração"
         ],
         "correctAnswer": "Precipitação",
+        "explanation": "Quando as gotas ou cristais nas nuvens ficam pesados, caem para a superfície como chuva, neve ou granizo. Esse movimento é a precipitação.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "science",
@@ -75,6 +78,7 @@
           "Solo"
         ],
         "correctAnswer": "Sol",
+        "explanation": "A energia do Sol aquece a água de rios, lagos, oceanos e do solo. Esse aquecimento fornece energia para a evaporação.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "science",
@@ -92,6 +96,7 @@
           "Ebulição"
         ],
         "correctAnswer": "Infiltração",
+        "explanation": "Parte da água da chuva entra pelos espaços do solo e pode abastecer reservas subterrâneas. Esse processo é chamado de infiltração.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "science",
@@ -109,6 +114,7 @@
           "Líquido"
         ],
         "correctAnswer": "Gasoso",
+        "explanation": "O vapor é água no estado gasoso. Ele pode estar presente no ar mesmo quando não conseguimos enxergá-lo.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "science",
@@ -126,6 +132,7 @@
           "Líquido"
         ],
         "correctAnswer": "Sólido",
+        "explanation": "Quando a água perde calor suficiente, pode congelar. O gelo mantém forma própria e corresponde ao estado sólido da água.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "science",
@@ -143,6 +150,7 @@
           "Desaparecimento de água"
         ],
         "correctAnswer": "Acúmulo de água",
+        "explanation": "Rios e lagos armazenam água na superfície. Essa água pode evaporar, escoar ou infiltrar, continuando o ciclo.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "science",
@@ -160,6 +168,7 @@
           "Solidificação"
         ],
         "correctAnswer": "Transpiração",
+        "explanation": "As plantas absorvem água pelas raízes e liberam parte dela como vapor pelas folhas. Esse processo recebe o nome de transpiração.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "science",
@@ -177,6 +186,7 @@
           "Impedir a chuva"
         ],
         "correctAnswer": "Preservar esse recurso",
+        "explanation": "A água circula na natureza, mas a água limpa disponível para uso é limitada. Evitar desperdícios ajuda a preservar esse recurso para todos.",
         "difficulty": 1,
         "tags": [],
         "subjectId": "science",

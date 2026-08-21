@@ -2,12 +2,12 @@
   "published": true,
   "enabled": true,
   "schemaVersion": 1,
-  "contentVersion": 7,
+  "contentVersion": 8,
   "payload": {
     "schemaVersion": 1,
-    "contentVersion": 7,
+    "contentVersion": 8,
     "locale": "pt-BR",
-    "updatedAt": "2026-08-14T00:00:00.000Z",
+    "updatedAt": "2026-08-21T00:00:00.000Z",
     "subjects": [
       {
         "id": "portuguese",
@@ -477,7 +477,7 @@
                 "activities": [
                   {
                     "id": "text_genres_v1",
-                    "version": 2,
+                    "version": 3,
                     "checksum": null,
                     "order": 0
                   }
@@ -2378,7 +2378,7 @@
                 "activities": [
                   {
                     "id": "fractions_intro_v1",
-                    "version": 2,
+                    "version": 3,
                     "checksum": null,
                     "order": 0
                   }
@@ -3392,7 +3392,7 @@
                 "activities": [
                   {
                     "id": "water_cycle_v1",
-                    "version": 2,
+                    "version": 3,
                     "checksum": null,
                     "order": 0
                   }

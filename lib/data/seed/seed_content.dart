@@ -65,7 +65,16 @@ final seedLessons = <Lesson>[
     id: 'fractions_intro',
     title: 'Frações na prática',
     summary:
-        'Uma fração mostra quantas partes iguais de um todo estamos usando.',
+        'Imagine uma pizza dividida igualmente entre quatro pessoas. Cada '
+        'pessoa recebe 1/4 da pizza.\n\nUma fração representa uma ou mais '
+        'partes iguais de um todo. Em 3/4, o denominador 4 mostra em quantas '
+        'partes iguais o todo foi dividido. O numerador 3 mostra quantas '
+        'partes foram consideradas.\n\nFrações diferentes podem representar '
+        'a mesma quantidade. Por exemplo, 1/2 e 2/4 são equivalentes. Para '
+        'comparar frações com o mesmo denominador, observe o numerador. Com '
+        'denominadores diferentes, transforme as frações em equivalentes ou '
+        'imagine as partes do mesmo todo.\n\nLembre-se: as partes precisam ser '
+        'iguais e os todos comparados precisam ter o mesmo tamanho.',
     subject: SubjectType.mathematics,
     topicId: 'fractions',
     questions: [
@@ -79,6 +88,9 @@ final seedLessons = <Lesson>[
         type: QuestionType.trueFalse,
         options: const ['Verdadeiro', 'Falso'],
         correctAnswer: 'Verdadeiro',
+        explanation:
+            'A fração 1/2 equivale a 2/4. Como 2/4 representa duas partes '
+            'e 1/4 representa apenas uma parte do mesmo todo, 1/2 é maior.',
         subjectId: 'mathematics',
         topicId: 'fractions',
       ),
@@ -91,6 +103,10 @@ final seedLessons = <Lesson>[
             'corresponde a _ da pizza.',
         options: const ['3/4', '1/4', '4/3', '1/3'],
         correctAnswer: '3/4',
+        explanation:
+            'A pizza tem 4 fatias iguais e 3 foram servidas. O numerador '
+            'registra as 3 partes consideradas; o denominador registra as 4 '
+            'partes do todo. A fração é 3/4.',
         subjectId: 'mathematics',
         topicId: 'fractions',
       ),
@@ -100,6 +116,9 @@ final seedLessons = <Lesson>[
         type: QuestionType.imageChoice,
         options: const ['🟦🟦🟦⬜', '🟦⬜⬜⬜', '🟦🟦⬜⬜', '🟦🟦🟦🟦'],
         correctAnswer: '🟦🟦🟦⬜',
+        explanation:
+            'Em 3/4, o todo tem quatro partes iguais e três delas estão '
+            'marcadas. Procure três partes azuis e uma sem preenchimento.',
         subjectId: 'mathematics',
         topicId: 'fractions',
       ),
@@ -110,12 +129,15 @@ final seedLessons = <Lesson>[
         template: 'N_MERAD_R',
         options: const ['U', 'O', 'A', 'E'],
         correctAnswer: 'NUMERADOR',
+        explanation:
+            'O número acima da barra é o numerador. Ele indica quantas '
+            'partes foram consideradas. As letras formam NUMERADOR.',
         subjectId: 'mathematics',
         topicId: 'fractions',
       ),
       Question(
         id: 'fraction_sequencing_1',
-        prompt: 'Organize os passos na ordem em que acontecem.',
+        prompt: 'Organize os passos para calcular 1/4 + 2/4.',
         type: QuestionType.sequencing,
         options: const [
           'Confira se os denominadores são iguais',
@@ -128,6 +150,9 @@ final seedLessons = <Lesson>[
             'Some os numeradores: 1 + 2 = 3 | '
             'Mantenha o denominador 4 | '
             'Escreva o resultado: 3/4',
+        explanation:
+            'Os denominadores já são iguais. Primeiro confirme isso, some '
+            'os numeradores, mantenha o denominador 4 e escreva 3/4.',
         subjectId: 'mathematics',
         topicId: 'fractions',
       ),
@@ -137,6 +162,10 @@ final seedLessons = <Lesson>[
         type: QuestionType.memory,
         options: const [],
         correctAnswer: '__memory_done__',
+        explanation:
+            'Frações equivalentes representam a mesma quantidade. Verifique '
+            'se o numerador e o denominador foram multiplicados pelo mesmo '
+            'número, como em 1/2 e 2/4.',
         pairs: const [
           MatchingPair(left: '1/2', right: '2/4'),
           MatchingPair(left: '1/3', right: '2/6'),
@@ -156,6 +185,10 @@ final seedLessons = <Lesson>[
         correctAnswer:
             'Uma fração mostra quantas partes iguais de um todo estamos '
             'usando. Exemplo: 1/2 é metade de uma pizza.',
+        explanation:
+            'Uma boa explicação mostra que o todo foi dividido em partes '
+            'iguais e quantas partes foram consideradas. Use um exemplo, '
+            'como 1/2 de uma pizza.',
         subjectId: 'mathematics',
         topicId: 'fractions',
       ),
@@ -163,10 +196,13 @@ final seedLessons = <Lesson>[
       _orderingQuestion(
         'fraction_ordering_1',
         'Ordene as palavras para formar a frase:',
-        ['Uma', 'fração', 'representa', 'partes', 'de', 'um', 'todo'],
-        'Uma fração representa partes de um todo',
+        ['Uma', 'fração', 'representa', 'partes', 'iguais', 'de', 'um', 'todo'],
+        'Uma fração representa partes iguais de um todo',
         'mathematics',
         'fractions',
+        explanation:
+            'Comece com “Uma fração representa” e complete com a ideia '
+            'essencial: “partes iguais de um todo”.',
       ),
       // Exercício de ligação: fração ↔ nome por extenso
       _matchingQuestion(
@@ -181,6 +217,10 @@ final seedLessons = <Lesson>[
         ],
         'mathematics',
         'fractions',
+        explanation:
+            'Leia o numerador como a quantidade de partes e o denominador '
+            'como o nome dessas partes. Assim, 1/2 é metade; denominador 3 '
+            'indica terços e denominador 4 indica quartos.',
       ),
       _question(
         'fraction_1',
@@ -189,6 +229,9 @@ final seedLessons = <Lesson>[
         '1/2',
         'mathematics',
         'fractions',
+        explanation:
+            'Metade é uma de duas partes iguais. Por isso, é representada '
+            'por 1/2.',
       ),
       Question(
         id: 'fraction_text_input_1',
@@ -196,6 +239,9 @@ final seedLessons = <Lesson>[
         type: QuestionType.textInput,
         options: const [],
         correctAnswer: '1/2',
+        explanation:
+            'Metade significa uma de duas partes iguais. Escrevemos 1 no '
+            'numerador e 2 no denominador: 1/2.',
         subjectId: 'mathematics',
         topicId: 'fractions',
       ),
@@ -399,8 +445,9 @@ Question _question(
   List<String> options,
   String correctAnswer,
   String subjectId,
-  String topicId,
-) => Question(
+  String topicId, {
+  String explanation = '',
+}) => Question(
   id: id,
   prompt: prompt,
   type: QuestionType.multipleChoice,
@@ -408,6 +455,7 @@ Question _question(
   correctAnswer: correctAnswer,
   subjectId: subjectId,
   topicId: topicId,
+  explanation: explanation,
 );
 
 /// Cria uma questão do tipo ligação com 5 pares.
@@ -416,8 +464,9 @@ Question _matchingQuestion(
   String prompt,
   List<MatchingPair> pairs,
   String subjectId,
-  String topicId,
-) => Question(
+  String topicId, {
+  String explanation = '',
+}) => Question(
   id: id,
   prompt: prompt,
   type: QuestionType.matching,
@@ -427,6 +476,7 @@ Question _matchingQuestion(
   subjectId: subjectId,
   topicId: topicId,
   pairs: pairs,
+  explanation: explanation,
 );
 
 /// Cria uma questão de ordenação de frase.
@@ -436,8 +486,9 @@ Question _orderingQuestion(
   List<String> words,
   String correctAnswer,
   String subjectId,
-  String topicId,
-) => Question(
+  String topicId, {
+  String explanation = '',
+}) => Question(
   id: id,
   prompt: prompt,
   type: QuestionType.ordering,
@@ -445,4 +496,5 @@ Question _orderingQuestion(
   correctAnswer: correctAnswer,
   subjectId: subjectId,
   topicId: topicId,
+  explanation: explanation,
 );

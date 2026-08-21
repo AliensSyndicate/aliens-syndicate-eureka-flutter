@@ -6,7 +6,6 @@ import '../../../ui/ui_option.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
 
-/// Exercício de verdadeiro ou falso.
 class ExerciseTrueFalse extends StatelessWidget {
   const ExerciseTrueFalse({
     required this.options,

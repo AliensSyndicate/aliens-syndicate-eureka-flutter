@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:eureka/app/components/app_button.dart';
 import 'package:eureka/data/seed/seed_content.dart';
 import 'package:eureka/enums/learning_mode.dart';
+import 'package:eureka/enums/subject_type.dart';
 import 'package:eureka/l10n/app_strings.dart';
+import 'package:eureka/models/model_lesson.dart';
 import 'package:eureka/pages/lesson/page_lesson.dart';
 import 'package:eureka/pages/lesson/widgets/widget_question_option.dart';
 import 'package:eureka/ui/ui_theme.dart';
@@ -48,7 +50,8 @@ void main() {
     tester
         .widget<InkWell>(find.byKey(const ValueKey('lesson-page-indicator-4')))
         .onTap!();
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
     expect(pager.controller?.page, closeTo(4, .01));
     expect(find.byType(QuestionOption), findsNWidgets(4));
 
@@ -84,5 +87,41 @@ void main() {
         .onTap!();
     await tester.pumpAndSettle();
     expect(find.byType(QuestionOption), findsNWidgets(4));
+  });
+
+  testWidgets('permite rolagem vertical quando o conteudo for longo', (
+    tester,
+  ) async {
+    final longContent = List.filled(
+      16,
+      'Frações representam partes iguais de um todo.',
+    ).join('\n\n');
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: UiTheme.dark,
+        home: PageLesson(
+          lesson: Lesson(
+            id: 'vertical_scroll_test',
+            title: 'Frações na prática',
+            summary: longContent,
+            subject: SubjectType.mathematics,
+            questions: const [],
+          ),
+          mode: LearningMode.journey,
+        ),
+      ),
+    );
+
+    final scrollView = tester.widget<SingleChildScrollView>(
+      find.byKey(const ValueKey('lesson-description-page')),
+    );
+    expect(scrollView.scrollDirection, Axis.vertical);
+    final initialTop = tester.getTopLeft(find.text(longContent)).dy;
+    await tester.drag(
+      find.byKey(const ValueKey('lesson-description-page')),
+      const Offset(0, -300),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(find.text(longContent)).dy, lessThan(initialTop));
   });
 }

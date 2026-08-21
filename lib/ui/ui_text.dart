@@ -61,6 +61,13 @@ abstract final class UiText {
     letterSpacing: .25,
     color: UiColor.textSecondary,
   );
+  static const small = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.0,
+    fontWeight: FontWeight.w400,
+    color: UiColor.textPrimary,
+  );
   static const disabledTitle = TextStyle(
     fontFamily: fontFamily,
     fontSize: 20,

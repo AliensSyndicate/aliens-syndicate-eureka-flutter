@@ -8,9 +8,9 @@ import 'seed_curriculum.dart';
 
 ContentManifest buildSeedContentManifest() => ContentManifest(
   schemaVersion: 1,
-  contentVersion: 7,
+  contentVersion: 8,
   locale: 'pt-BR',
-  updatedAt: DateTime.utc(2026, 8, 14),
+  updatedAt: DateTime.utc(2026, 8, 21),
   subjects: _subjects.indexed.map((entry) {
     final (order, definition) = entry;
     final grades = seedCurriculum[definition.type] ?? const [];
@@ -85,13 +85,13 @@ const _subjects = [
 
 List<ActivityReference> _activitiesFor(String lessonId) => switch (lessonId) {
   'portuguese_ef_5_6' => const [
-    ActivityReference(id: 'text_genres_v1', version: 2),
+    ActivityReference(id: 'text_genres_v1', version: 3),
   ],
   'mathematics_ef_5_2' => const [
-    ActivityReference(id: 'fractions_intro_v1', version: 2),
+    ActivityReference(id: 'fractions_intro_v1', version: 3),
   ],
   'science_ef_5_2' => const [
-    ActivityReference(id: 'water_cycle_v1', version: 2),
+    ActivityReference(id: 'water_cycle_v1', version: 3),
   ],
   _ => const [],
 };

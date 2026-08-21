@@ -57,9 +57,6 @@ class LessonPageIndicators extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: color,
                     borderRadius: BorderRadius.circular(UiRadius.pill),
-                    border: selected
-                        ? Border.all(color: UiColor.textPrimary)
-                        : null,
                   ),
                 ),
               ),
