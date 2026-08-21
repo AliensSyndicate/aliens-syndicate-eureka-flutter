@@ -21,15 +21,15 @@ class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(UiSize.homeAppBarHeight);
   @override
   Widget build(BuildContext context) => AppBar(
-    backgroundColor: Colors.transparent,
-    surfaceTintColor: Colors.transparent,
-    shadowColor: Colors.transparent,
+    backgroundColor: UiColor.background,
+    surfaceTintColor: UiColor.background,
+    shadowColor: UiColor.background,
     elevation: 0,
     scrolledUnderElevation: 0,
     forceMaterialTransparency: true,
     foregroundColor: UiColor.textPrimary,
     systemOverlayStyle: const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
+      statusBarColor: UiColor.background,
       statusBarIconBrightness: Brightness.light,
       statusBarBrightness: Brightness.dark,
     ),

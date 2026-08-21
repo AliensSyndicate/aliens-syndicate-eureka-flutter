@@ -37,7 +37,9 @@ class ExerciseImageChoice extends StatelessWidget {
       if (question != null)
         ExerciseQuestionPrompt(question: question!, primaryColor: primaryColor),
       GridView.count(
+        primary: false,
         shrinkWrap: true,
+        padding: EdgeInsets.zero,
         physics: const NeverScrollableScrollPhysics(),
         crossAxisCount: 2,
         mainAxisSpacing: UiSpacing.sm,
