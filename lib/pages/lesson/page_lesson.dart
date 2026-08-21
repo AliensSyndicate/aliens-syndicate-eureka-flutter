@@ -200,7 +200,19 @@ class _PageLessonState extends State<PageLesson> {
   Widget _summaryPage() => LessonSummary(
     questions: controller.visibleQuestions,
     resultFor: controller.resultFor,
+    primaryColor: subjectColor,
+    onRetry: _retryActivities,
   );
+
+  Future<void> _retryActivities() async {
+    await controller.retry();
+    if (!mounted) return;
+    for (final textController in textControllers.values) {
+      textController.clear();
+    }
+    pageController.jumpToPage(controller.currentPage);
+    setState(() {});
+  }
 
   Widget _contentPage() => Padding(
     padding: const EdgeInsets.symmetric(horizontal: UiSpacing.pageHorizontal),

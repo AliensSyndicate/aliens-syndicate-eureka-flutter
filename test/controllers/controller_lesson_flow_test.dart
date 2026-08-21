@@ -93,4 +93,22 @@ void main() {
       expect(controller.currentPage, controller.summaryPage);
     },
   );
+
+  test(
+    'tentar novamente limpa resultados e volta a primeira atividade',
+    () async {
+      await controller.selectPage(1);
+      final question = controller.currentQuestion;
+      await controller.saveDraft(question, question.correctAnswer);
+      await controller.submit(question.correctAnswer);
+
+      await controller.retry();
+
+      expect(controller.currentPage, 1);
+      expect(controller.answeredQuestions, 0);
+      expect(controller.answerFor(question), isNull);
+      expect(controller.resultFor(question), isNull);
+      expect(controller.canOpenSummary, isFalse);
+    },
+  );
 }

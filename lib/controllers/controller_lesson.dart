@@ -115,4 +115,11 @@ class LessonController {
       await _progressService.completeLesson(lesson.id, earnedXp);
     }
   }
+
+  Future<void> retry() async {
+    _answers.clear();
+    _results.clear();
+    currentPage = _questions.isEmpty ? 0 : 1;
+    await _persist();
+  }
 }

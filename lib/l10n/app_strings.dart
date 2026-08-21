@@ -49,6 +49,7 @@ abstract final class AppStrings {
       lessonContent = 'Conteúdo',
       activitiesSummary = 'Resumo das atividades',
       activitiesSummaryIntro = 'Veja como você se saiu nas atividades desta aula.',
+      tryAgain = 'Tentar novamente',
       playLessonAudio = 'Ouvir conteúdo da aula',
       pauseLessonAudio = 'Pausar leitura da aula',
       completeAllLessons = 'Complete todas as aulas',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../app/components/app_button.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
@@ -12,11 +13,15 @@ class LessonSummary extends StatelessWidget {
   const LessonSummary({
     required this.questions,
     required this.resultFor,
+    required this.primaryColor,
+    required this.onRetry,
     super.key,
   });
 
   final List<Question> questions;
   final bool? Function(Question question) resultFor;
+  final Color primaryColor;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +83,13 @@ class LessonSummary extends StatelessWidget {
               ),
             );
           }),
+          const SizedBox(height: UiSpacing.lg),
+          AppButton(
+            key: const ValueKey('lesson-summary-retry'),
+            label: AppStrings.tryAgain,
+            color: primaryColor,
+            onPressed: onRetry,
+          ),
         ],
       ),
     );
