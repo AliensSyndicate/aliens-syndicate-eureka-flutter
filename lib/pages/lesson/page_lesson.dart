@@ -23,6 +23,7 @@ import 'widgets/widget_lesson_app_bar.dart';
 import 'widgets/widget_lesson_feedback_card.dart';
 import 'widgets/widget_lesson_header.dart';
 import 'widgets/widget_lesson_page_indicators.dart';
+import 'widgets/widget_lesson_summary.dart';
 
 class PageLesson extends StatefulWidget {
   const PageLesson({required this.lesson, required this.mode, super.key});
@@ -43,7 +44,9 @@ class _PageLessonState extends State<PageLesson> {
 
   Color get subjectColor => UiColor.forSubject(widget.lesson.subject);
   int get currentPage => controller.currentPage;
-  int get totalPages => controller.totalQuestions + 1;
+  int get totalPages => controller.totalQuestions + 2;
+  int get availablePages =>
+      controller.canOpenSummary ? totalPages : controller.summaryPage;
 
   @override
   void initState() {
@@ -103,7 +106,7 @@ class _PageLessonState extends State<PageLesson> {
             key: const ValueKey('lesson-activities-pager'),
             controller: pageController,
             scrollDirection: Axis.horizontal,
-            itemCount: totalPages,
+            itemCount: availablePages,
             onPageChanged: (page) {
               unawaited(controller.selectPage(page));
               if (page != 0) unawaited(narrationController.stop());
@@ -168,10 +171,15 @@ class _PageLessonState extends State<PageLesson> {
   }
 
   Widget _lessonPage(int page) {
-    final question = page == 0 ? null : controller.visibleQuestions[page - 1];
+    final isSummary = page == controller.summaryPage;
+    final question = page == 0 || isSummary
+        ? null
+        : controller.visibleQuestions[page - 1];
     return SingleChildScrollView(
       key: page == 0
           ? const ValueKey('lesson-description-page')
+          : isSummary
+          ? const ValueKey('lesson-summary-page')
           : ValueKey('lesson-activity-page-${question!.id}'),
       primary: false,
       scrollDirection: Axis.vertical,
@@ -185,9 +193,18 @@ class _PageLessonState extends State<PageLesson> {
             UiSpacing.md,
         bottom: UiSpacing.pageVertical,
       ),
-      child: question == null ? _contentPage() : _activityPage(question),
+      child: page == 0
+          ? _contentPage()
+          : isSummary
+          ? _summaryPage()
+          : _activityPage(question!),
     );
   }
+
+  Widget _summaryPage() => LessonSummary(
+    questions: controller.visibleQuestions,
+    resultFor: controller.resultFor,
+  );
 
   Widget _contentPage() => Padding(
     padding: const EdgeInsets.symmetric(horizontal: UiSpacing.pageHorizontal),
@@ -292,6 +309,7 @@ class _PageLessonState extends State<PageLesson> {
   );
 
   void _goToPage(int page) {
+    if (page == controller.summaryPage && !controller.canOpenSummary) return;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     if (reduceMotion) {
       pageController.jumpToPage(page);
@@ -314,11 +332,16 @@ class _PageLessonState extends State<PageLesson> {
           ? LessonPageIndicatorStatus.correct
           : LessonPageIndicatorStatus.incorrect;
     }),
+    controller.canOpenSummary
+        ? LessonPageIndicatorStatus.summary
+        : LessonPageIndicatorStatus.summaryDisabled,
   ];
 
-  String _pageName(int page) => page == 0
-      ? AppStrings.lessonContent
-      : _activityName(controller.visibleQuestions[page - 1].type);
+  String _pageName(int page) {
+    if (page == 0) return AppStrings.lessonContent;
+    if (page == controller.summaryPage) return AppStrings.activitiesSummary;
+    return _activityName(controller.visibleQuestions[page - 1].type);
+  }
 
   String _activityName(QuestionType type) => switch (type) {
     QuestionType.multipleChoice => 'Escolha uma resposta',

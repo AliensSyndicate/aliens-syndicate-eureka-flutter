@@ -73,4 +73,24 @@ void main() {
     await controller.selectPage(5);
     expect(controller.currentPage, 5);
   });
+
+  test(
+    'libera o resumo apenas depois de verificar todas as atividades',
+    () async {
+      await controller.selectPage(controller.summaryPage);
+      expect(controller.currentPage, controller.totalQuestions);
+      expect(controller.canOpenSummary, isFalse);
+
+      for (var page = 1; page <= controller.totalQuestions; page++) {
+        await controller.selectPage(page);
+        final question = controller.currentQuestion;
+        await controller.saveDraft(question, question.correctAnswer);
+        await controller.submit(question.correctAnswer);
+      }
+
+      expect(controller.canOpenSummary, isTrue);
+      await controller.selectPage(controller.summaryPage);
+      expect(controller.currentPage, controller.summaryPage);
+    },
+  );
 }

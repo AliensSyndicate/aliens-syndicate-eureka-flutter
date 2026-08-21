@@ -29,7 +29,10 @@ class LessonController {
     final saved = _progressService.loadLessonSession(lesson.id);
     _answers.addAll(saved.answers);
     _results.addAll(saved.results);
-    currentPage = saved.currentPage.clamp(0, _questions.length);
+    currentPage = saved.currentPage.clamp(
+      0,
+      canOpenSummary ? summaryPage : _questions.length,
+    );
   }
   final Lesson lesson;
   final LearningMode mode;
@@ -46,7 +49,9 @@ class LessonController {
   int get totalQuestions => _questions.length;
   bool get isLastQuestion => currentIndex == _questions.length - 1;
   bool get hasSubmittedCurrent => _results.containsKey(currentQuestion.id);
-  int get answeredQuestions => _answers.length;
+  int get answeredQuestions => _results.length;
+  bool get canOpenSummary => answeredQuestions == totalQuestions;
+  int get summaryPage => totalQuestions + 1;
   double get completionProgress =>
       totalQuestions == 0 ? 0 : answeredQuestions / totalQuestions;
   String? answerFor(Question question) => _answers[question.id];
@@ -61,7 +66,10 @@ class LessonController {
       ? _scoringService.calculateJourneyXp(correctAnswers: correctAnswers)
       : 0;
   Future<void> selectPage(int page) async {
-    currentPage = page.clamp(0, _questions.length);
+    currentPage = page.clamp(
+      0,
+      canOpenSummary ? summaryPage : _questions.length,
+    );
     await _persist();
   }
 

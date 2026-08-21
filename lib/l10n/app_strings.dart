@@ -47,14 +47,15 @@ abstract final class AppStrings {
       reportError = 'Reportar erro',
       reportErrorUnavailable = 'O envio de relatos estará disponível em breve.',
       lessonContent = 'Conteúdo',
+      activitiesSummary = 'Resumo das atividades',
+      activitiesSummaryIntro = 'Veja como você se saiu nas atividades desta aula.',
       playLessonAudio = 'Ouvir conteúdo da aula',
       pauseLessonAudio = 'Pausar leitura da aula',
       completeAllLessons = 'Complete todas as aulas',
       lessonElapsedTimeLabel = 'Tempo decorrido da aula',
       lessonPaginationLabel = 'Página da atividade',
       lessonTimeUp = 'O tempo da aula terminou',
-      lessonTimeUpMessage =
-          'Os 20 minutos acabaram. Você pode tentar esta lição novamente.',
+      lessonTimeUpMessage = 'Os 20 minutos acabaram. Você pode tentar esta lição novamente.',
       answeredActivity = 'Atividade respondida',
       currentActivity = 'Atividade atual',
       returnToCurrentActivity = 'Voltar à atividade atual',
@@ -77,6 +78,8 @@ abstract final class AppStrings {
   static String activityPosition(int current, int total) =>
       'Atividade $current de $total';
   static String correctAnswerValue(String answer) => '$correctAnswer\n$answer';
+  static String activitiesSummaryResult(int correct, int total) =>
+      'Você acertou $correct de $total atividades.';
   static String essayCounter(int length, int maxLength) => '$length/$maxLength';
   static String memoryPairs(int found, int total) => '$found/$total';
   static String lessonTime(Duration value) {

@@ -44,6 +44,10 @@ void main() {
       find.byKey(const ValueKey('lesson-page-indicator-5')),
       findsOneWidget,
     );
+    final summaryIndicator = tester.widget<InkWell>(
+      find.byKey(const ValueKey('lesson-page-indicator-6')),
+    );
+    expect(summaryIndicator.onTap, isNull);
     expect(find.text(modelMultipleChoiceLesson.summary), findsOneWidget);
     expect(find.text(AppStrings.startActivity), findsNothing);
 
