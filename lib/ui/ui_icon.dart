@@ -36,8 +36,11 @@ abstract final class UiIcon {
       huge(icon: HugeIcons.strokeRoundedCancelCircle, size: size, color: color);
   static Widget check({double size = UiSize.icon, Color? color}) =>
       huge(icon: HugeIcons.strokeRoundedTick02, size: size, color: color);
-  static Widget drag({double size = UiSize.icon, Color? color}) =>
-      huge(icon: HugeIcons.strokeRoundedDrag01, size: size, color: color);
+  static Widget drag({double size = UiSize.icon, Color? color}) => huge(
+    icon: HugeIcons.strokeRoundedDragDropVertical,
+    size: size,
+    color: color,
+  );
   static Widget trophy({double size = UiSize.icon, Color? color}) =>
       huge(icon: HugeIcons.strokeRoundedChampion, size: size, color: color);
   static Widget user({double size = UiSize.icon, Color? color}) =>

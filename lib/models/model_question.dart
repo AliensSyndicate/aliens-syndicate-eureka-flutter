@@ -58,6 +58,10 @@ class Question {
       ? explanation
       : 'Observe como a pergunta foi construída. A resposta correta é '
             '$correctAnswer.';
+
+  String get correctAnswerForFeedback => type == QuestionType.matching
+      ? pairs!.map((pair) => '${pair.left} — ${pair.right}').join('\n')
+      : correctAnswer;
   final QuestionType type;
   final List<String> options, tags;
 

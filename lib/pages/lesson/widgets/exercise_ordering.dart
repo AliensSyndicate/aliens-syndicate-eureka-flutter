@@ -8,12 +8,6 @@ import '../../../ui/ui_option.dart';
 import '../../../ui/ui_spacing.dart';
 import 'exercise_question_prompt.dart';
 
-/// Exercício de ordenação de frase (Sentence Ordering) estilo Duolingo.
-///
-/// - Área superior: 2 linhas de pauta horizontais. As palavras montadas repousam
-///   diretamente sobre a Linha 1; ao quebrar para a 2ª linha, repousam sobre a Linha 2.
-/// - Área inferior: banco de palavras disponíveis (sem linhas de pauta).
-/// - Suporta toque simples e arrastar para reordenar (drag & drop).
 class ExerciseOrdering extends StatefulWidget {
   const ExerciseOrdering({
     this.question,
@@ -26,20 +20,10 @@ class ExerciseOrdering extends StatefulWidget {
   });
 
   final Question? question;
-
-  /// Lista de palavras disponíveis no banco.
   final List<String> words;
-
-  /// Cor temática da matéria atual.
   final Color primaryColor;
-
-  /// Callback com a frase montada em tempo real (separada por espaço).
   final ValueChanged<String> onChanged;
-
-  /// Resposta submetida anteriormente (para histórico).
   final String? initialAnswer;
-
-  /// Se a interação está habilitada.
   final bool enabled;
 
   @override
@@ -120,15 +104,11 @@ class _ExerciseOrderingState extends State<ExerciseOrdering> {
             question: widget.question!,
             primaryColor: widget.primaryColor,
           ),
-        // -------------------------------------------------------------------
-        // Área superior: Pauta de linhas de montagem estilo Duolingo
-        // -------------------------------------------------------------------
-        SizedBox(
-          width: double.infinity,
-          height: _rowHeight * _lineCount,
+        // Área das linhas guia + palavras selecionadas com altura mínima garantida
+        ConstrainedBox(
+          constraints: BoxConstraints(minHeight: _rowHeight * _lineCount),
           child: Stack(
             children: [
-              // Fundo: 2 linhas de base horizontais de pauta com margin-top
               Column(
                 children: List.generate(_lineCount, (index) {
                   return SizedBox(
@@ -147,8 +127,6 @@ class _ExerciseOrderingState extends State<ExerciseOrdering> {
                   );
                 }),
               ),
-
-              // Frente: Palavras montadas que assentam sobre cada linha
               Padding(
                 padding: const EdgeInsets.only(top: 2.0),
                 child: Wrap(
@@ -212,12 +190,8 @@ class _ExerciseOrderingState extends State<ExerciseOrdering> {
             ],
           ),
         ),
-
-        const SizedBox(height: UiSpacing.xl),
-
-        // -------------------------------------------------------------------
-        // Área inferior: Banco de palavras disponíveis (sem linhas de pauta)
-        // -------------------------------------------------------------------
+        // Espaçamento dinâmico garantindo que o banco de palavras nunca encoste ou suba na frase
+        const SizedBox(height: UiSpacing.xxl * 1.5),
         Wrap(
           spacing: UiSpacing.xs,
           runSpacing: UiSpacing.sm,
@@ -241,10 +215,6 @@ class _ExerciseOrderingState extends State<ExerciseOrdering> {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Chip de palavra interativo
-// ---------------------------------------------------------------------------
 
 class _WordChip extends StatelessWidget {
   const _WordChip({
@@ -299,10 +269,6 @@ class _WordChip extends StatelessWidget {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Chip placeholder (slot vazio no banco de palavras)
-// ---------------------------------------------------------------------------
 
 class _PlaceholderChip extends StatelessWidget {
   const _PlaceholderChip({required this.label});

@@ -53,19 +53,14 @@ abstract final class AppStrings {
       lessonElapsedTimeLabel = 'Tempo decorrido da aula',
       lessonPaginationLabel = 'Página da atividade',
       lessonTimeUp = 'O tempo da aula terminou',
-      lessonTimeUpMessage = 'Os 20 minutos acabaram. Você pode tentar esta lição novamente.',
+      lessonTimeUpMessage =
+          'Os 20 minutos acabaram. Você pode tentar esta lição novamente.',
       answeredActivity = 'Atividade respondida',
       currentActivity = 'Atividade atual',
       returnToCurrentActivity = 'Voltar à atividade atual',
-      matchingPrompt = 'Toque os pares correspondentes',
-      matchingComplete = 'Todos os pares conectados!',
-      orderingPrompt = 'Monte a frase na ordem correta',
-      essayHint = 'Escreva sua explicação...',
-      sequencingPrompt = 'Arraste os itens para a ordem correta',
+      essayHint = 'Escreva...',
       trueLabel = 'Verdadeiro',
-      falseLabel = 'Falso',
-      memoryPrompt = 'Encontre os pares!',
-      memoryComplete = 'Todos os pares encontrados!';
+      falseLabel = 'Falso';
   static String lessonPage(int current, int total, String label) =>
       '$current de $total - $label';
   static const xpLabel = 'Pontos de experiência';

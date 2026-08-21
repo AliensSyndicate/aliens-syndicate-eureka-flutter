@@ -25,6 +25,7 @@ class ExerciseMemory extends StatefulWidget {
     required this.primaryColor,
     required this.onCompleted,
     this.enabled = true,
+    this.revealAll = false,
     super.key,
   });
 
@@ -33,6 +34,7 @@ class ExerciseMemory extends StatefulWidget {
   final Color primaryColor;
   final ValueChanged<bool> onCompleted;
   final bool enabled;
+  final bool revealAll;
 
   @override
   State<ExerciseMemory> createState() => _ExerciseMemoryState();
@@ -61,7 +63,7 @@ class _ExerciseMemoryState extends State<ExerciseMemory> {
   }
 
   bool _isOpen(int index) =>
-      _matched.contains(index) || _revealed.contains(index);
+      widget.revealAll || _matched.contains(index) || _revealed.contains(index);
 
   Future<void> _flip(int index) async {
     if (!widget.enabled || _busy || _isOpen(index)) return;
@@ -105,7 +107,9 @@ class _ExerciseMemoryState extends State<ExerciseMemory> {
             primaryColor: widget.primaryColor,
           ),
         GridView.count(
+          primary: false,
           shrinkWrap: true,
+          padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: _columns,
           mainAxisSpacing: UiSpacing.xs,
@@ -117,7 +121,7 @@ class _ExerciseMemoryState extends State<ExerciseMemory> {
               key: ValueKey('memory-card-$index'),
               label: entry.$2.label,
               revealed: _isOpen(index),
-              matched: _matched.contains(index),
+              matched: widget.revealAll || _matched.contains(index),
               accentColor: widget.primaryColor,
               onTap: () => _flip(index),
             );

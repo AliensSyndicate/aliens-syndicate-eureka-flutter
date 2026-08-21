@@ -258,7 +258,9 @@ class _PageLessonState extends State<PageLesson> {
                   : AppStrings.incorrectTitle,
               message: result
                   ? null
-                  : AppStrings.correctAnswerValue(question.correctAnswer),
+                  : AppStrings.correctAnswerValue(
+                      question.correctAnswerForFeedback,
+                    ),
               explanation: result ? null : question.incorrectFeedback,
               onReport: () => _reportError(question: question),
             ),
@@ -321,7 +323,7 @@ class _PageLessonState extends State<PageLesson> {
   String _activityName(QuestionType type) => switch (type) {
     QuestionType.multipleChoice => 'Escolha uma resposta',
     QuestionType.textInput => 'Complete a resposta',
-    QuestionType.essay => 'Explique com suas palavras',
+    QuestionType.essay => 'Palavra',
     QuestionType.fillBlank => 'Complete os espaços',
     QuestionType.ordering => 'Organize as palavras',
     QuestionType.sequencing => 'Organize a sequência',

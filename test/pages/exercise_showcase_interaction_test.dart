@@ -122,4 +122,27 @@ void main() {
     expect(completed, isTrue);
     expect(find.text('2/2'), findsOneWidget, reason: 'contador de pares');
   });
+
+  testWidgets('memória finalizada mantém todas as cartas viradas', (
+    tester,
+  ) async {
+    await host(
+      tester,
+      ExerciseMemory(
+        pairs: const [
+          MatchingPair(left: '1/2', right: '2/4'),
+          MatchingPair(left: '1/3', right: '2/6'),
+        ],
+        primaryColor: UiColor.mathematics,
+        enabled: false,
+        revealAll: true,
+        onCompleted: (_) {},
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    for (final label in ['1/2', '2/4', '1/3', '2/6']) {
+      expect(find.text(label), findsOneWidget);
+    }
+  });
 }

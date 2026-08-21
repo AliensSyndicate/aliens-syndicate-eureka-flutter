@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../app/components/app_text_field.dart';
 import '../../../l10n/app_strings.dart';
@@ -7,7 +8,6 @@ import '../../../ui/ui_color.dart';
 import 'exercise_multiple_choice.dart';
 import 'exercise_question_prompt.dart';
 
-/// Exercício de entrada de texto livre.
 class ExerciseTextInput extends StatelessWidget {
   const ExerciseTextInput({
     this.question,
@@ -36,6 +36,7 @@ class ExerciseTextInput extends StatelessWidget {
         hint: AppStrings.correctAnswer,
         controller: textController,
         showSearchIcon: false,
+        inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
         onChanged: onTextChanged,
       );
     } else {

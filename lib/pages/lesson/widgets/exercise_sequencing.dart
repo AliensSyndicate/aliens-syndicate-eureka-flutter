@@ -78,7 +78,7 @@ class _ExerciseSequencingState extends State<ExerciseSequencing> {
     final accent = switch (widget.answeredCorrect) {
       true => UiColor.success,
       false => UiColor.error,
-      null => widget.primaryColor,
+      null => UiColor.outline,
     };
 
     return Column(
@@ -97,25 +97,27 @@ class _ExerciseSequencingState extends State<ExerciseSequencing> {
           onReorderItem: _reorder,
           proxyDecorator: (child, index, animation) =>
               Material(color: Colors.transparent, child: child),
-          itemBuilder: (context, index) => Padding(
-            key: ValueKey('sequence-${_order[index]}'),
-            padding: const EdgeInsets.only(bottom: UiSpacing.xs),
-            child: _SequenceTile(
+          itemBuilder: (context, index) {
+            final tile = _SequenceTile(
               position: index + 1,
               label: _order[index],
               accent: accent,
               answered: widget.answeredCorrect != null,
               handle: widget.enabled
-                  ? ReorderableDragStartListener(
-                      index: index,
-                      child: UiIcon.drag(
-                        color: UiColor.textSecondary,
-                        size: UiSize.iconMd,
-                      ),
+                  ? UiIcon.drag(
+                      color: UiColor.textSecondary,
+                      size: UiSize.iconMd,
                     )
                   : null,
-            ),
-          ),
+            );
+            return Padding(
+              key: ValueKey('sequence-${_order[index]}'),
+              padding: const EdgeInsets.only(bottom: UiSpacing.xs),
+              child: widget.enabled
+                  ? ReorderableDragStartListener(index: index, child: tile)
+                  : tile,
+            );
+          },
         ),
       ],
     );

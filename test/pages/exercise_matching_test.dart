@@ -14,52 +14,57 @@ void main() {
     MatchingPair(left: '2/3', right: 'Dois terços'),
   ];
 
-  testWidgets('opções não somem e erro trava em vermelho', (tester) async {
-    bool? completedAllCorrect;
+  testWidgets('só mostra correção depois de verificar a resposta', (
+    tester,
+  ) async {
+    var answer = '';
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: ExerciseMatching(
-            pairs: testPairs,
-            primaryColor: UiColor.mathematics,
-            onCompleted: (allCorrect) => completedAllCorrect = allCorrect,
-          ),
+    Widget exercise({bool? answeredCorrect}) => MaterialApp(
+      home: Scaffold(
+        body: ExerciseMatching(
+          pairs: testPairs,
+          primaryColor: UiColor.mathematics,
+          initialAnswer: answer,
+          answeredCorrect: answeredCorrect,
+          enabled: answeredCorrect == null,
+          onChanged: (value) => answer = value,
         ),
       ),
     );
 
-    // Seleciona um par correto: 1/2 e Metade
-    await tester.tap(find.text('1/2'));
-    await tester.pump();
-    await tester.tap(find.text('Metade'));
-    await tester.pumpAndSettle();
+    await tester.pumpWidget(exercise());
+    final wrongRights = [
+      'Um quarto',
+      'Três quartos',
+      'Um terço',
+      'Dois terços',
+      'Metade',
+    ];
+    for (var index = 0; index < testPairs.length; index++) {
+      await tester.tap(find.text(testPairs[index].left));
+      await tester.tap(find.text(wrongRights[index]));
+      await tester.pump();
+    }
 
-    // As opções continuam visíveis na tela
-    expect(find.text('1/2'), findsOneWidget);
-    expect(find.text('Metade'), findsOneWidget);
-
-    // Seleciona um par incorreto: 1/4 e Dois terços
-    await tester.tap(find.text('1/4'));
-    await tester.pump();
-    await tester.tap(find.text('Dois terços'));
-    await tester.pumpAndSettle();
-
-    // Opções incorretas continuam na tela e com ícone de erro
-    expect(find.text('1/4'), findsOneWidget);
-    expect(find.text('Dois terços'), findsOneWidget);
+    expect(answer, isNotEmpty);
     expect(
       find.byWidgetPredicate(
         (widget) =>
             widget is HugeIcon &&
             identical(widget.icon, HugeIcons.strokeRoundedCancelCircle),
       ),
-      findsNWidgets(2),
+      findsNothing,
     );
 
-    // Clicar novamente em uma opção travada não altera estado
-    await tester.tap(find.text('1/4'));
+    await tester.pumpWidget(exercise(answeredCorrect: false));
     await tester.pump();
-    expect(completedAllCorrect, isNull);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is HugeIcon &&
+            identical(widget.icon, HugeIcons.strokeRoundedCancelCircle),
+      ),
+      findsNWidgets(10),
+    );
   });
 }

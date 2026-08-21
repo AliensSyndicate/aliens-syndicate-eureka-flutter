@@ -1,4 +1,3 @@
-import 'package:eureka/ui/ui_text.dart';
 import 'package:flutter/material.dart';
 
 import '../../../enums/question_type.dart';
@@ -20,8 +19,6 @@ import 'exercise_word_completion.dart';
 
 enum LessonActivityStatus { active, answeredCorrect, answeredIncorrect }
 
-const _kMatchingDone = '__matching_done__';
-const _kMatchingIncorrect = '__matching_incorrect__';
 const _kMemoryDone = '__memory_done__';
 const _kMemoryIncorrect = '__memory_incorrect__';
 
@@ -73,40 +70,32 @@ class LessonActivity extends StatelessWidget {
 
   List<Widget> _exercise() => switch (question.type) {
     QuestionType.matching => [
-      _hint(AppStrings.matchingPrompt),
-      if (isCurrent)
-        ExerciseMatching(
-          key: ValueKey('matching-${question.id}'),
-          question: question,
-          pairs: question.pairs!,
-          primaryColor: primaryColor,
-          enabled: interactionEnabled,
-          onCompleted: (allCorrect) => onOptionSelected(
-            allCorrect ? _kMatchingDone : _kMatchingIncorrect,
-          ),
-        )
-      else
-        _DoneIndicator(correct: isCorrect, label: AppStrings.matchingComplete),
+      ExerciseMatching(
+        key: ValueKey('matching-${question.id}'),
+        question: question,
+        pairs: question.pairs!,
+        primaryColor: primaryColor,
+        enabled: interactionEnabled,
+        initialAnswer: currentAnswer,
+        answeredCorrect: isCurrent ? null : isCorrect,
+        onChanged: onOptionSelected,
+      ),
     ],
 
     QuestionType.memory => [
-      _hint(AppStrings.memoryPrompt),
-      if (isCurrent)
-        ExerciseMemory(
-          key: ValueKey('memory-${question.id}'),
-          question: question,
-          pairs: question.pairs!,
-          primaryColor: primaryColor,
-          enabled: interactionEnabled,
-          onCompleted: (allCorrect) =>
-              onOptionSelected(allCorrect ? _kMemoryDone : _kMemoryIncorrect),
-        )
-      else
-        _DoneIndicator(correct: isCorrect, label: AppStrings.memoryComplete),
+      ExerciseMemory(
+        key: ValueKey('memory-${question.id}'),
+        question: question,
+        pairs: question.pairs!,
+        primaryColor: primaryColor,
+        enabled: interactionEnabled,
+        revealAll: !isCurrent,
+        onCompleted: (allCorrect) =>
+            onOptionSelected(allCorrect ? _kMemoryDone : _kMemoryIncorrect),
+      ),
     ],
 
     QuestionType.ordering => [
-      _hint(AppStrings.orderingPrompt),
       ExerciseOrdering(
         key: ValueKey('ordering-${question.id}'),
         question: question,
@@ -119,7 +108,6 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.sequencing => [
-      _hint(AppStrings.sequencingPrompt),
       ExerciseSequencing(
         key: ValueKey('sequencing-${question.id}'),
         question: question,
@@ -238,25 +226,4 @@ class LessonActivity extends StatelessWidget {
       ),
     ],
   };
-
-  Widget _hint(String text) => Padding(
-    padding: const EdgeInsets.only(bottom: UiSpacing.sm),
-    child: Text(text, style: UiText.p.copyWith(color: UiColor.textSecondary)),
-  );
-}
-
-class _DoneIndicator extends StatelessWidget {
-  const _DoneIndicator({required this.correct, required this.label});
-
-  final bool correct;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = correct ? UiColor.success : UiColor.error;
-    return Text(
-      correct ? label : AppStrings.answeredActivity,
-      style: UiText.label.copyWith(color: color),
-    );
-  }
 }

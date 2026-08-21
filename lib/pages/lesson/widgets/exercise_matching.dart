@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -10,21 +11,24 @@ import '../../../ui/ui_option.dart';
 import '../../../ui/ui_spacing.dart';
 import 'exercise_question_prompt.dart';
 
-enum _Feedback { none, selected, correct, incorrect }
+enum _MatchingState { normal, selected, correct, incorrect }
 
-/// Exercício de ligação (matching).
-///
-/// Exibe duas colunas de opções embaralhadas. O usuário seleciona um item de cada
-/// coluna para formar um par.
-/// - Não é possível tentar novamente: se acertar, o par fica verde; se errar, o par fica vermelho.
-/// - As opções permanecem visíveis na tela.
-/// - Ao responder todos os pares, dispara [onCompleted] informando se todos foram corretos.
+const _pairColors = [
+  UiColor.info,
+  UiColor.warning,
+  UiColor.portuguese,
+  UiColor.biology,
+  UiColor.chemistry,
+];
+
 class ExerciseMatching extends StatefulWidget {
   const ExerciseMatching({
     this.question,
     required this.pairs,
     required this.primaryColor,
-    required this.onCompleted,
+    required this.onChanged,
+    this.initialAnswer,
+    this.answeredCorrect,
     this.enabled = true,
     super.key,
   });
@@ -32,270 +36,283 @@ class ExerciseMatching extends StatefulWidget {
   final Question? question;
   final List<MatchingPair> pairs;
   final Color primaryColor;
-  final ValueChanged<bool> onCompleted;
+  final ValueChanged<String> onChanged;
+  final String? initialAnswer;
+  final bool? answeredCorrect;
   final bool enabled;
 
   @override
   State<ExerciseMatching> createState() => _ExerciseMatchingState();
 }
 
-class _ExerciseMatchingState extends State<ExerciseMatching>
-    with SingleTickerProviderStateMixin {
+class _ExerciseMatchingState extends State<ExerciseMatching> {
   late final List<String> _leftItems;
   late final List<String> _rightItems;
-
+  final Map<String, String> _matches = {};
   String? _selectedLeft;
   String? _selectedRight;
-
-  final Set<String> _correctLeft = {};
-  final Set<String> _correctRight = {};
-  final Set<String> _incorrectLeft = {};
-  final Set<String> _incorrectRight = {};
-
-  bool _busy = false;
-
-  late final AnimationController _shakeCtrl;
-  late final Animation<double> _shakeAnim;
 
   @override
   void initState() {
     super.initState();
-    final rng = math.Random();
-    _leftItems = widget.pairs.map((p) => p.left).toList()..shuffle(rng);
-    _rightItems = widget.pairs.map((p) => p.right).toList()..shuffle(rng);
-
-    _shakeCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
-    _shakeAnim = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: -8.0), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: -8.0, end: 8.0), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: 8.0, end: -8.0), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: -8.0, end: 8.0), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: 8.0, end: 0.0), weight: 1),
-    ]).animate(CurvedAnimation(parent: _shakeCtrl, curve: Curves.easeInOut));
+    final random = math.Random();
+    _leftItems = widget.pairs.map((pair) => pair.left).toList()
+      ..shuffle(random);
+    _rightItems = widget.pairs.map((pair) => pair.right).toList()
+      ..shuffle(random);
+    _restore(widget.initialAnswer);
   }
 
-  @override
-  void dispose() {
-    _shakeCtrl.dispose();
-    super.dispose();
+  void _restore(String? answer) {
+    if (answer == null || answer.isEmpty) return;
+    try {
+      final decoded = jsonDecode(answer);
+      if (decoded is! Map) return;
+      for (final entry in decoded.entries) {
+        final left = entry.key.toString();
+        final right = entry.value.toString();
+        if (_leftItems.contains(left) && _rightItems.contains(right)) {
+          _matches[left] = right;
+        }
+      }
+    } on FormatException {
+      return;
+    }
   }
-
-  _Feedback _leftState(String item) {
-    if (_correctLeft.contains(item)) return _Feedback.correct;
-    if (_incorrectLeft.contains(item)) return _Feedback.incorrect;
-    if (_selectedLeft == item) return _Feedback.selected;
-    return _Feedback.none;
-  }
-
-  _Feedback _rightState(String item) {
-    if (_correctRight.contains(item)) return _Feedback.correct;
-    if (_incorrectRight.contains(item)) return _Feedback.incorrect;
-    if (_selectedRight == item) return _Feedback.selected;
-    return _Feedback.none;
-  }
-
-  bool _isLeftLocked(String item) =>
-      _correctLeft.contains(item) || _incorrectLeft.contains(item);
-
-  bool _isRightLocked(String item) =>
-      _correctRight.contains(item) || _incorrectRight.contains(item);
 
   void _tapLeft(String item) {
-    if (_busy || _isLeftLocked(item)) return;
-    setState(() {
-      _selectedLeft = _selectedLeft == item ? null : item;
-    });
-    _tryCheck();
+    if (!widget.enabled) return;
+    if (_matches.containsKey(item)) {
+      setState(() => _matches.remove(item));
+      _notifyChange();
+      return;
+    }
+    setState(() => _selectedLeft = _selectedLeft == item ? null : item);
+    _commitSelection();
   }
 
   void _tapRight(String item) {
-    if (_busy || _isRightLocked(item)) return;
-    setState(() {
-      _selectedRight = _selectedRight == item ? null : item;
-    });
-    _tryCheck();
+    if (!widget.enabled) return;
+    final matchedLeft = _leftForRight(item);
+    if (matchedLeft != null) {
+      setState(() => _matches.remove(matchedLeft));
+      _notifyChange();
+      return;
+    }
+    setState(() => _selectedRight = _selectedRight == item ? null : item);
+    _commitSelection();
   }
 
-  void _tryCheck() {
-    if (_selectedLeft == null || _selectedRight == null) return;
-    _checkPair(_selectedLeft!, _selectedRight!);
-  }
-
-  Future<void> _checkPair(String left, String right) async {
-    _busy = true;
-    final correct = widget.pairs.any((p) => p.left == left && p.right == right);
-
+  void _commitSelection() {
+    final left = _selectedLeft;
+    final right = _selectedRight;
+    if (left == null || right == null) return;
     setState(() {
-      if (correct) {
-        _correctLeft.add(left);
-        _correctRight.add(right);
-      } else {
-        _incorrectLeft.add(left);
-        _incorrectRight.add(right);
-      }
+      _matches[left] = right;
       _selectedLeft = null;
       _selectedRight = null;
     });
-
-    if (!correct) {
-      await _shakeCtrl.forward(from: 0);
-    }
-
-    _busy = false;
-
-    final totalAnswered = _correctLeft.length + _incorrectLeft.length;
-    if (totalAnswered == widget.pairs.length) {
-      final allCorrect = _incorrectLeft.isEmpty;
-      widget.onCompleted(allCorrect);
-    }
+    _notifyChange();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (widget.question != null)
-          ExerciseQuestionPrompt(
-            question: widget.question!,
-            primaryColor: widget.primaryColor,
-          ),
-        AnimatedBuilder(
-          animation: _shakeAnim,
-          builder: (context, child) => Transform.translate(
-            offset: Offset(_shakeAnim.value, 0),
-            child: child,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: _Column(
-                  items: _leftItems,
-                  stateOf: _leftState,
-                  onTap: widget.enabled ? _tapLeft : (_) {},
-                  accentColor: widget.primaryColor,
-                ),
-              ),
-              const SizedBox(width: UiSpacing.sm),
-              Expanded(
-                child: _Column(
-                  items: _rightItems,
-                  stateOf: _rightState,
-                  onTap: widget.enabled ? _tapRight : (_) {},
-                  accentColor: widget.primaryColor,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+  void _notifyChange() {
+    widget.onChanged(
+      _matches.length == widget.pairs.length ? jsonEncode(_matches) : '',
     );
   }
+
+  String? _leftForRight(String right) {
+    for (final entry in _matches.entries) {
+      if (entry.value == right) return entry.key;
+    }
+    return null;
+  }
+
+  bool _pairIsCorrect(String left, String right) =>
+      widget.pairs.any((pair) => pair.left == left && pair.right == right);
+
+  _MatchingState _leftState(String item) {
+    final right = _matches[item];
+    if (right != null) return _matchedState(item, right);
+    return _selectedLeft == item
+        ? _MatchingState.selected
+        : _MatchingState.normal;
+  }
+
+  _MatchingState _rightState(String item) {
+    final left = _leftForRight(item);
+    if (left != null) return _matchedState(left, item);
+    return _selectedRight == item
+        ? _MatchingState.selected
+        : _MatchingState.normal;
+  }
+
+  _MatchingState _matchedState(String left, String right) {
+    if (widget.answeredCorrect == null) return _MatchingState.selected;
+    return _pairIsCorrect(left, right)
+        ? _MatchingState.correct
+        : _MatchingState.incorrect;
+  }
+
+  int? _leftPairIndex(String item) =>
+      _matches.containsKey(item) ? _leftItems.indexOf(item) : null;
+
+  int? _rightPairIndex(String item) {
+    final left = _leftForRight(item);
+    return left == null ? null : _leftItems.indexOf(left);
+  }
+
+  Color _leftColor(String item) => _pairColor(_leftPairIndex(item));
+
+  Color _rightColor(String item) => _pairColor(_rightPairIndex(item));
+
+  Color _pairColor(int? index) => index == null
+      ? widget.primaryColor
+      : _pairColors[index % _pairColors.length];
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      if (widget.question != null)
+        ExerciseQuestionPrompt(
+          question: widget.question!,
+          primaryColor: widget.primaryColor,
+        ),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: _MatchingColumn(
+              items: _leftItems,
+              stateOf: _leftState,
+              colorOf: _leftColor,
+              pairIndexOf: _leftPairIndex,
+              onTap: _tapLeft,
+              enabled: widget.enabled,
+            ),
+          ),
+          const SizedBox(width: UiSpacing.sm),
+          Expanded(
+            child: _MatchingColumn(
+              items: _rightItems,
+              stateOf: _rightState,
+              colorOf: _rightColor,
+              pairIndexOf: _rightPairIndex,
+              onTap: _tapRight,
+              enabled: widget.enabled,
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
-class _Column extends StatelessWidget {
-  const _Column({
+class _MatchingColumn extends StatelessWidget {
+  const _MatchingColumn({
     required this.items,
     required this.stateOf,
+    required this.colorOf,
+    required this.pairIndexOf,
     required this.onTap,
-    required this.accentColor,
+    required this.enabled,
   });
 
   final List<String> items;
-  final _Feedback Function(String) stateOf;
-  final void Function(String) onTap;
-  final Color accentColor;
+  final _MatchingState Function(String) stateOf;
+  final Color Function(String) colorOf;
+  final int? Function(String) pairIndexOf;
+  final ValueChanged<String> onTap;
+  final bool enabled;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: items.map((item) {
-        final fb = stateOf(item);
-        return _Chip(
-          label: item,
-          feedback: fb,
-          accentColor: accentColor,
-          onTap: () => onTap(item),
-        );
-      }).toList(),
-    );
-  }
+  Widget build(BuildContext context) => Column(
+    children: items
+        .map(
+          (item) => _MatchingChip(
+            label: item,
+            state: stateOf(item),
+            selectionColor: colorOf(item),
+            pairIndex: pairIndexOf(item),
+            onTap: enabled ? () => onTap(item) : null,
+          ),
+        )
+        .toList(),
+  );
 }
 
-class _Chip extends StatelessWidget {
-  const _Chip({
+class _MatchingChip extends StatelessWidget {
+  const _MatchingChip({
     required this.label,
-    required this.feedback,
-    required this.accentColor,
+    required this.state,
+    required this.selectionColor,
+    required this.pairIndex,
     required this.onTap,
   });
 
   final String label;
-  final _Feedback feedback;
-  final Color accentColor;
-  final VoidCallback onTap;
+  final _MatchingState state;
+  final Color selectionColor;
+  final int? pairIndex;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final Color border = switch (feedback) {
-      _Feedback.selected => accentColor,
-      _Feedback.correct => UiColor.success,
-      _Feedback.incorrect => UiColor.error,
-      _ => UiColor.outline,
+    final color = switch (state) {
+      _MatchingState.normal => UiColor.outline,
+      _MatchingState.selected => selectionColor,
+      _MatchingState.correct => UiColor.success,
+      _MatchingState.incorrect => UiColor.error,
     };
+    final showResult =
+        state == _MatchingState.correct || state == _MatchingState.incorrect;
 
-    final bool isLocked =
-        feedback == _Feedback.correct || feedback == _Feedback.incorrect;
-    final bool interactive = !isLocked;
-
-    final showStatus =
-        feedback == _Feedback.correct || feedback == _Feedback.incorrect;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: UiSpacing.xs),
-      child: Material(
-        color: UiColor.surface,
-        borderRadius: BorderRadius.circular(UiOption.radius),
-        child: InkWell(
-          onTap: interactive ? onTap : null,
+    return Semantics(
+      button: true,
+      selected: state != _MatchingState.normal,
+      label: pairIndex == null ? label : '$label, par ${pairIndex! + 1}',
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: UiSpacing.xs),
+        child: Material(
+          color: UiColor.surface,
           borderRadius: BorderRadius.circular(UiOption.radius),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            constraints: const BoxConstraints(minHeight: 52),
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(UiOption.radius),
-              border: Border.all(color: border, width: UiOption.borderWidth),
-            ),
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (showStatus) ...[
-                  feedback == _Feedback.correct
-                      ? UiIcon.correct(color: border, size: 16)
-                      : UiIcon.incorrect(color: border, size: 16),
-                  const SizedBox(width: 6),
-                ],
-                Flexible(
-                  child: Text(
-                    label,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: feedback == _Feedback.none
-                          ? UiColor.textPrimary
-                          : border,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(UiOption.radius),
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 52),
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(UiOption.radius),
+                border: Border.all(color: color, width: UiOption.borderWidth),
+              ),
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (showResult) ...[
+                    state == _MatchingState.correct
+                        ? UiIcon.correct(color: color, size: 16)
+                        : UiIcon.incorrect(color: color, size: 16),
+                    const SizedBox(width: 6),
+                  ],
+                  Flexible(
+                    child: Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        color: state == _MatchingState.normal
+                            ? UiColor.textPrimary
+                            : color,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
