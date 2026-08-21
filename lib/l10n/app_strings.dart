@@ -20,8 +20,12 @@ abstract final class AppStrings {
       nextQuestion = 'Continuar',
       finish = 'Concluir',
       correctFeedback = 'Muito bem!',
+      correctTitle = 'Correto!',
+      correctFeedbackMessage = 'Muito bem! Continue explorando no seu ritmo.',
+      incorrectTitle = 'Incorreto!',
       incorrectFeedback = 'Quase! Leve essa ideia para a próxima.',
       correctAnswer = 'Resposta correta',
+      answerExplanation = 'Entenda por quê',
       lessonComplete = 'Descoberta concluída!',
       noXpOutsideJourney = 'Este modo é para estudar e não concede XP.',
       selectAtLeastOne = 'Selecione pelo menos um conteúdo.',
@@ -77,6 +81,7 @@ abstract final class AppStrings {
       'Reforce $lesson e avance com confiança.';
   static String activityPosition(int current, int total) =>
       'Atividade $current de $total';
+  static String correctAnswerValue(String answer) => '$correctAnswer\n$answer';
   static String essayCounter(int length, int maxLength) => '$length/$maxLength';
   static String memoryPairs(int found, int total) => '$found/$total';
   static String lessonTime(Duration value) {

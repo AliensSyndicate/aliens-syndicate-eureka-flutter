@@ -1,10 +1,13 @@
 import 'package:eureka/data/seed/seed_content.dart';
+import 'package:eureka/l10n/app_strings.dart';
 import 'package:eureka/pages/lesson/widgets/widget_lesson_activity.dart';
 import 'package:eureka/pages/lesson/widgets/exercise_content.dart';
+import 'package:eureka/pages/lesson/widgets/widget_lesson_feedback_card.dart';
 import 'package:eureka/pages/lesson/widgets/widget_question_option.dart';
 import 'package:eureka/pages/lesson/widgets/widget_lesson_page_indicators.dart';
 import 'package:eureka/services/service_lesson_narration.dart';
 import 'package:eureka/ui/ui_color.dart';
+import 'package:eureka/ui/ui_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -199,6 +202,54 @@ void main() {
 
     final inkWells = tester.widgetList<InkWell>(find.byType(InkWell));
     expect(inkWells.every((item) => item.onTap == null), isTrue);
+  });
+
+  testWidgets('card reutilizavel mostra erro e sucesso no corpo', (
+    tester,
+  ) async {
+    var reported = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              LessonFeedbackCard(
+                status: LessonFeedbackStatus.error,
+                title: AppStrings.incorrectTitle,
+                message: AppStrings.correctAnswerValue('3/4'),
+                explanation: 'O todo foi dividido em quatro partes iguais.',
+                onReport: () => reported = true,
+              ),
+              LessonFeedbackCard(
+                status: LessonFeedbackStatus.success,
+                title: AppStrings.correctTitle,
+                onReport: () => reported = true,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text(AppStrings.incorrectTitle), findsOneWidget);
+    expect(find.text(AppStrings.correctTitle), findsOneWidget);
+    expect(find.text(AppStrings.correctAnswer), findsOneWidget);
+    expect(find.text('3/4'), findsOneWidget);
+    expect(
+      tester.widget<Text>(find.text(AppStrings.correctAnswer)).style,
+      UiText.label.copyWith(color: UiColor.error),
+    );
+    expect(tester.widget<Text>(find.text('3/4')).style, UiText.p);
+    expect(find.text(AppStrings.answerExplanation), findsOneWidget);
+    expect(
+      find.text('O todo foi dividido em quatro partes iguais.'),
+      findsOneWidget,
+    );
+    expect(find.byTooltip(AppStrings.reportError), findsNWidgets(2));
+    expect(find.byType(BottomSheet), findsNothing);
+
+    await tester.tap(find.byTooltip(AppStrings.reportError).first);
+    expect(reported, isTrue);
   });
 }
 

@@ -20,6 +20,7 @@ import '../../ui/ui_spacing.dart';
 import 'widgets/exercise_content.dart';
 import 'widgets/widget_lesson_activity.dart';
 import 'widgets/widget_lesson_app_bar.dart';
+import 'widgets/widget_lesson_feedback_card.dart';
 import 'widgets/widget_lesson_header.dart';
 import 'widgets/widget_lesson_page_indicators.dart';
 
@@ -86,7 +87,7 @@ class _PageLessonState extends State<PageLesson> {
       extendBodyBehindAppBar: true,
       appBar: LessonAppBar(
         onClose: () => Navigator.maybePop(context),
-        onReport: _reportError,
+        onReport: () => _reportError(),
         indicators: Padding(
           padding: const EdgeInsets.symmetric(horizontal: UiSpacing.xs),
           child: LessonPageIndicators(
@@ -224,20 +225,44 @@ class _PageLessonState extends State<PageLesson> {
           onOptionSelected: (value) => _saveAnswer(question, value),
           onTextChanged: (value) => _saveAnswer(question, value),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: UiSpacing.pageHorizontal,
+        if (result == null)
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: UiSpacing.pageHorizontal,
+            ),
+            child: AppButton(
+              key: ValueKey('verify-${question.id}'),
+              label: AppStrings.checkAnswer,
+              color: subjectColor,
+              isLoading: submitting,
+              onPressed: answer.trim().isNotEmpty && !submitting
+                  ? () => _verify(question)
+                  : null,
+            ),
           ),
-          child: AppButton(
-            key: ValueKey('verify-${question.id}'),
-            label: AppStrings.checkAnswer,
-            color: subjectColor,
-            isLoading: submitting,
-            onPressed: result == null && answer.trim().isNotEmpty && !submitting
-                ? () => _verify(question)
-                : null,
+        if (result != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              UiSpacing.pageHorizontal,
+              0,
+              UiSpacing.pageHorizontal,
+              0,
+            ),
+            child: LessonFeedbackCard(
+              key: ValueKey('feedback-${question.id}'),
+              status: result
+                  ? LessonFeedbackStatus.success
+                  : LessonFeedbackStatus.error,
+              title: result
+                  ? AppStrings.correctTitle
+                  : AppStrings.incorrectTitle,
+              message: result
+                  ? null
+                  : AppStrings.correctAnswerValue(question.correctAnswer),
+              explanation: result ? null : question.incorrectFeedback,
+              onReport: () => _reportError(question: question),
+            ),
           ),
-        ),
       ],
     );
   }
@@ -250,28 +275,17 @@ class _PageLessonState extends State<PageLesson> {
   Future<void> _verify(Question question) async {
     if (submitting || controller.resultFor(question) != null) return;
     setState(() => submitting = true);
-    final correct = await controller.submit(
-      controller.answerFor(question) ?? '',
-    );
+    await controller.submit(controller.answerFor(question) ?? '');
     if (!mounted) return;
     setState(() => submitting = false);
-    await AppBottomSheet.show<void>(
-      context,
-      title: correct ? 'Correto!' : 'Incorreto',
-      titleColor: correct ? UiColor.success : UiColor.error,
-      content: Text(
-        correct
-            ? 'Muito bem! Continue explorando no seu ritmo.'
-            : question.incorrectFeedback,
-      ),
-    );
   }
 
-  Future<void> _reportError() => AppBottomSheet.show<void>(
+  Future<void> _reportError({Question? question}) => AppBottomSheet.show<void>(
     context,
     title: AppStrings.reportError,
     content: Text(
-      '${_pageName(currentPage)}\n${AppStrings.reportErrorUnavailable}',
+      '${question?.prompt ?? _pageName(currentPage)}\n'
+      '${AppStrings.reportErrorUnavailable}',
     ),
   );
 

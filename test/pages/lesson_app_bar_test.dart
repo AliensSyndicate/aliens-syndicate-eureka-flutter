@@ -33,6 +33,11 @@ void main() {
         const Size.square(UiSize.touchTarget),
       );
     }
+    final closeRect = tester.getRect(find.byTooltip(AppStrings.closeActivity));
+    final reportRect = tester.getRect(find.byTooltip(AppStrings.reportError));
+    final screenWidth =
+        tester.view.physicalSize.width / tester.view.devicePixelRatio;
+    expect(closeRect.left, screenWidth - reportRect.right);
     expect(find.byType(LinearProgressIndicator), findsNothing);
   });
 }

@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
-import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_option.dart';
-import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
 import 'exercise_question_prompt.dart';
 
-/// Exercício de escolha por imagem: grade 2x2 de figuras.
 class ExerciseImageChoice extends StatelessWidget {
   const ExerciseImageChoice({
     this.question,
@@ -24,8 +21,6 @@ class ExerciseImageChoice extends StatelessWidget {
   });
 
   final Question? question;
-
-  /// Cada opção é a própria figura (sequência de glifos) exibida no cartão.
   final List<String> options;
   final String currentAnswer;
   final String? submittedAnswer;
@@ -100,20 +95,6 @@ class ExerciseImageChoice extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (!isCurrent && selected)
-                          Positioned(
-                            top: UiSpacing.xs,
-                            right: UiSpacing.xs,
-                            child: isCorrect
-                                ? UiIcon.correct(
-                                    color: accent,
-                                    size: UiSize.iconSm,
-                                  )
-                                : UiIcon.incorrect(
-                                    color: accent,
-                                    size: UiSize.iconSm,
-                                  ),
-                          ),
                       ],
                     ),
                   ),
