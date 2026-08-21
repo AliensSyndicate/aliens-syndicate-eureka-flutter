@@ -20,6 +20,7 @@ abstract final class UiSize {
   static const avatarXl = 96.0;
   static const logoSize = 20.0;
   static const indicatorHeight = 12.0;
+  static const borderSm = 2.5;
 
   // Aliases semânticos preservados para componentes existentes.
   static const touchTarget = 48.0;

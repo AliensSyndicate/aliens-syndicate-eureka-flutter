@@ -116,6 +116,8 @@ void main() {
       find.byKey(const ValueKey('lesson-description-page')),
     );
     expect(scrollView.scrollDirection, Axis.vertical);
+    final indicator = find.byKey(const ValueKey('lesson-page-indicator-0'));
+    final initialIndicatorTop = tester.getTopLeft(indicator).dy;
     final initialTop = tester.getTopLeft(find.text(longContent)).dy;
     await tester.drag(
       find.byKey(const ValueKey('lesson-description-page')),
@@ -123,5 +125,6 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(tester.getTopLeft(find.text(longContent)).dy, lessThan(initialTop));
+    expect(tester.getTopLeft(indicator).dy, initialIndicatorTop);
   });
 }

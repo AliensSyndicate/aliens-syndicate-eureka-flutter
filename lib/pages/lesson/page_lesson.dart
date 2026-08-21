@@ -11,10 +11,11 @@ import '../../enums/subject_type.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/model_lesson.dart';
 import '../../models/model_question.dart';
-import '../../services/service_registry.dart';
 import '../../services/service_lesson_narration.dart';
+import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_motion.dart';
+import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
 import 'widgets/exercise_content.dart';
 import 'widgets/widget_lesson_activity.dart';
@@ -35,6 +36,8 @@ class _PageLessonState extends State<PageLesson> {
   late final PageController pageController;
   late final LessonNarrationService narrationController;
   final Map<String, TextEditingController> textControllers = {};
+  final GlobalKey fixedHeaderKey = GlobalKey();
+  double fixedHeaderHeight = 0;
   bool submitting = false;
 
   Color get subjectColor => UiColor.forSubject(widget.lesson.subject);
@@ -80,77 +83,113 @@ class _PageLessonState extends State<PageLesson> {
       }
     },
     child: Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: LessonAppBar(
         onClose: () => Navigator.maybePop(context),
         onReport: _reportError,
-      ),
-      body: SafeArea(
-        top: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: UiSpacing.pageHorizontal,
-              ),
-              child: LessonPageIndicators(
-                currentPage: currentPage,
-                statuses: _indicatorStatuses(),
-                onSelected: _goToPage,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                UiSpacing.pageHorizontal,
-                UiSpacing.lg,
-                UiSpacing.pageHorizontal,
-                UiSpacing.md,
-              ),
-              child: LessonHeader(
-                subject: _subjectName(widget.lesson.subject),
-                title: widget.lesson.title,
-                pageLabel: AppStrings.lessonPage(
-                  currentPage + 1,
-                  totalPages,
-                  _pageName(currentPage),
-                ),
-                subjectColor: subjectColor,
-              ),
-            ),
-            Expanded(
-              child: PageView.builder(
-                key: const ValueKey('lesson-activities-pager'),
-                controller: pageController,
-                scrollDirection: Axis.horizontal,
-                itemCount: totalPages,
-                onPageChanged: (page) {
-                  unawaited(controller.selectPage(page));
-                  if (page != 0) unawaited(narrationController.stop());
-                  setState(() {});
-                },
-                itemBuilder: (context, index) => index == 0
-                    ? _contentPage()
-                    : _activityPage(controller.visibleQuestions[index - 1]),
-              ),
-            ),
-          ],
+        indicators: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: UiSpacing.xs),
+          child: LessonPageIndicators(
+            currentPage: currentPage,
+            statuses: _indicatorStatuses(),
+            onSelected: _goToPage,
+          ),
         ),
+      ),
+      body: Stack(
+        children: [
+          PageView.builder(
+            key: const ValueKey('lesson-activities-pager'),
+            controller: pageController,
+            scrollDirection: Axis.horizontal,
+            itemCount: totalPages,
+            onPageChanged: (page) {
+              unawaited(controller.selectPage(page));
+              if (page != 0) unawaited(narrationController.stop());
+              setState(() {});
+            },
+            itemBuilder: (context, index) => _lessonPage(index),
+          ),
+          Positioned(
+            top:
+                MediaQuery.paddingOf(context).top +
+                UiSize.homeAppBarHeight -
+                UiSpacing.md,
+            left: 0,
+            right: 0,
+            child: _fixedHeader(),
+          ),
+        ],
       ),
     ),
   );
 
-  Widget _contentPage() => SingleChildScrollView(
-    key: const ValueKey('lesson-description-page'),
-    primary: false,
-    scrollDirection: Axis.vertical,
-    physics: const AlwaysScrollableScrollPhysics(),
-    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-    padding: const EdgeInsets.fromLTRB(
-      UiSpacing.pageHorizontal,
-      0,
-      UiSpacing.pageHorizontal,
-      UiSpacing.pageVertical,
-    ),
+  Widget _fixedHeader() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final renderBox =
+          fixedHeaderKey.currentContext?.findRenderObject() as RenderBox?;
+      final height = renderBox?.size.height;
+      if (!mounted ||
+          height == null ||
+          (height - fixedHeaderHeight).abs() < 0.5) {
+        return;
+      }
+      setState(() => fixedHeaderHeight = height);
+    });
+
+    return ColoredBox(
+      key: fixedHeaderKey,
+      color: UiColor.background,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              UiSpacing.pageHorizontal,
+              UiSpacing.sm,
+              UiSpacing.pageHorizontal,
+              UiSpacing.lg,
+            ),
+            child: LessonHeader(
+              subject: _subjectName(widget.lesson.subject),
+              title: widget.lesson.title,
+              pageLabel: AppStrings.lessonPage(
+                currentPage + 1,
+                totalPages,
+                _pageName(currentPage),
+              ),
+              subjectColor: subjectColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _lessonPage(int page) {
+    final question = page == 0 ? null : controller.visibleQuestions[page - 1];
+    return SingleChildScrollView(
+      key: page == 0
+          ? const ValueKey('lesson-description-page')
+          : ValueKey('lesson-activity-page-${question!.id}'),
+      primary: false,
+      scrollDirection: Axis.vertical,
+      physics: const AlwaysScrollableScrollPhysics(),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: EdgeInsets.only(
+        top:
+            MediaQuery.paddingOf(context).top +
+            UiSize.homeAppBarHeight +
+            fixedHeaderHeight -
+            UiSpacing.md,
+        bottom: UiSpacing.pageVertical,
+      ),
+      child: question == null ? _contentPage() : _activityPage(question),
+    );
+  }
+
+  Widget _contentPage() => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: UiSpacing.pageHorizontal),
     child: ExerciseContent(
       title: widget.lesson.title,
       description: widget.lesson.summary,
@@ -165,50 +204,41 @@ class _PageLessonState extends State<PageLesson> {
   Widget _activityPage(Question question) {
     final result = controller.resultFor(question);
     final answer = controller.answerFor(question) ?? '';
-    return SingleChildScrollView(
-      key: ValueKey('lesson-activity-page-${question.id}'),
-      primary: false,
-      scrollDirection: Axis.vertical,
-      physics: const AlwaysScrollableScrollPhysics(),
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      padding: const EdgeInsets.only(bottom: UiSpacing.pageVertical),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          LessonActivity(
-            question: question,
-            position: controller.visibleQuestions.indexOf(question) + 1,
-            total: controller.totalQuestions,
-            primaryColor: subjectColor,
-            status: result == null
-                ? LessonActivityStatus.active
-                : result
-                ? LessonActivityStatus.answeredCorrect
-                : LessonActivityStatus.answeredIncorrect,
-            interactionEnabled: result == null && !submitting,
-            currentAnswer: answer,
-            submittedAnswer: result == null ? null : answer,
-            textController: textControllers[question.id],
-            onOptionSelected: (value) => _saveAnswer(question, value),
-            onTextChanged: (value) => _saveAnswer(question, value),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        LessonActivity(
+          question: question,
+          position: controller.visibleQuestions.indexOf(question) + 1,
+          total: controller.totalQuestions,
+          primaryColor: subjectColor,
+          status: result == null
+              ? LessonActivityStatus.active
+              : result
+              ? LessonActivityStatus.answeredCorrect
+              : LessonActivityStatus.answeredIncorrect,
+          interactionEnabled: result == null && !submitting,
+          currentAnswer: answer,
+          submittedAnswer: result == null ? null : answer,
+          textController: textControllers[question.id],
+          onOptionSelected: (value) => _saveAnswer(question, value),
+          onTextChanged: (value) => _saveAnswer(question, value),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: UiSpacing.pageHorizontal,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: UiSpacing.pageHorizontal,
-            ),
-            child: AppButton(
-              key: ValueKey('verify-${question.id}'),
-              label: AppStrings.checkAnswer,
-              color: subjectColor,
-              isLoading: submitting,
-              onPressed:
-                  result == null && answer.trim().isNotEmpty && !submitting
-                  ? () => _verify(question)
-                  : null,
-            ),
+          child: AppButton(
+            key: ValueKey('verify-${question.id}'),
+            label: AppStrings.checkAnswer,
+            color: subjectColor,
+            isLoading: submitting,
+            onPressed: result == null && answer.trim().isNotEmpty && !submitting
+                ? () => _verify(question)
+                : null,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

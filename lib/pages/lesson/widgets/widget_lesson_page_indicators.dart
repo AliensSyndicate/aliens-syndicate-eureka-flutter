@@ -23,14 +23,12 @@ class LessonPageIndicators extends StatelessWidget {
       final index = entry.$1;
       final status = entry.$2;
       final selected = index == currentPage;
-      final color = selected
-          ? UiColor.accent
-          : switch (status) {
-              LessonPageIndicatorStatus.correct => UiColor.success,
-              LessonPageIndicatorStatus.incorrect => UiColor.error,
-              LessonPageIndicatorStatus.content => UiColor.textSecondary,
-              LessonPageIndicatorStatus.unanswered => UiColor.outline,
-            };
+      final color = switch (status) {
+        LessonPageIndicatorStatus.content => UiColor.success,
+        LessonPageIndicatorStatus.correct => UiColor.success,
+        LessonPageIndicatorStatus.incorrect => UiColor.error,
+        LessonPageIndicatorStatus.unanswered => UiColor.outline,
+      };
       final state = switch (status) {
         LessonPageIndicatorStatus.correct => 'respondida corretamente',
         LessonPageIndicatorStatus.incorrect => 'respondida incorretamente',
@@ -57,6 +55,12 @@ class LessonPageIndicators extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: color,
                     borderRadius: BorderRadius.circular(UiRadius.pill),
+                    border: selected
+                        ? Border.all(
+                            color: UiColor.textPrimary,
+                            width: UiSize.borderSm,
+                          )
+                        : null,
                   ),
                 ),
               ),

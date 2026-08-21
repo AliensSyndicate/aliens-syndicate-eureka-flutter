@@ -21,12 +21,10 @@ class LessonHeader extends StatelessWidget {
     liveRegion: true,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: UiSpacing.xxs,
       children: [
-        Text(
-          '$subject - $title',
-          style: UiText.small.copyWith(color: UiColor.textPrimary),
-        ),
-        const SizedBox(height: UiSpacing.xxs),
+        Text(subject, style: UiText.small.copyWith(color: subjectColor)),
+        Text(title, style: UiText.p),
         Text(
           pageLabel,
           style: UiText.small.copyWith(color: UiColor.textSecondary),

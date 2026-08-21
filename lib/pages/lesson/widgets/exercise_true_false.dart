@@ -1,10 +1,9 @@
+import 'package:eureka/ui/ui_color.dart';
+import 'package:eureka/ui/ui_icon.dart';
+import 'package:eureka/ui/ui_option.dart';
+import 'package:eureka/ui/ui_size.dart';
+import 'package:eureka/ui/ui_spacing.dart';
 import 'package:flutter/material.dart';
-
-import '../../../ui/ui_color.dart';
-import '../../../ui/ui_icon.dart';
-import '../../../ui/ui_option.dart';
-import '../../../ui/ui_size.dart';
-import '../../../ui/ui_spacing.dart';
 
 class ExerciseTrueFalse extends StatelessWidget {
   const ExerciseTrueFalse({

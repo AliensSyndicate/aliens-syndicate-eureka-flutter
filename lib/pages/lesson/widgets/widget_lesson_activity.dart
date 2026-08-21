@@ -242,7 +242,7 @@ class LessonActivity extends StatelessWidget {
     padding: const EdgeInsets.only(bottom: UiSpacing.lg),
     child: Text(
       question.prompt,
-      style: UiText.h5.copyWith(color: primaryColor),
+      style: UiText.h6.copyWith(color: primaryColor),
     ),
   );
 
