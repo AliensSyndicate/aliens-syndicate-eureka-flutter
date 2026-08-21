@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -43,8 +42,6 @@ class _ExerciseMemoryState extends State<ExerciseMemory> {
   final List<int> _revealed = [];
   final Set<int> _matched = {};
 
-  Timer? _clock;
-  Duration _elapsed = Duration.zero;
   bool _busy = false;
   bool _missed = false;
 
@@ -57,16 +54,6 @@ class _ExerciseMemoryState extends State<ExerciseMemory> {
         _MemoryCard(pairIndex: entry.$1, label: entry.$2.right),
       ],
     ]..shuffle(math.Random());
-
-    _clock = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() => _elapsed += const Duration(seconds: 1));
-    });
-  }
-
-  @override
-  void dispose() {
-    _clock?.cancel();
-    super.dispose();
   }
 
   bool _isOpen(int index) =>
@@ -97,7 +84,6 @@ class _ExerciseMemoryState extends State<ExerciseMemory> {
     _busy = false;
 
     if (_matched.length == _cards.length) {
-      _clock?.cancel();
       widget.onCompleted(true);
     }
   }
@@ -129,26 +115,13 @@ class _ExerciseMemoryState extends State<ExerciseMemory> {
           }).toList(),
         ),
         const SizedBox(height: UiSpacing.md),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _Stat(
-              icon: UiIcon.timer(
-                color: UiColor.textSecondary,
-                size: UiSize.iconSm,
-              ),
-              value: AppStrings.lessonTime(_elapsed),
-              color: UiColor.textSecondary,
-            ),
-            _Stat(
-              icon: UiIcon.star(
-                color: _missed ? UiColor.warning : UiColor.success,
-                size: UiSize.iconSm,
-              ),
-              value: AppStrings.memoryPairs(foundPairs, widget.pairs.length),
-              color: _missed ? UiColor.warning : UiColor.success,
-            ),
-          ],
+        _Stat(
+          icon: UiIcon.star(
+            color: _missed ? UiColor.warning : UiColor.success,
+            size: UiSize.iconSm,
+          ),
+          value: AppStrings.memoryPairs(foundPairs, widget.pairs.length),
+          color: _missed ? UiColor.warning : UiColor.success,
         ),
       ],
     );

@@ -5,7 +5,6 @@ import '../../../enums/question_type.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
-import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_spacing.dart';
 import 'exercise_essay.dart';
 import 'exercise_fill_blank.dart';
@@ -26,9 +25,6 @@ const _kMatchingDone = '__matching_done__';
 const _kMatchingIncorrect = '__matching_incorrect__';
 const _kMemoryDone = '__memory_done__';
 const _kMemoryIncorrect = '__memory_incorrect__';
-
-/// Tipos que se corrigem sozinhos e, por isso, não exibem feedback textual.
-const _selfContainedTypes = {QuestionType.matching, QuestionType.memory};
 
 class LessonActivity extends StatelessWidget {
   const LessonActivity({
@@ -74,20 +70,9 @@ class LessonActivity extends StatelessWidget {
         children: [
           Text(AppStrings.activityPosition(position, total), style: UiText.p),
           const SizedBox(height: UiSpacing.xs),
-          Text(question.prompt, style: UiText.h5.copyWith(color: primaryColor)),
+          Text(question.prompt, style: UiText.h5),
           const SizedBox(height: UiSpacing.lg),
           ..._exercise(),
-          if (!isCurrent && !_selfContainedTypes.contains(question.type)) ...[
-            const SizedBox(height: UiSpacing.xs),
-            Text(
-              isCorrect
-                  ? AppStrings.correctFeedback
-                  : AppStrings.incorrectFeedback,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: isCorrect ? UiColor.success : UiColor.error,
-              ),
-            ),
-          ],
         ],
       ),
     ),
@@ -265,21 +250,9 @@ class _DoneIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = correct ? UiColor.success : UiColor.error;
-    return Row(
-      children: [
-        correct
-            ? UiIcon.correct(color: color, size: 20)
-            : UiIcon.incorrect(color: color, size: 20),
-        const SizedBox(width: UiSpacing.xs),
-        Expanded(
-          child: Text(
-            correct ? label : AppStrings.incorrectFeedback,
-            style: Theme.of(
-              context,
-            ).textTheme.labelLarge?.copyWith(color: color),
-          ),
-        ),
-      ],
+    return Text(
+      correct ? label : AppStrings.answeredActivity,
+      style: UiText.label.copyWith(color: color),
     );
   }
 }

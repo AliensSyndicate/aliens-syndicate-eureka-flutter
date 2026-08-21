@@ -1,6 +1,7 @@
 import '../enums/learning_mode.dart';
 import '../models/model_lesson.dart';
 import '../models/model_question.dart';
+import '../models/model_lesson_session.dart';
 import '../services/service_answer.dart';
 import '../services/service_progress.dart';
 import '../services/service_question_selection.dart';
@@ -24,7 +25,12 @@ class LessonController {
                  lesson.questions,
                  count: QuestionSelectionService.sessionSize,
                ),
-             );
+             ) {
+    final saved = _progressService.loadLessonSession(lesson.id);
+    _answers.addAll(saved.answers);
+    _results.addAll(saved.results);
+    currentPage = saved.currentPage.clamp(0, _questions.length);
+  }
   final Lesson lesson;
   final LearningMode mode;
   final AnswerService _answerService;
@@ -33,36 +39,38 @@ class LessonController {
   final List<Question> _questions;
   final Map<String, String> _answers = {};
   final Map<String, bool> _results = {};
-  int currentIndex = 0;
+  int currentPage = 0;
+  int get currentIndex => (currentPage - 1).clamp(0, _questions.length - 1);
   Question get currentQuestion => _questions[currentIndex];
-  List<Question> get visibleQuestions => List.unmodifiable(
-    _questions.take((currentIndex + 1).clamp(0, _questions.length)),
-  );
+  List<Question> get visibleQuestions => List.unmodifiable(_questions);
   int get totalQuestions => _questions.length;
   bool get isLastQuestion => currentIndex == _questions.length - 1;
-  bool get hasSubmittedCurrent => _answers.containsKey(currentQuestion.id);
+  bool get hasSubmittedCurrent => _results.containsKey(currentQuestion.id);
   int get answeredQuestions => _answers.length;
   double get completionProgress =>
       totalQuestions == 0 ? 0 : answeredQuestions / totalQuestions;
   String? answerFor(Question question) => _answers[question.id];
   bool? resultFor(Question question) => _results[question.id];
-  int get correctAnswers => _questions
-      .where(
-        (question) =>
-            _answerService.isCorrect(question, _answers[question.id] ?? ''),
-      )
-      .length;
+  int get correctAnswers => _results.values.where((result) => result).length;
   List<String> get reviewTopics => _questions
-      .where(
-        (question) =>
-            !_answerService.isCorrect(question, _answers[question.id] ?? ''),
-      )
+      .where((question) => _results[question.id] == false)
       .map((question) => question.topicId)
       .toSet()
       .toList();
   int get earnedXp => mode == LearningMode.journey
       ? _scoringService.calculateJourneyXp(correctAnswers: correctAnswers)
       : 0;
+  Future<void> selectPage(int page) async {
+    currentPage = page.clamp(0, _questions.length);
+    await _persist();
+  }
+
+  Future<void> saveDraft(Question question, String answer) async {
+    if (_results.containsKey(question.id)) return;
+    _answers[question.id] = answer;
+    await _persist();
+  }
+
   Future<bool> submit(String answer) async {
     if (answer.trim().isEmpty) {
       throw ArgumentError.value(answer, 'answer', 'A resposta é obrigatória.');
@@ -76,17 +84,23 @@ class LessonController {
     if (!correct) {
       await _progressService.recordDifficulty(currentQuestion.subjectId);
     }
+    await _persist();
     return correct;
   }
 
-  void next() {
-    if (!hasSubmittedCurrent) {
-      throw StateError('Responda a atividade atual antes de avançar.');
-    }
-    if (!isLastQuestion) {
-      currentIndex++;
-    }
-  }
+  List<int> get incorrectPages => _questions.indexed
+      .where((entry) => _results[entry.$2.id] == false)
+      .map((entry) => entry.$1 + 1)
+      .toList();
+
+  Future<void> _persist() => _progressService.saveLessonSession(
+    lesson.id,
+    LessonSession(
+      currentPage: currentPage,
+      answers: Map.unmodifiable(_answers),
+      results: Map.unmodifiable(_results),
+    ),
+  );
 
   Future<void> complete() async {
     if (mode == LearningMode.journey) {

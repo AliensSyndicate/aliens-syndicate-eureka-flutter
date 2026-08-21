@@ -13,6 +13,7 @@ class AppBottomSheet {
     List<Widget> actions = const [],
     bool isDismissible = true,
     bool enableDrag = true,
+    Color titleColor = UiColor.accent,
   }) => showModalBottomSheet<T>(
     context: context,
     isScrollControlled: true,
@@ -32,10 +33,7 @@ class AppBottomSheet {
           children: [
             Semantics(
               header: true,
-              child: Text(
-                title,
-                style: UiText.h4.copyWith(color: UiColor.accent),
-              ),
+              child: Text(title, style: UiText.h4.copyWith(color: titleColor)),
             ),
             const SizedBox(height: UiSpacing.md),
             content,

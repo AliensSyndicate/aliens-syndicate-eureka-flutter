@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-
 import 'package:eureka/controllers/controller_lesson.dart';
 import 'package:eureka/data/seed/seed_content.dart';
 import 'package:eureka/enums/learning_mode.dart';
@@ -15,63 +14,63 @@ void main() {
   late Directory tempDirectory;
   late Box<dynamic> box;
   late LessonController controller;
-
+  LessonController createController() => LessonController(
+    lesson: modelMultipleChoiceLesson,
+    mode: LearningMode.journey,
+    answerService: AnswerService(),
+    scoringService: ScoringService(),
+    progressService: ProgressService(box),
+    questionSelectionService: QuestionSelectionService(random: Random(42)),
+  );
   setUpAll(() async {
     tempDirectory = Directory.systemTemp.createTempSync('eureka_lesson_flow_');
     Hive.init(tempDirectory.path);
     box = await Hive.openBox<dynamic>('lesson_flow');
   });
-
   tearDownAll(() async {
     await Hive.close();
     tempDirectory.deleteSync(recursive: true);
   });
-
   setUp(() async {
     await box.clear();
-    controller = LessonController(
-      lesson: modelMultipleChoiceLesson,
-      mode: LearningMode.journey,
-      answerService: AnswerService(),
-      scoringService: ScoringService(),
-      progressService: ProgressService(box),
-      questionSelectionService: QuestionSelectionService(random: Random(42)),
+    controller = createController();
+  });
+
+  test(
+    'disponibiliza todas as atividades e permite pular livremente',
+    () async {
+      expect(controller.visibleQuestions, hasLength(5));
+      await controller.selectPage(4);
+      expect(controller.currentPage, 4);
+      expect(controller.answeredQuestions, 0);
+      await controller.selectPage(0);
+      expect(controller.currentPage, 0);
+    },
+  );
+
+  test('persiste pagina, rascunho e resultado por atividade', () async {
+    await controller.selectPage(4);
+    final question = controller.currentQuestion;
+    await controller.saveDraft(question, question.correctAnswer);
+    expect(controller.resultFor(question), isNull);
+    expect(await controller.submit(question.correctAnswer), isTrue);
+    final restored = createController();
+    expect(restored.currentPage, 4);
+    expect(restored.answerFor(question), question.correctAnswer);
+    expect(restored.resultFor(question), isTrue);
+  });
+
+  test('erro conta como respondido sem bloquear outra pagina', () async {
+    await controller.selectPage(2);
+    final question = controller.currentQuestion;
+    final wrong = question.options.firstWhere(
+      (e) => e != question.correctAnswer,
     );
-  });
-
-  test('libera uma atividade por vez e preserva a resposta anterior', () async {
-    expect(controller.totalQuestions, 5);
-    expect(controller.visibleQuestions, hasLength(1));
-    expect(controller.completionProgress, 0);
-
-    final first = controller.currentQuestion;
-    expect(await controller.submit(first.correctAnswer), isTrue);
-    expect(controller.answerFor(first), first.correctAnswer);
-    expect(controller.resultFor(first), isTrue);
-    expect(controller.completionProgress, .2);
-    await expectLater(controller.submit(first.correctAnswer), throwsStateError);
-
-    controller.next();
-    expect(controller.visibleQuestions, hasLength(2));
-    expect(controller.currentQuestion.id, isNot(first.id));
-    expect(controller.answerFor(first), first.correctAnswer);
-  });
-
-  test('nao avanca antes de responder a atividade obrigatoria', () {
-    expect(controller.next, throwsStateError);
-  });
-
-  test('atividade modelo tem cinco questoes com quatro opcoes numeradas', () {
-    expect(modelMultipleChoiceLesson.questions, hasLength(5));
-    expect(
-      modelMultipleChoiceLesson.questions.every(
-        (question) =>
-            question.options.length == 4 &&
-            question.options.asMap().entries.every(
-              (entry) => entry.value.startsWith('${entry.key + 1}. '),
-            ),
-      ),
-      isTrue,
-    );
+    await controller.saveDraft(question, wrong);
+    expect(await controller.submit(wrong), isFalse);
+    expect(controller.answeredQuestions, 1);
+    expect(controller.incorrectPages, [2]);
+    await controller.selectPage(5);
+    expect(controller.currentPage, 5);
   });
 }

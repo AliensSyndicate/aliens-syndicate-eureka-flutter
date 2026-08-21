@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../../ui/ui_color.dart';
 import '../../../ui/ui_spacing.dart';
+import '../../../ui/ui_text.dart';
 
-class LessonDescription extends StatelessWidget {
-  const LessonDescription({
+/// Apresenta a explicação que ocupa a primeira página de uma aula.
+class ExerciseContent extends StatelessWidget {
+  const ExerciseContent({
     required this.title,
     required this.description,
     required this.primaryColor,
@@ -20,17 +23,16 @@ class LessonDescription extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Text(
-        title,
-        style: Theme.of(
-          context,
-        ).textTheme.titleLarge?.copyWith(color: primaryColor),
-      ),
+      Text(title, style: UiText.h5.copyWith(color: primaryColor)),
       const SizedBox(height: UiSpacing.md),
-      Text(description, style: Theme.of(context).textTheme.bodyLarge),
+      Text(description, style: UiText.p),
       if (notice != null) ...[
         const SizedBox(height: UiSpacing.xxl),
-        Text(notice!, textAlign: TextAlign.center),
+        Text(
+          notice!,
+          textAlign: TextAlign.center,
+          style: UiText.p.copyWith(color: UiColor.textSecondary),
+        ),
       ],
     ],
   );

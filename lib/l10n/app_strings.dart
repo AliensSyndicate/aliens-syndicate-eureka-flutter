@@ -16,7 +16,7 @@ abstract final class AppStrings {
       selectToReview = 'Selecionar para revisar',
       lessonSummary = 'Antes de começar',
       startActivity = 'Começar atividade',
-      checkAnswer = 'Confirmar',
+      checkAnswer = 'Verificar',
       nextQuestion = 'Continuar',
       finish = 'Concluir',
       correctFeedback = 'Muito bem!',
@@ -42,6 +42,11 @@ abstract final class AppStrings {
       back = 'Voltar',
       reportError = 'Reportar erro',
       reportErrorUnavailable = 'O envio de relatos estará disponível em breve.',
+      lessonContent = 'Conteúdo',
+      lessonExitTitle = 'Encerrar estudo?',
+      lessonExitEmpty = 'Você pode continuar esta aula quando quiser.',
+      reviewNow = 'Revisar agora',
+      finishForNow = 'Encerrar por enquanto',
       completeAllLessons = 'Complete todas as aulas',
       lessonElapsedTimeLabel = 'Tempo decorrido da aula',
       lessonPaginationLabel = 'Página da atividade',
@@ -60,6 +65,10 @@ abstract final class AppStrings {
       falseLabel = 'Falso',
       memoryPrompt = 'Encontre os pares!',
       memoryComplete = 'Todos os pares encontrados!';
+  static String lessonPage(int current, int total, String label) =>
+      '$current de $total - $label';
+  static String lessonExitSummary(int answered, int errors) =>
+      'Você respondeu $answered atividades e errou $errors.';
   static const xpLabel = 'Pontos de experiência';
   static const levelLabel = 'Nível atual';
   static String xpValue(int value) => '$value XP';
