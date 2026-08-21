@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 
 import '../../../l10n/app_strings.dart';
 import '../../../models/model_matching_pair.dart';
+import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
 import '../../../ui/ui_text.dart';
+import 'exercise_question_prompt.dart';
 
 /// Exercício de jogo da memória.
 ///
@@ -18,6 +20,7 @@ import '../../../ui/ui_text.dart';
 /// são encontrados, dispara [onCompleted].
 class ExerciseMemory extends StatefulWidget {
   const ExerciseMemory({
+    this.question,
     required this.pairs,
     required this.primaryColor,
     required this.onCompleted,
@@ -25,6 +28,7 @@ class ExerciseMemory extends StatefulWidget {
     super.key,
   });
 
+  final Question? question;
   final List<MatchingPair> pairs;
   final Color primaryColor;
   final ValueChanged<bool> onCompleted;
@@ -95,6 +99,11 @@ class _ExerciseMemoryState extends State<ExerciseMemory> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (widget.question != null)
+          ExerciseQuestionPrompt(
+            question: widget.question!,
+            primaryColor: widget.primaryColor,
+          ),
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),

@@ -2,11 +2,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
+import 'exercise_question_prompt.dart';
 
 /// Exercício de ordenação de itens (linha do tempo / passos de um processo).
 ///
@@ -14,6 +16,7 @@ import '../../../ui/ui_spacing.dart';
 /// o aluno pode confirmar sem precisar mover nada.
 class ExerciseSequencing extends StatefulWidget {
   const ExerciseSequencing({
+    this.question,
     required this.items,
     required this.primaryColor,
     required this.onChanged,
@@ -26,6 +29,7 @@ class ExerciseSequencing extends StatefulWidget {
   /// Separador usado para montar a resposta enviada ao gabarito.
   static const separator = ' | ';
 
+  final Question? question;
   final List<String> items;
   final Color primaryColor;
   final ValueChanged<String> onChanged;
@@ -77,33 +81,43 @@ class _ExerciseSequencingState extends State<ExerciseSequencing> {
       null => widget.primaryColor,
     };
 
-    return ReorderableListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      buildDefaultDragHandles: false,
-      itemCount: _order.length,
-      onReorderItem: _reorder,
-      proxyDecorator: (child, index, animation) =>
-          Material(color: Colors.transparent, child: child),
-      itemBuilder: (context, index) => Padding(
-        key: ValueKey('sequence-${_order[index]}'),
-        padding: const EdgeInsets.only(bottom: UiSpacing.xs),
-        child: _SequenceTile(
-          position: index + 1,
-          label: _order[index],
-          accent: accent,
-          answered: widget.answeredCorrect != null,
-          handle: widget.enabled
-              ? ReorderableDragStartListener(
-                  index: index,
-                  child: UiIcon.drag(
-                    color: UiColor.textSecondary,
-                    size: UiSize.iconMd,
-                  ),
-                )
-              : null,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (widget.question != null)
+          ExerciseQuestionPrompt(
+            question: widget.question!,
+            primaryColor: widget.primaryColor,
+          ),
+        ReorderableListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          buildDefaultDragHandles: false,
+          itemCount: _order.length,
+          onReorderItem: _reorder,
+          proxyDecorator: (child, index, animation) =>
+              Material(color: Colors.transparent, child: child),
+          itemBuilder: (context, index) => Padding(
+            key: ValueKey('sequence-${_order[index]}'),
+            padding: const EdgeInsets.only(bottom: UiSpacing.xs),
+            child: _SequenceTile(
+              position: index + 1,
+              label: _order[index],
+              accent: accent,
+              answered: widget.answeredCorrect != null,
+              handle: widget.enabled
+                  ? ReorderableDragStartListener(
+                      index: index,
+                      child: UiIcon.drag(
+                        color: UiColor.textSecondary,
+                        size: UiSize.iconMd,
+                      ),
+                    )
+                  : null,
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

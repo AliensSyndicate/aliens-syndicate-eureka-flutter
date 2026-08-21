@@ -2,9 +2,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_spacing.dart';
+import 'exercise_question_prompt.dart';
 
 /// Exercício de ordenação de frase (Sentence Ordering) estilo Duolingo.
 ///
@@ -14,6 +16,7 @@ import '../../../ui/ui_spacing.dart';
 /// - Suporta toque simples e arrastar para reordenar (drag & drop).
 class ExerciseOrdering extends StatefulWidget {
   const ExerciseOrdering({
+    this.question,
     required this.words,
     required this.primaryColor,
     required this.onChanged,
@@ -21,6 +24,8 @@ class ExerciseOrdering extends StatefulWidget {
     this.enabled = true,
     super.key,
   });
+
+  final Question? question;
 
   /// Lista de palavras disponíveis no banco.
   final List<String> words;
@@ -110,6 +115,11 @@ class _ExerciseOrderingState extends State<ExerciseOrdering> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (widget.question != null)
+          ExerciseQuestionPrompt(
+            question: widget.question!,
+            primaryColor: widget.primaryColor,
+          ),
         // -------------------------------------------------------------------
         // Área superior: Pauta de linhas de montagem estilo Duolingo
         // -------------------------------------------------------------------
@@ -277,10 +287,7 @@ class _WordChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(UiOption.radius),
         child: Container(
           constraints: const BoxConstraints(minHeight: 40),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 9,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(UiOption.radius),
             border: Border.all(color: border, width: UiOption.borderWidth),
@@ -312,10 +319,7 @@ class _PlaceholderChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints(minHeight: 40),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 9,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
       decoration: BoxDecoration(
         color: UiColor.surface.withValues(alpha: .35),
         borderRadius: BorderRadius.circular(UiOption.radius),

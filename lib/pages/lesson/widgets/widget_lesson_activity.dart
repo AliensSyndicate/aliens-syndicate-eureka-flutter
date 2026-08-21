@@ -73,11 +73,11 @@ class LessonActivity extends StatelessWidget {
 
   List<Widget> _exercise() => switch (question.type) {
     QuestionType.matching => [
-      _questionPrompt(),
       _hint(AppStrings.matchingPrompt),
       if (isCurrent)
         ExerciseMatching(
           key: ValueKey('matching-${question.id}'),
+          question: question,
           pairs: question.pairs!,
           primaryColor: primaryColor,
           enabled: interactionEnabled,
@@ -90,11 +90,11 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.memory => [
-      _questionPrompt(),
       _hint(AppStrings.memoryPrompt),
       if (isCurrent)
         ExerciseMemory(
           key: ValueKey('memory-${question.id}'),
+          question: question,
           pairs: question.pairs!,
           primaryColor: primaryColor,
           enabled: interactionEnabled,
@@ -106,10 +106,10 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.ordering => [
-      _questionPrompt(),
       _hint(AppStrings.orderingPrompt),
       ExerciseOrdering(
         key: ValueKey('ordering-${question.id}'),
+        question: question,
         words: question.options,
         primaryColor: primaryColor,
         enabled: interactionEnabled,
@@ -119,10 +119,10 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.sequencing => [
-      _questionPrompt(),
       _hint(AppStrings.sequencingPrompt),
       ExerciseSequencing(
         key: ValueKey('sequencing-${question.id}'),
+        question: question,
         items: question.options,
         primaryColor: primaryColor,
         enabled: interactionEnabled,
@@ -133,8 +133,8 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.multipleChoice => [
-      _questionPrompt(),
       ExerciseMultipleChoice(
+        question: question,
         questionId: question.id,
         options: question.options,
         currentAnswer: currentAnswer,
@@ -148,8 +148,8 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.trueFalse => [
-      _questionPrompt(),
       ExerciseTrueFalse(
+        question: question,
         options: question.options,
         currentAnswer: currentAnswer,
         submittedAnswer: submittedAnswer,
@@ -162,8 +162,8 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.imageChoice => [
-      _questionPrompt(),
       ExerciseImageChoice(
+        question: question,
         options: question.options,
         currentAnswer: currentAnswer,
         submittedAnswer: submittedAnswer,
@@ -176,8 +176,8 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.fillBlank => [
-      _questionPrompt(),
       ExerciseFillBlank(
+        question: question,
         sentence: question.template!,
         options: question.options,
         currentAnswer: currentAnswer,
@@ -191,10 +191,10 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.wordCompletion => [
-      _questionPrompt(),
       if (isCurrent)
         ExerciseWordCompletion(
           key: ValueKey('word-completion-${question.id}'),
+          question: question,
           template: question.template!,
           letters: question.options,
           primaryColor: primaryColor,
@@ -214,8 +214,8 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.essay => [
-      _questionPrompt(),
       ExerciseEssay(
+        question: question,
         primaryColor: primaryColor,
         textController: textController,
         submittedAnswer: submittedAnswer,
@@ -227,8 +227,9 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.textInput => [
-      _questionPrompt(),
       ExerciseTextInput(
+        question: question,
+        primaryColor: primaryColor,
         isCurrent: isCurrent,
         isCorrect: isCorrect,
         textController: textController,
@@ -237,14 +238,6 @@ class LessonActivity extends StatelessWidget {
       ),
     ],
   };
-
-  Widget _questionPrompt() => Padding(
-    padding: const EdgeInsets.only(bottom: UiSpacing.lg),
-    child: Text(
-      question.prompt,
-      style: UiText.h6.copyWith(color: primaryColor),
-    ),
-  );
 
   Widget _hint(String text) => Padding(
     padding: const EdgeInsets.only(bottom: UiSpacing.sm),

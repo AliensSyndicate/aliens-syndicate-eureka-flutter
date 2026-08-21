@@ -1,12 +1,15 @@
 import 'package:eureka/ui/ui_color.dart';
-import 'package:eureka/ui/ui_icon.dart';
 import 'package:eureka/ui/ui_option.dart';
 import 'package:eureka/ui/ui_size.dart';
 import 'package:eureka/ui/ui_spacing.dart';
 import 'package:flutter/material.dart';
 
+import '../../../models/model_question.dart';
+import 'exercise_question_prompt.dart';
+
 class ExerciseTrueFalse extends StatelessWidget {
   const ExerciseTrueFalse({
+    this.question,
     required this.options,
     required this.currentAnswer,
     required this.primaryColor,
@@ -18,6 +21,7 @@ class ExerciseTrueFalse extends StatelessWidget {
     super.key,
   });
 
+  final Question? question;
   final List<String> options;
   final String currentAnswer;
   final String? submittedAnswer;
@@ -30,25 +34,29 @@ class ExerciseTrueFalse extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: options.map((option) {
-      final selected = isCurrent
-          ? currentAnswer == option
-          : submittedAnswer == option;
+    children: [
+      if (question != null)
+        ExerciseQuestionPrompt(question: question!, primaryColor: primaryColor),
+      ...options.map((option) {
+        final selected = isCurrent
+            ? currentAnswer == option
+            : submittedAnswer == option;
 
-      return Padding(
-        padding: const EdgeInsets.only(bottom: UiSpacing.sm),
-        child: _StatementButton(
-          label: option,
-          selected: selected,
-          answered: !isCurrent,
-          correct: isCorrect,
-          accentColor: primaryColor,
-          onTap: isCurrent && interactionEnabled
-              ? () => onOptionSelected(option)
-              : null,
-        ),
-      );
-    }).toList(),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: UiSpacing.sm),
+          child: _StatementButton(
+            label: option,
+            selected: selected,
+            answered: !isCurrent,
+            correct: isCorrect,
+            accentColor: primaryColor,
+            onTap: isCurrent && interactionEnabled
+                ? () => onOptionSelected(option)
+                : null,
+          ),
+        );
+      }),
+    ],
   );
 }
 
@@ -77,8 +85,6 @@ class _StatementButton extends StatelessWidget {
         ? (correct ? UiColor.success : UiColor.error)
         : accentColor;
 
-    final showStatus = answered && selected;
-
     return Semantics(
       selected: selected,
       button: true,
@@ -98,24 +104,13 @@ class _StatementButton extends StatelessWidget {
                 border: Border.all(color: accent, width: UiOption.borderWidth),
               ),
               alignment: Alignment.center,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (showStatus) ...[
-                    correct
-                        ? UiIcon.correct(color: accent, size: UiSize.iconSm)
-                        : UiIcon.incorrect(color: accent, size: UiSize.iconSm),
-                    const SizedBox(width: UiSpacing.xs),
-                  ],
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 17,
-                      color: selected ? accent : UiColor.textPrimary,
-                    ),
-                  ),
-                ],
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 17,
+                  color: selected ? accent : UiColor.textPrimary,
+                ),
               ),
             ),
           ),

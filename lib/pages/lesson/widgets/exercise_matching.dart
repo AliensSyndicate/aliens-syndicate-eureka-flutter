@@ -3,10 +3,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../models/model_matching_pair.dart';
+import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_spacing.dart';
+import 'exercise_question_prompt.dart';
 
 enum _Feedback { none, selected, correct, incorrect }
 
@@ -19,6 +21,7 @@ enum _Feedback { none, selected, correct, incorrect }
 /// - Ao responder todos os pares, dispara [onCompleted] informando se todos foram corretos.
 class ExerciseMatching extends StatefulWidget {
   const ExerciseMatching({
+    this.question,
     required this.pairs,
     required this.primaryColor,
     required this.onCompleted,
@@ -26,6 +29,7 @@ class ExerciseMatching extends StatefulWidget {
     super.key,
   });
 
+  final Question? question;
   final List<MatchingPair> pairs;
   final Color primaryColor;
   final ValueChanged<bool> onCompleted;
@@ -151,36 +155,44 @@ class _ExerciseMatchingState extends State<ExerciseMatching>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _shakeAnim,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: Offset(_shakeAnim.value, 0),
-          child: child,
-        );
-      },
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: _Column(
-              items: _leftItems,
-              stateOf: _leftState,
-              onTap: widget.enabled ? _tapLeft : (_) {},
-              accentColor: widget.primaryColor,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (widget.question != null)
+          ExerciseQuestionPrompt(
+            question: widget.question!,
+            primaryColor: widget.primaryColor,
           ),
-          const SizedBox(width: UiSpacing.sm),
-          Expanded(
-            child: _Column(
-              items: _rightItems,
-              stateOf: _rightState,
-              onTap: widget.enabled ? _tapRight : (_) {},
-              accentColor: widget.primaryColor,
-            ),
+        AnimatedBuilder(
+          animation: _shakeAnim,
+          builder: (context, child) => Transform.translate(
+            offset: Offset(_shakeAnim.value, 0),
+            child: child,
           ),
-        ],
-      ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _Column(
+                  items: _leftItems,
+                  stateOf: _leftState,
+                  onTap: widget.enabled ? _tapLeft : (_) {},
+                  accentColor: widget.primaryColor,
+                ),
+              ),
+              const SizedBox(width: UiSpacing.sm),
+              Expanded(
+                child: _Column(
+                  items: _rightItems,
+                  stateOf: _rightState,
+                  onTap: widget.enabled ? _tapRight : (_) {},
+                  accentColor: widget.primaryColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_spacing.dart';
+import 'exercise_question_prompt.dart';
 
 enum ExerciseOptionState { normal, selected, correct, incorrect, disabled }
 
@@ -12,6 +14,7 @@ typedef QuestionOption = ExerciseOption;
 /// Exercício de múltipla escolha.
 class ExerciseMultipleChoice extends StatelessWidget {
   const ExerciseMultipleChoice({
+    this.question,
     required this.options,
     required this.currentAnswer,
     required this.primaryColor,
@@ -24,6 +27,7 @@ class ExerciseMultipleChoice extends StatelessWidget {
     super.key,
   });
 
+  final Question? question;
   final List<String> options;
   final String currentAnswer;
   final String? submittedAnswer;
@@ -38,33 +42,40 @@ class ExerciseMultipleChoice extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: options.indexed.map((e) {
-        final index = e.$1;
-        final option = e.$2;
-        final selected = isCurrent
-            ? currentAnswer == option
-            : submittedAnswer == option;
-        final state = isCurrent
-            ? null
-            : selected
-            ? (isCorrect
-                ? ExerciseOptionState.correct
-                : ExerciseOptionState.incorrect)
-            : ExerciseOptionState.disabled;
+      children: [
+        if (question != null)
+          ExerciseQuestionPrompt(
+            question: question!,
+            primaryColor: primaryColor,
+          ),
+        ...options.indexed.map((e) {
+          final index = e.$1;
+          final option = e.$2;
+          final selected = isCurrent
+              ? currentAnswer == option
+              : submittedAnswer == option;
+          final state = isCurrent
+              ? null
+              : selected
+              ? (isCorrect
+                    ? ExerciseOptionState.correct
+                    : ExerciseOptionState.incorrect)
+              : ExerciseOptionState.disabled;
 
-        return ExerciseOption(
-          key: ValueKey('lesson-option-$questionId-$option'),
-          label: option,
-          selected: selected,
-          index: index,
-          accentColor: primaryColor,
-          state: state,
-          bottomSpacing: UiSpacing.xs,
-          onTap: isCurrent && interactionEnabled
-              ? () => onOptionSelected(option)
-              : null,
-        );
-      }).toList(),
+          return ExerciseOption(
+            key: ValueKey('lesson-option-$questionId-$option'),
+            label: option,
+            selected: selected,
+            index: index,
+            accentColor: primaryColor,
+            state: state,
+            bottomSpacing: UiSpacing.xs,
+            onTap: isCurrent && interactionEnabled
+                ? () => onOptionSelected(option)
+                : null,
+          );
+        }),
+      ],
     );
   }
 }

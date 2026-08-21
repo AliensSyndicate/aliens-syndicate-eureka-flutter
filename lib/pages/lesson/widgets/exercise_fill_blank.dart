@@ -5,10 +5,12 @@ import '../../../ui/ui_color.dart';
 import '../../../ui/ui_spacing.dart';
 import '../../../ui/ui_text.dart';
 import 'exercise_chip.dart';
+import 'exercise_question_prompt.dart';
 
 /// Exercício de preencher lacuna: frase com um espaço vazio e banco de opções.
 class ExerciseFillBlank extends StatelessWidget {
   const ExerciseFillBlank({
+    this.question,
     required this.sentence,
     required this.options,
     required this.currentAnswer,
@@ -20,6 +22,8 @@ class ExerciseFillBlank extends StatelessWidget {
     this.interactionEnabled = true,
     super.key,
   });
+
+  final Question? question;
 
   /// Frase com a lacuna marcada por [Question.blankToken].
   final String sentence;
@@ -52,6 +56,11 @@ class ExerciseFillBlank extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (question != null)
+          ExerciseQuestionPrompt(
+            question: question!,
+            primaryColor: primaryColor,
+          ),
         Text.rich(
           TextSpan(
             children: [

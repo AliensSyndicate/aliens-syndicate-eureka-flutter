@@ -4,6 +4,7 @@ import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_spacing.dart';
 import 'exercise_chip.dart';
+import 'exercise_question_prompt.dart';
 
 /// Exercício de completar palavra.
 ///
@@ -12,6 +13,7 @@ import 'exercise_chip.dart';
 /// Enquanto houver lacuna aberta, a resposta enviada é vazia.
 class ExerciseWordCompletion extends StatefulWidget {
   const ExerciseWordCompletion({
+    this.question,
     required this.template,
     required this.letters,
     required this.primaryColor,
@@ -19,6 +21,8 @@ class ExerciseWordCompletion extends StatefulWidget {
     this.enabled = true,
     super.key,
   });
+
+  final Question? question;
 
   /// Palavra com lacunas, ex.: `N_MERAD_R`.
   final String template;
@@ -72,14 +76,12 @@ class _ExerciseWordCompletionState extends State<ExerciseWordCompletion> {
       widget.onChanged('');
       return;
     }
-    final assembled = widget.template.split('').indexed
-        .map((entry) {
-          final index = entry.$1;
-          return _filled.containsKey(index)
-              ? widget.letters[_filled[index]!]
-              : entry.$2;
-        })
-        .join();
+    final assembled = widget.template.split('').indexed.map((entry) {
+      final index = entry.$1;
+      return _filled.containsKey(index)
+          ? widget.letters[_filled[index]!]
+          : entry.$2;
+    }).join();
     widget.onChanged(assembled);
   }
 
@@ -88,6 +90,11 @@ class _ExerciseWordCompletionState extends State<ExerciseWordCompletion> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (widget.question != null)
+          ExerciseQuestionPrompt(
+            question: widget.question!,
+            primaryColor: widget.primaryColor,
+          ),
         Wrap(
           spacing: UiSpacing.xxs,
           runSpacing: UiSpacing.xs,
