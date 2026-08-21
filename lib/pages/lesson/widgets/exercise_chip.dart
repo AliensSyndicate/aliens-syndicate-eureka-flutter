@@ -31,12 +31,8 @@ class ExerciseChip extends StatelessWidget {
       ExerciseChipState.normal => UiColor.outline,
     };
 
-    final background = state == ExerciseChipState.normal
-        ? UiColor.surfaceElevated
-        : border.withValues(alpha: .18);
-
     return Material(
-      color: background,
+      color: UiColor.surfaceElevated,
       borderRadius: BorderRadius.circular(UiOption.radius),
       child: InkWell(
         onTap: onTap,
@@ -55,7 +51,9 @@ class ExerciseChip extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: fontSize,
-              color: UiColor.textPrimary,
+              color: state == ExerciseChipState.normal
+                  ? UiColor.textPrimary
+                  : border,
             ),
           ),
         ),

@@ -145,7 +145,7 @@ class _SequenceTile extends StatelessWidget {
       vertical: UiSpacing.xs,
     ),
     decoration: BoxDecoration(
-      color: answered ? accent.withValues(alpha: .14) : UiColor.surface,
+      color: UiColor.surface,
       borderRadius: BorderRadius.circular(UiOption.radius),
       border: Border.all(color: accent, width: UiOption.borderWidth),
     ),
@@ -154,14 +154,18 @@ class _SequenceTile extends StatelessWidget {
         Container(
           width: 28,
           height: 28,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: accent),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.transparent,
+            border: Border.all(color: accent, width: UiOption.borderWidth),
+          ),
           alignment: Alignment.center,
           child: Text(
             '$position',
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w800,
               fontSize: 13,
-              color: Colors.white,
+              color: accent,
             ),
           ),
         ),
@@ -169,7 +173,11 @@ class _SequenceTile extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+              color: answered ? accent : UiColor.textPrimary,
+            ),
           ),
         ),
         if (handle != null) ...[const SizedBox(width: UiSpacing.xs), handle!],

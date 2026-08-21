@@ -180,7 +180,6 @@ class _FlipCard extends StatelessWidget {
                 transform: Matrix4.identity()..rotateY(math.pi),
                 child: _CardFace(
                   accent: matched ? UiColor.success : accentColor,
-                  filled: true,
                   onTap: null,
                   child: Padding(
                     padding: const EdgeInsets.all(UiSpacing.xxs),
@@ -190,7 +189,7 @@ class _FlipCard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 14,
-                        color: matched ? UiColor.success : UiColor.textPrimary,
+                        color: matched ? UiColor.success : accentColor,
                       ),
                     ),
                   ),
@@ -198,7 +197,6 @@ class _FlipCard extends StatelessWidget {
               )
             : _CardFace(
                 accent: UiColor.outline,
-                filled: false,
                 onTap: onTap,
                 child: UiIcon.sparkles(
                   color: accentColor.withValues(alpha: .8),
@@ -213,19 +211,17 @@ class _FlipCard extends StatelessWidget {
 class _CardFace extends StatelessWidget {
   const _CardFace({
     required this.accent,
-    required this.filled,
     required this.onTap,
     required this.child,
   });
 
   final Color accent;
-  final bool filled;
   final VoidCallback? onTap;
   final Widget child;
 
   @override
   Widget build(BuildContext context) => Material(
-    color: filled ? accent.withValues(alpha: .16) : UiColor.surfaceElevated,
+    color: UiColor.surfaceElevated,
     borderRadius: BorderRadius.circular(UiOption.radius),
     child: InkWell(
       onTap: onTap,

@@ -137,9 +137,7 @@ class ExerciseOption extends StatelessWidget {
         child: Opacity(
           opacity: disabled ? .55 : 1,
           child: Material(
-            color: isNormalOrDisabled
-                ? UiColor.surface
-                : accent.withValues(alpha: .14),
+            color: UiColor.surface,
             borderRadius: BorderRadius.circular(UiOption.radius),
             child: InkWell(
               onTap: interactive ? onTap : null,
@@ -161,16 +159,17 @@ class ExerciseOption extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    _IndexBadge(
-                      label: indexLabel,
-                      accent: accent,
-                      filled: !isNormalOrDisabled,
-                    ),
+                    _IndexBadge(label: indexLabel, accent: accent),
                     const SizedBox(width: UiSpacing.sm),
                     Expanded(
                       child: Text(
                         label,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: isNormalOrDisabled
+                              ? UiColor.textPrimary
+                              : accent,
+                        ),
                       ),
                     ),
                   ],
@@ -185,15 +184,10 @@ class ExerciseOption extends StatelessWidget {
 }
 
 class _IndexBadge extends StatelessWidget {
-  const _IndexBadge({
-    required this.label,
-    required this.accent,
-    required this.filled,
-  });
+  const _IndexBadge({required this.label, required this.accent});
 
   final String label;
   final Color accent;
-  final bool filled;
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +196,7 @@ class _IndexBadge extends StatelessWidget {
       height: 32,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: filled ? accent : Colors.transparent,
+        color: Colors.transparent,
         border: Border.all(color: accent, width: 1.5),
       ),
       alignment: Alignment.center,
@@ -211,7 +205,7 @@ class _IndexBadge extends StatelessWidget {
         style: TextStyle(
           fontWeight: FontWeight.w800,
           fontSize: 13,
-          color: filled ? Colors.white : accent,
+          color: accent,
         ),
       ),
     );

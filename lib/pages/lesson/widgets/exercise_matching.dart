@@ -248,13 +248,6 @@ class _Chip extends StatelessWidget {
       _ => UiColor.outline,
     };
 
-    final Color bg = switch (feedback) {
-      _Feedback.selected => accentColor.withValues(alpha: .15),
-      _Feedback.correct => UiColor.success.withValues(alpha: .15),
-      _Feedback.incorrect => UiColor.error.withValues(alpha: .15),
-      _ => UiColor.surface,
-    };
-
     final bool isLocked =
         feedback == _Feedback.correct || feedback == _Feedback.incorrect;
     final bool interactive = !isLocked;
@@ -265,7 +258,7 @@ class _Chip extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: UiSpacing.xs),
       child: Material(
-        color: bg,
+        color: UiColor.surface,
         borderRadius: BorderRadius.circular(UiOption.radius),
         child: InkWell(
           onTap: interactive ? onTap : null,
@@ -296,11 +289,9 @@ class _Chip extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
-                      color: isLocked && feedback == _Feedback.incorrect
-                          ? UiColor.error
-                          : isLocked && feedback == _Feedback.correct
-                          ? UiColor.success
-                          : null,
+                      color: feedback == _Feedback.none
+                          ? UiColor.textPrimary
+                          : border,
                     ),
                   ),
                 ),

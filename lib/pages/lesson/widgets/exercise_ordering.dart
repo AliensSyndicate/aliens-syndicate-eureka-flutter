@@ -271,14 +271,8 @@ class _WordChip extends StatelessWidget {
         ? accentColor
         : UiColor.outline;
 
-    final bg = isDragging
-        ? accentColor.withValues(alpha: .35)
-        : isSelected
-        ? accentColor.withValues(alpha: .18)
-        : UiColor.surfaceElevated;
-
     return Material(
-      color: bg,
+      color: UiColor.surfaceElevated,
       elevation: isDragging ? 6 : 0,
       shadowColor: Colors.black54,
       borderRadius: BorderRadius.circular(UiOption.radius),
@@ -294,10 +288,10 @@ class _WordChip extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 15,
-              color: UiColor.textPrimary,
+              color: isSelected || isDropTarget ? border : UiColor.textPrimary,
             ),
           ),
         ),

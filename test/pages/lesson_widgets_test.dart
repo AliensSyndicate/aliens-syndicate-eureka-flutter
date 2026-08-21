@@ -189,7 +189,7 @@ void main() {
     expect(find.text(question.prompt), findsOneWidget);
     expect(
       tester.widget<Text>(find.text(question.prompt)).style?.color,
-      UiColor.science,
+      UiColor.textPrimary,
     );
     tester.widget<QuestionOption>(find.byType(QuestionOption).first).onTap!();
     expect(selected, question.options.first);

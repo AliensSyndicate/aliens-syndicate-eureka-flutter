@@ -92,7 +92,7 @@ class _StatementButton extends StatelessWidget {
       child: Opacity(
         opacity: answered && !selected ? .55 : 1,
         child: Material(
-          color: selected ? accent.withValues(alpha: .16) : UiColor.surface,
+          color: UiColor.surface,
           borderRadius: BorderRadius.circular(UiOption.radius),
           child: InkWell(
             onTap: onTap,

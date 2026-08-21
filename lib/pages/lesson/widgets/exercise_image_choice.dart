@@ -70,9 +70,7 @@ class ExerciseImageChoice extends StatelessWidget {
             child: Opacity(
               opacity: !isCurrent && !selected ? .55 : 1,
               child: Material(
-                color: selected
-                    ? accent.withValues(alpha: .16)
-                    : UiColor.surface,
+                color: UiColor.surface,
                 borderRadius: BorderRadius.circular(UiOption.radius),
                 child: InkWell(
                   onTap: enabled ? () => onOptionSelected(option) : null,
@@ -94,7 +92,11 @@ class ExerciseImageChoice extends StatelessWidget {
                             padding: const EdgeInsets.all(UiSpacing.sm),
                             child: Text(
                               option,
-                              style: const TextStyle(fontSize: 30, height: 1.1),
+                              style: TextStyle(
+                                fontSize: 30,
+                                height: 1.1,
+                                color: selected ? accent : UiColor.textPrimary,
+                              ),
                             ),
                           ),
                         ),
