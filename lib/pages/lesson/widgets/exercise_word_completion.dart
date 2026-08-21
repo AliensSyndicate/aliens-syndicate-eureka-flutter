@@ -18,6 +18,7 @@ class ExerciseWordCompletion extends StatefulWidget {
     required this.letters,
     required this.primaryColor,
     required this.onChanged,
+    this.initialAnswer,
     this.enabled = true,
     super.key,
   });
@@ -32,6 +33,7 @@ class ExerciseWordCompletion extends StatefulWidget {
 
   final Color primaryColor;
   final ValueChanged<String> onChanged;
+  final String? initialAnswer;
   final bool enabled;
 
   @override
@@ -52,6 +54,24 @@ class _ExerciseWordCompletionState extends State<ExerciseWordCompletion> {
       for (final entry in widget.template.split('').indexed)
         if (entry.$2 == Question.blankToken) entry.$1,
     ];
+    _restore(widget.initialAnswer);
+  }
+
+  void _restore(String? answer) {
+    if (answer == null || answer.length != widget.template.length) return;
+    final used = <int>{};
+    for (final blank in _blanks) {
+      final expectedLetter = answer[blank];
+      final letterIndex = widget.letters.indexed
+          .where((entry) => !used.contains(entry.$1))
+          .where((entry) => entry.$2 == expectedLetter)
+          .map((entry) => entry.$1)
+          .firstOrNull;
+      if (letterIndex != null) {
+        used.add(letterIndex);
+        _filled[blank] = letterIndex;
+      }
+    }
   }
 
   void _useLetter(int letterIndex) {
@@ -131,15 +151,19 @@ class _ExerciseWordCompletionState extends State<ExerciseWordCompletion> {
 
             return Opacity(
               opacity: used ? .3 : 1,
-              child: ExerciseChip(
-                key: ValueKey('word-letter-$index'),
-                label: letter,
-                accentColor: widget.primaryColor,
-                state: used
-                    ? ExerciseChipState.selected
-                    : ExerciseChipState.normal,
-                fontSize: 18,
-                onTap: widget.enabled && !used ? () => _useLetter(index) : null,
+              child: IntrinsicWidth(
+                child: ExerciseChip(
+                  key: ValueKey('word-letter-$index'),
+                  label: letter,
+                  accentColor: widget.primaryColor,
+                  state: used
+                      ? ExerciseChipState.selected
+                      : ExerciseChipState.normal,
+                  fontSize: 18,
+                  onTap: widget.enabled && !used
+                      ? () => _useLetter(index)
+                      : null,
+                ),
               ),
             );
           }).toList(),

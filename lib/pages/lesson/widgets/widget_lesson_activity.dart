@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../enums/question_type.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../models/model_question.dart';
-import '../../../ui/ui_color.dart';
 import '../../../ui/ui_spacing.dart';
 import 'exercise_essay.dart';
 import 'exercise_fill_blank.dart';
@@ -179,26 +178,16 @@ class LessonActivity extends StatelessWidget {
     ],
 
     QuestionType.wordCompletion => [
-      if (isCurrent)
-        ExerciseWordCompletion(
-          key: ValueKey('word-completion-${question.id}'),
-          question: question,
-          template: question.template!,
-          letters: question.options,
-          primaryColor: primaryColor,
-          enabled: interactionEnabled,
-          onChanged: onOptionSelected,
-        )
-      else
-        ExerciseOption(
-          label: submittedAnswer ?? '',
-          selected: true,
-          state: isCorrect
-              ? ExerciseOptionState.correct
-              : ExerciseOptionState.incorrect,
-          accentColor: isCorrect ? UiColor.success : UiColor.error,
-          onTap: null,
-        ),
+      ExerciseWordCompletion(
+        key: ValueKey('word-completion-${question.id}'),
+        question: question,
+        template: question.template!,
+        letters: question.options,
+        primaryColor: primaryColor,
+        initialAnswer: currentAnswer,
+        enabled: interactionEnabled,
+        onChanged: onOptionSelected,
+      ),
     ],
 
     QuestionType.essay => [

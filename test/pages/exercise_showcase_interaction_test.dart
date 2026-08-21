@@ -46,6 +46,13 @@ void main() {
       ),
     );
 
+    for (var index = 0; index < 4; index++) {
+      expect(
+        tester.getSize(find.byKey(ValueKey('word-letter-$index'))).width,
+        lessThan(80),
+      );
+    }
+
     await tester.tap(find.byKey(const ValueKey('word-letter-0'))); // U
     await tester.pump();
     expect(reported.last, isEmpty, reason: 'ainda falta uma lacuna');
