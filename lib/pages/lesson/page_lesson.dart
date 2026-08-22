@@ -46,8 +46,6 @@ class _PageLessonState extends State<PageLesson> {
   Color get subjectColor => UiColor.forSubject(widget.lesson.subject);
   int get currentPage => controller.currentPage;
   int get totalPages => controller.summaryPage + 1;
-  int get availablePages =>
-      controller.canOpenSummary ? totalPages : controller.summaryPage;
 
   @override
   void initState() {
@@ -96,7 +94,7 @@ class _PageLessonState extends State<PageLesson> {
             key: const ValueKey('lesson-activities-pager'),
             controller: pageController,
             scrollDirection: Axis.horizontal,
-            itemCount: availablePages,
+            itemCount: totalPages,
             onPageChanged: (page) {
               unawaited(controller.selectPage(page));
               unawaited(narrationController.stop());
@@ -334,7 +332,6 @@ class _PageLessonState extends State<PageLesson> {
   );
 
   void _goToPage(int page) {
-    if (page == controller.summaryPage && !controller.canOpenSummary) return;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     if (reduceMotion) {
       pageController.jumpToPage(page);

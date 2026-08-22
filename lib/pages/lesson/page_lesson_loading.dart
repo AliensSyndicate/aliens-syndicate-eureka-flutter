@@ -10,7 +10,6 @@ import '../../l10n/app_strings.dart';
 import '../../models/model_lesson.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
-import '../../ui/ui_motion.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
 import 'widgets/widget_lesson_campfire.dart';
@@ -46,16 +45,12 @@ class _PageLessonLoadingState extends State<PageLessonLoading> {
   }
 
   Future<void> _prepare() async {
-    final minimumDuration = Future<void>.delayed(
-      UiMotion.lessonLoadingMinimumDuration,
-    );
     Lesson? preparedLesson;
     try {
       preparedLesson = await controller.prepare(widget.lesson);
     } on Object {
       preparedLesson = null;
     }
-    await minimumDuration;
     if (!mounted) return;
 
     if (preparedLesson == null) {

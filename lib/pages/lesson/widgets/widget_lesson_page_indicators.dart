@@ -53,8 +53,6 @@ class LessonPageIndicators extends StatelessWidget {
               final index = entry.$1;
               final status = entry.$2;
               final selected = index == currentPage;
-              final enabled =
-                  status != LessonPageIndicatorStatus.summaryDisabled;
               final color = switch (status) {
                 LessonPageIndicatorStatus.content => UiColor.success,
                 LessonPageIndicatorStatus.correct => UiColor.success,
@@ -71,7 +69,7 @@ class LessonPageIndicators extends StatelessWidget {
                 LessonPageIndicatorStatus.unanswered => 'ainda não respondida',
                 LessonPageIndicatorStatus.summary => 'resumo disponível',
                 LessonPageIndicatorStatus.summaryDisabled =>
-                  'resumo indisponível, finalize as atividades',
+                  'resumo com atividades pendentes',
               };
               return <Widget>[
                 TweenAnimationBuilder<double>(
@@ -83,12 +81,12 @@ class LessonPageIndicators extends StatelessWidget {
                       SizedBox(width: width, child: child),
                   child: Semantics(
                     button: true,
-                    enabled: enabled,
+                    enabled: true,
                     selected: selected,
                     label: 'Página ${index + 1} de ${statuses.length}, $state',
                     child: InkWell(
                       key: ValueKey('lesson-page-indicator-$index'),
-                      onTap: enabled ? () => onSelected(index) : null,
+                      onTap: () => onSelected(index),
                       borderRadius: BorderRadius.circular(UiRadius.pill),
                       child: AnimatedContainer(
                         duration: duration,
@@ -97,9 +95,6 @@ class LessonPageIndicators extends StatelessWidget {
                         height: circleWidth,
                         decoration: BoxDecoration(
                           color: color,
-                          border: selected
-                              ? Border.all(color: UiColor.textPrimary, width: 2)
-                              : null,
                           borderRadius: BorderRadius.circular(UiRadius.pill),
                         ),
                       ),

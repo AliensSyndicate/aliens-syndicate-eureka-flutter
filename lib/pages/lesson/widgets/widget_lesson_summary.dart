@@ -48,21 +48,36 @@ class LessonSummary extends StatelessWidget {
           ...questions.indexed.map((entry) {
             final position = entry.$1 + 1;
             final question = entry.$2;
-            final correct = resultFor(question) == true;
-            final color = correct ? UiColor.success : UiColor.error;
+            final result = resultFor(question);
+            final color = switch (result) {
+              true => UiColor.success,
+              false => UiColor.error,
+              null => UiColor.warning,
+            };
+            final status = switch (result) {
+              true => AppStrings.activityCorrect,
+              false => AppStrings.activityIncorrect,
+              null => AppStrings.activityNotDone,
+            };
             return Padding(
               padding: const EdgeInsets.only(bottom: UiSpacing.md),
               child: Semantics(
-                label: correct
-                    ? 'Atividade $position, correta'
-                    : 'Atividade $position, incorreta',
+                label: 'Atividade $position, $status',
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ExcludeSemantics(
-                      child: correct
-                          ? UiIcon.correct(size: UiSize.iconMd, color: color)
-                          : UiIcon.incorrect(size: UiSize.iconMd, color: color),
+                      child: switch (result) {
+                        true => UiIcon.correct(
+                          size: UiSize.iconMd,
+                          color: color,
+                        ),
+                        false => UiIcon.incorrect(
+                          size: UiSize.iconMd,
+                          color: color,
+                        ),
+                        null => UiIcon.timer(size: UiSize.iconMd, color: color),
+                      },
                     ),
                     const SizedBox(width: UiSpacing.sm),
                     Expanded(
@@ -70,7 +85,7 @@ class LessonSummary extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Atividade $position',
+                            'Atividade $position · $status',
                             style: UiText.label.copyWith(color: color),
                           ),
                           const SizedBox(height: UiSpacing.xxs),

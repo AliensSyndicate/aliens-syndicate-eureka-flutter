@@ -5,6 +5,7 @@ import 'package:eureka/pages/lesson/widgets/exercise_content.dart';
 import 'package:eureka/pages/lesson/widgets/widget_lesson_feedback_card.dart';
 import 'package:eureka/pages/lesson/widgets/widget_question_option.dart';
 import 'package:eureka/pages/lesson/widgets/widget_lesson_page_indicators.dart';
+import 'package:eureka/pages/lesson/widgets/widget_lesson_summary.dart';
 import 'package:eureka/services/service_lesson_narration.dart';
 import 'package:eureka/ui/ui_color.dart';
 import 'package:eureka/ui/ui_text.dart';
@@ -13,6 +14,28 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 void main() {
+  testWidgets('resumo mostra atividade pendente como nao feito em warning', (
+    tester,
+  ) async {
+    final question = modelMultipleChoiceLesson.questions.first;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: LessonSummary(
+            questions: [question],
+            resultFor: (_) => null,
+            primaryColor: UiColor.science,
+            onRetry: () {},
+          ),
+        ),
+      ),
+    );
+
+    final status = find.text('Atividade 1 · ${AppStrings.activityNotDone}');
+    expect(status, findsOneWidget);
+    expect(tester.widget<Text>(status).style?.color, UiColor.warning);
+  });
+
   testWidgets('descricao reutilizavel mostra titulo resumo e destaque', (
     tester,
   ) async {
@@ -91,7 +114,7 @@ void main() {
     expect(narration.state, LessonNarrationState.paused);
   });
 
-  testWidgets('mantem o indicador de conteudo sempre verde', (tester) async {
+  testWidgets('mantem todas as paginas de conteudo verdes', (tester) async {
     Widget indicators(int currentPage) => MaterialApp(
       home: Scaffold(
         body: LessonPageIndicators(
@@ -126,7 +149,7 @@ void main() {
     expect(contentColor(), UiColor.success);
   });
 
-  testWidgets('usa somente a cor do estado e borda para selecao', (
+  testWidgets('usa tamanho e cor para indicar a pagina atual sem borda', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -161,7 +184,7 @@ void main() {
     expect(decorationAt(1).color, UiColor.success);
     expect(decorationAt(2).color, UiColor.error);
     expect(decorationAt(3).color, UiColor.outline);
-    expect(decorationAt(3).border, isNotNull);
+    expect(decorationAt(3).border, isNull);
     expect(decorationAt(0).border, isNull);
   });
 

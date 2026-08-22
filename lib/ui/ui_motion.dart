@@ -8,5 +8,4 @@ abstract final class UiMotion {
   static const lessonActivityCurve = Curves.easeOutCubic;
   static const lessonActivitySlideOffset = 80.0;
   static const campfireFlickerDuration = Duration(milliseconds: 1200);
-  static const lessonLoadingMinimumDuration = Duration(seconds: 3);
 }

@@ -79,9 +79,7 @@ void main() {
     await tester.pump(const Duration(seconds: 3));
   });
 
-  testWidgets('aguarda tres segundos antes de abrir a aula preparada', (
-    tester,
-  ) async {
+  testWidgets('abre a aula assim que a atividade fica pronta', (tester) async {
     var calls = 0;
     final controller = LessonPreparationController(
       loadActivity: (lesson) async {
@@ -94,13 +92,8 @@ void main() {
     await tester.pumpWidget(
       MaterialApp.router(theme: UiTheme.dark, routerConfig: router),
     );
-    await tester.pump(const Duration(milliseconds: 2999));
-
-    expect(find.byKey(const Key('lesson-loading-wallpaper')), findsOneWidget);
-    expect(find.text('Aula preparada'), findsNothing);
-
-    await tester.pump(const Duration(milliseconds: 1));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Aula preparada'), findsOneWidget);
     expect(find.text(modelMultipleChoiceLesson.id), findsOneWidget);
@@ -108,7 +101,7 @@ void main() {
     expect(calls, 1);
   });
 
-  testWidgets('aguarda a atividade quando a carga passa de tres segundos', (
+  testWidgets('mantem o carregamento somente enquanto a atividade nao chega', (
     tester,
   ) async {
     final completer = Completer<Lesson>();
@@ -119,7 +112,6 @@ void main() {
     await tester.pumpWidget(
       MaterialApp.router(theme: UiTheme.dark, routerConfig: router),
     );
-    await tester.pump(const Duration(seconds: 3));
     expect(find.byKey(const Key('lesson-loading-wallpaper')), findsOneWidget);
 
     completer.complete(modelMultipleChoiceLesson);
@@ -129,7 +121,9 @@ void main() {
     expect(find.text('Aula preparada'), findsOneWidget);
   });
 
-  testWidgets('mostra indisponibilidade apos o tempo minimo', (tester) async {
+  testWidgets('mostra indisponibilidade assim que a preparacao falha', (
+    tester,
+  ) async {
     final controller = LessonPreparationController(
       loadActivity: (lesson) async => Lesson(
         id: lesson.id,
@@ -144,7 +138,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp.router(theme: UiTheme.dark, routerConfig: router),
     );
-    await tester.pump(const Duration(seconds: 3));
+    await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text(AppStrings.contentUnavailable), findsOneWidget);

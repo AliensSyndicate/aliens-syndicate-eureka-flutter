@@ -29,10 +29,7 @@ class LessonController {
     final saved = _progressService.loadLessonSession(lesson.id);
     _answers.addAll(saved.answers);
     _results.addAll(saved.results);
-    currentPage = saved.currentPage.clamp(
-      0,
-      canOpenSummary ? summaryPage : summaryPage - 1,
-    );
+    currentPage = saved.currentPage.clamp(0, summaryPage);
   }
   final Lesson lesson;
   final LearningMode mode;
@@ -71,7 +68,7 @@ class LessonController {
       ? _scoringService.calculateJourneyXp(correctAnswers: correctAnswers)
       : 0;
   Future<void> selectPage(int page) async {
-    currentPage = page.clamp(0, canOpenSummary ? summaryPage : summaryPage - 1);
+    currentPage = page.clamp(0, summaryPage);
     await _persist();
   }
 

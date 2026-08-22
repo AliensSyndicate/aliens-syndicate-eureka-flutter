@@ -42,7 +42,7 @@ void main() {
 
     final pager = tester.widget<PageView>(find.byType(PageView));
     expect(pager.scrollDirection, Axis.horizontal);
-    expect(pager.childrenDelegate.estimatedChildCount, 6);
+    expect(pager.childrenDelegate.estimatedChildCount, 7);
     expect(
       find.byKey(const ValueKey('lesson-page-indicator-5')),
       findsOneWidget,
@@ -50,7 +50,7 @@ void main() {
     final summaryIndicator = tester.widget<InkWell>(
       find.byKey(const ValueKey('lesson-page-indicator-6')),
     );
-    expect(summaryIndicator.onTap, isNull);
+    expect(summaryIndicator.onTap, isNotNull);
     expect(find.text(modelMultipleChoiceLesson.summary), findsOneWidget);
     expect(find.text(AppStrings.startActivity), findsNothing);
 
@@ -147,11 +147,19 @@ void main() {
       );
 
       final pager = tester.widget<PageView>(find.byType(PageView));
-      expect(pager.childrenDelegate.estimatedChildCount, 7);
+      expect(pager.childrenDelegate.estimatedChildCount, 8);
       expect(find.text('Gancho da água'), findsOneWidget);
       expect(find.text('1 de 8 - Gancho da água'), findsOneWidget);
       expect(
         find.byKey(const ValueKey('lesson-page-indicator-7')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('lesson-page-indicator-0')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('lesson-page-indicator-1')),
         findsOneWidget,
       );
 
@@ -215,7 +223,7 @@ void main() {
       );
 
       final pager = tester.widget<PageView>(find.byType(PageView));
-      expect(pager.childrenDelegate.estimatedChildCount, 5);
+      expect(pager.childrenDelegate.estimatedChildCount, 6);
       expect(
         find.byKey(const ValueKey('lesson-page-indicator-5')),
         findsOneWidget,
