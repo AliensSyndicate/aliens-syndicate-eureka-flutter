@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../app/components/app_report_bottom_sheet.dart';
 import '../../app/navigation/navigation_router.dart';
 import '../../enums/learning_mode.dart';
+import '../../enums/report_context.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/content/model_content_manifest.dart';
 import '../../models/model_lesson.dart';
@@ -79,6 +80,7 @@ class PageSubjectLessons extends StatelessWidget {
         context,
         subjectId: subject.type.name,
         lessonTitle: subject.title,
+        reportContext: ReportContext.subject,
       );
 
   Future<void> _openLesson(BuildContext context, Lesson lesson) async {

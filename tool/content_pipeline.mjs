@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 const SUBJECTS = ['portuguese', 'mathematics', 'science', 'geography', 'history'];
 const PAGE_TYPES = new Set([
   'hook', 'story', 'discovery', 'explanation', 'example', 'visual_example',
-  'rule', 'curiosity', 'recap',
+  'visualExample', 'rule', 'curiosity', 'application', 'common_mistake',
+  'commonMistake', 'recap',
 ]);
 const EXERCISE_TYPES = new Set([
   'multiple_choice', 'text_input', 'essay', 'fill_blank', 'ordering',
@@ -20,6 +21,9 @@ const TYPE_TO_RUNTIME = {
   image_choice: 'imageChoice', word_completion: 'wordCompletion',
 };
 const DIFFICULTY_TO_RUNTIME = { easy: 1, medium: 2, hard: 3 };
+const EXERCISE_TYPE_TO_SOURCE = Object.fromEntries(
+  Object.entries(TYPE_TO_RUNTIME).map(([source, runtime]) => [runtime, source]),
+);
 const RUNTIME_SCHEMA_VERSION = 1;
 
 function contentVersion(catalog) {
@@ -115,6 +119,73 @@ function optionItems(parameters) {
   return array(parameters?.options);
 }
 
+function field(object, snakeCase, camelCase) {
+  return object?.[snakeCase] ?? object?.[camelCase];
+}
+
+function wordCount(value) {
+  return String(value ?? '').trim().split(/\s+/u).filter(Boolean).length;
+}
+
+function normalizeExercise(exercise) {
+  const parameters = { ...(exercise.parameters ?? {}) };
+  const answer = { ...(exercise.correct_answer ?? exercise.correctAnswer ?? {}) };
+  const copy = (target, source) => {
+    if (parameters[target] === undefined && parameters[source] !== undefined) parameters[target] = parameters[source];
+  };
+  copy('accepted_answers', 'acceptedAnswers');
+  copy('case_sensitive', 'caseSensitive');
+  copy('ignore_accents', 'ignoreAccents');
+  copy('incomplete_text', 'incompleteText');
+  copy('missing_part_position', 'missingPartPosition');
+  copy('left_items', 'leftItems');
+  copy('right_items', 'rightItems');
+  copy('minimum_words', 'minimumWords');
+  copy('maximum_words', 'maximumWords');
+  copy('required_concepts', 'requiredConcepts');
+  copy('evaluation_mode', 'evaluationMode');
+  if (parameters.items === undefined && parameters.steps !== undefined) parameters.items = parameters.steps;
+  if (Array.isArray(parameters.options)) {
+    parameters.options = parameters.options.map((option) => ({
+      ...option,
+      visual_description: option.visual_description ?? option.visualDescription,
+    }));
+  }
+  const answerCopy = (target, source) => {
+    if (answer[target] === undefined && answer[source] !== undefined) answer[target] = answer[source];
+  };
+  answerCopy('option_id', 'optionId');
+  answerCopy('ordered_ids', 'orderedIds');
+  answerCopy('pair_ids', 'pairIds');
+  answerCopy('reference_answer', 'referenceAnswer');
+  return {
+    ...exercise,
+    usage: exercise.usage === 'simulatorExplore' ? 'simulator_explore' : exercise.usage,
+    type: EXERCISE_TYPE_TO_SOURCE[exercise.type] ?? exercise.type,
+    parameters,
+    correct_answer: answer,
+    correct_answer_explanation:
+      exercise.correct_answer_explanation ?? exercise.correctAnswerExplanation,
+  };
+}
+
+function normalizeLesson(lesson) {
+  return {
+    ...lesson,
+    short_description: lesson.short_description ?? lesson.shortDescription,
+    bncc_codes: lesson.bncc_codes ?? lesson.bnccCodes,
+    learning_objectives: lesson.learning_objectives ?? lesson.learningObjectives,
+    estimated_minutes: lesson.estimated_minutes ?? lesson.estimatedMinutes,
+    content_pages: array(lesson.content_pages ?? lesson.contentPages).map((page) => ({
+      ...page,
+      visual_description: page.visual_description ?? page.visualDescription ?? '',
+      key_concept: page.key_concept ?? page.keyConcept,
+    })),
+    practice_exercises: array(lesson.practice_exercises ?? lesson.practiceExercises).map(normalizeExercise),
+    extra_exercises: array(lesson.extra_exercises ?? lesson.extraExercises).map(normalizeExercise),
+  };
+}
+
 function validateExercise(exercise, location, expectedUsage, errors) {
   assert(errors, text(exercise.id), location, 'id obrigatório.');
   assert(errors, exercise.usage === expectedUsage, location, `usage deve ser ${expectedUsage}.`);
@@ -147,43 +218,57 @@ function validateExercise(exercise, location, expectedUsage, errors) {
   }
 
   const parameters = exercise.parameters ?? {};
-  const answer = exercise.correct_answer ?? {};
+  const answer = exercise.correct_answer ?? exercise.correctAnswer ?? {};
   const options = optionItems(parameters);
   if (exercise.type === 'multiple_choice' || exercise.type === 'image_choice') {
     assert(errors, options.length === 4, location, 'deve possuir exatamente 4 opções.');
     uniqueIds(errors, options, `${location}/parameters/options`);
-    assert(errors, options.every((item) => text(item.text) || text(item.image)), location,
-      'cada opção deve possuir text ou image.');
-    assert(errors, text(answer.option_id) && options.some((item) => item.id === answer.option_id),
+    assert(errors, options.every((item) => text(item.text) || text(item.image) ||
+      text(field(item, 'visual_description', 'visualDescription'))), location,
+    'cada opção deve possuir text, image ou visual_description.');
+    const optionId = field(answer, 'option_id', 'optionId');
+    assert(errors, text(optionId) && options.some((item) => item.id === optionId),
       location, 'correct_answer.option_id deve apontar para uma opção.');
+    assert(errors, parameters.shuffle === true, location, 'parameters.shuffle deve ser true.');
   } else if (exercise.type === 'true_false') {
     assert(errors, typeof answer.value === 'boolean', location, 'correct_answer.value deve ser boolean.');
   } else if (exercise.type === 'text_input' || exercise.type === 'fill_blank' || exercise.type === 'word_completion') {
-    const accepted = array(parameters.accepted_answers);
+    const accepted = array(field(parameters, 'accepted_answers', 'acceptedAnswers'));
     assert(errors, accepted.length > 0 && accepted.every(text), location, 'accepted_answers não pode ser vazio.');
     assert(errors, text(answer.value) && accepted.includes(answer.value), location,
       'correct_answer.value deve estar em accepted_answers.');
-    if (exercise.type !== 'text_input') {
+    if (exercise.type === 'fill_blank') {
       assert(errors, text(parameters.sentence) && parameters.sentence.includes('_'), location,
-        'parameters.sentence deve possuir uma lacuna "_".');
+        'fill_blank exige parameters.sentence com uma lacuna "_".');
+      const statement = normalized(exercise.statement).trim();
+      const sentence = normalized(parameters.sentence).trim();
+      assert(errors, statement !== sentence, location,
+        'fill_blank não pode repetir o mesmo texto em statement e sentence.');
+    }
+    if (exercise.type === 'word_completion') {
+      const incompleteText = field(parameters, 'incomplete_text', 'incompleteText');
+      assert(errors, text(incompleteText) && incompleteText.includes('_'), location,
+        'word_completion exige incomplete_text claro com uma lacuna "_".');
+      assert(errors, text(field(parameters, 'missing_part_position', 'missingPartPosition')), location,
+        'word_completion exige missing_part_position.');
     }
   } else if (exercise.type === 'ordering' || exercise.type === 'sequencing') {
-    const items = array(parameters.items);
+    const items = array(exercise.type === 'sequencing' ? parameters.steps ?? parameters.items : parameters.items);
     uniqueIds(errors, items, `${location}/parameters/items`);
-    assert(errors, items.length >= 2 && items.every((item) => text(item.text)), location,
-      'items deve possuir ao menos 2 textos.');
-    const ordered = array(answer.ordered_ids);
+    assert(errors, items.length >= 4 && items.length <= 7 && items.every((item) => text(item.text)), location,
+      'ordering/sequencing deve possuir de 4 a 7 itens ou etapas.');
+    const ordered = array(field(answer, 'ordered_ids', 'orderedIds'));
     assert(errors, ordered.length === items.length && new Set(ordered).size === ordered.length &&
       ordered.every((id) => items.some((item) => item.id === id)), location,
     'ordered_ids deve ser uma permutação completa de items.');
-  } else if (exercise.type === 'matching' || exercise.type === 'memory') {
-    const left = array(parameters.left_items);
-    const right = array(parameters.right_items);
+    assert(errors, parameters.shuffle === true, location, 'parameters.shuffle deve ser true.');
+  } else if (exercise.type === 'matching') {
+    const left = array(field(parameters, 'left_items', 'leftItems'));
+    const right = array(field(parameters, 'right_items', 'rightItems'));
     uniqueIds(errors, left, `${location}/parameters/left_items`);
     uniqueIds(errors, right, `${location}/parameters/right_items`);
-    assert(errors, left.length >= 2 && left.length === right.length, location,
-      'left_items e right_items devem ter o mesmo tamanho (mínimo 2).');
-    if (exercise.type === 'matching') assert(errors, left.length === 5, location, 'matching deve possuir 5 pares.');
+    assert(errors, left.length >= 3 && left.length <= 6 && left.length === right.length, location,
+      'matching deve possuir de 3 a 6 pares, com lados do mesmo tamanho.');
     assert(errors, left.every((item) => text(item.text)) && right.every((item) => text(item.text)), location,
       'itens de associação devem possuir text.');
     const pairs = array(answer.pairs);
@@ -192,9 +277,31 @@ function validateExercise(exercise, location, expectedUsage, errors) {
       new Set(pairs.map((pair) => pair.left_id)).size === pairs.length &&
       new Set(pairs.map((pair) => pair.right_id)).size === pairs.length,
     location, 'pairs deve associar todos os itens uma única vez.');
+    assert(errors, parameters.shuffle === true, location, 'parameters.shuffle deve ser true.');
+  } else if (exercise.type === 'memory') {
+    const pairs = array(parameters.pairs);
+    uniqueIds(errors, pairs, `${location}/parameters/pairs`);
+    assert(errors, pairs.length >= 4 && pairs.length <= 6, location,
+      'memory deve possuir de 4 a 6 pares.');
+    assert(errors, pairs.every((pair) => text(pair.first) && text(pair.second)), location,
+      'cada par de memory deve possuir first e second.');
+    const pairIds = array(field(answer, 'pair_ids', 'pairIds'));
+    assert(errors, pairIds.length === pairs.length && new Set(pairIds).size === pairIds.length &&
+      pairIds.every((id) => pairs.some((pair) => pair.id === id)), location,
+    'pair_ids deve listar todos os pares de memory uma única vez.');
+    assert(errors, parameters.shuffle === true, location, 'parameters.shuffle deve ser true.');
   } else if (exercise.type === 'essay') {
-    assert(errors, text(answer.value) || text(answer.model_answer), location,
-      'essay exige correct_answer.value ou model_answer.');
+    const referenceAnswer = field(answer, 'reference_answer', 'referenceAnswer') ?? answer.value ?? answer.model_answer;
+    assert(errors, text(referenceAnswer), location, 'essay exige correct_answer.reference_answer.');
+    const requiredConcepts = array(field(parameters, 'required_concepts', 'requiredConcepts'));
+    assert(errors, requiredConcepts.length > 0 && requiredConcepts.every(text), location,
+      'essay exige required_concepts preenchido.');
+    assert(errors, array(parameters.rubric).length > 0, location, 'essay exige rubric preenchida.');
+    assert(errors, Number.isInteger(parameters.minimum_words) && parameters.minimum_words > 0 &&
+      Number.isInteger(parameters.maximum_words) && parameters.maximum_words >= parameters.minimum_words,
+    location, 'essay exige limites minimum_words e maximum_words válidos.');
+    assert(errors, parameters.evaluation_mode === 'semantic', location,
+      'essay exige evaluation_mode semantic.');
   }
 }
 
@@ -219,7 +326,10 @@ function validateLesson(lesson, catalogRef, errors) {
   assert(errors, lesson.status === 'generated' || lesson.status === 'reviewed', location,
     'status deve ser generated ou reviewed.');
   const pages = array(lesson.content_pages);
-  assert(errors, pages.length >= 4 && pages.length <= 7, location, 'content_pages deve ter de 4 a 7 páginas.');
+  assert(errors, pages.length >= 6 && pages.length <= 9, location, 'content_pages deve ter de 6 a 9 páginas.');
+  const lessonWords = pages.reduce((total, page) => total + wordCount(page?.text), 0);
+  assert(errors, lessonWords >= 500 && lessonWords <= 900, location,
+    `o texto da aula deve ter de 500 a 900 palavras; recebeu ${lessonWords}.`);
   pages.forEach((page, index) => {
     const pageLocation = `${location}/content_pages/${index}`;
     assert(errors, page.page === index + 1, pageLocation, 'page deve ser sequencial, iniciando em 1.');
@@ -238,11 +348,26 @@ function validateLesson(lesson, catalogRef, errors) {
   assert(errors, [...practiceTypes.values()].every((count) => count <= 2), location,
     'practice_exercises pode ter no máximo 2 exercícios do mesmo tipo.');
   const difficultyCounts = Object.fromEntries(['easy', 'medium', 'hard'].map((value) => [value, practice.filter((item) => item.difficulty === value).length]));
-  assert(errors, difficultyCounts.easy === 2 && difficultyCounts.medium === 2 && difficultyCounts.hard === 1,
-    location, 'practice_exercises deve ter exatamente 2 easy, 2 medium e 1 hard.');
+  assert(errors, difficultyCounts.easy === 1 && difficultyCounts.medium === 2 && difficultyCounts.hard === 2,
+    location, 'practice_exercises deve ter exatamente 1 easy, 2 medium e 2 hard.');
+  const extraDifficultyCounts = Object.fromEntries(['easy', 'medium', 'hard'].map((value) => [value, extra.filter((item) => item.difficulty === value).length]));
+  assert(errors, extraDifficultyCounts.easy === 0 && extraDifficultyCounts.medium === 1 && extraDifficultyCounts.hard === 2,
+    location, 'extra_exercises deve ter exatamente 1 medium e 2 hard.');
   practice.forEach((item, index) => validateExercise(item, `${location}/practice/${index}`, 'practice', errors));
   extra.forEach((item, index) => validateExercise(item, `${location}/extra/${index}`, 'simulator_explore', errors));
   uniqueIds(errors, [...practice, ...extra], `${location}/exercises`);
+  const exerciseSignatures = [...practice, ...extra].map((exercise) => normalized(JSON.stringify({
+    type: exercise.type, statement: exercise.statement, instruction: exercise.instruction,
+    parameters: exercise.parameters,
+  })).replace(/\d+/g, '#').replace(/\s+/g, ' ').trim());
+  assert(errors, new Set(exerciseSignatures).size === exerciseSignatures.length, location,
+    'os 8 exercícios não podem ser duplicados por simples troca de números ou nomes.');
+  const choicePositions = [...practice, ...extra]
+    .filter((exercise) => exercise.type === 'multiple_choice')
+    .map((exercise) => optionItems(exercise.parameters).findIndex((option) =>
+      option.id === field(exercise.correct_answer ?? exercise.correctAnswer, 'option_id', 'optionId')));
+  assert(errors, choicePositions.length < 2 || new Set(choicePositions).size > 1, location,
+    'a posição da resposta correta deve variar entre exercícios multiple_choice.');
   assert(errors, lesson.skills.length > 0, location, 'skills não pode ser vazio.');
   assert(errors, lesson.keywords.length > 0, location, 'keywords não pode ser vazio.');
   if (pages.length > 0) {
@@ -259,10 +384,14 @@ function runtimeQuestion(exercise, lesson) {
   const itemById = new Map(array(parameters.items).map((item) => [item.id, item.text]));
   const leftById = new Map(array(parameters.left_items).map((item) => [item.id, item.text]));
   const rightById = new Map(array(parameters.right_items).map((item) => [item.id, item.text]));
-  const pairs = array(answer.pairs).map((pair) => ({
+  let pairs = array(answer.pairs).map((pair) => ({
     left: leftById.get(pair.left_id), right: rightById.get(pair.right_id),
   }));
-  let correctAnswer = answer.value ?? answer.model_answer ?? option?.text ?? '';
+  if (exercise.type === 'memory') {
+    pairs = array(parameters.pairs).map((pair) => ({ left: pair.first, right: pair.second }));
+  }
+  let correctAnswer = answer.value ?? answer.reference_answer ?? answer.model_answer ??
+    option?.text ?? option?.image ?? option?.visual_description ?? '';
   if (exercise.type === 'true_false') correctAnswer = answer.value ? 'Verdadeiro' : 'Falso';
   if (exercise.type === 'ordering' || exercise.type === 'sequencing') {
     correctAnswer = answer.ordered_ids.map((id) => itemById.get(id)).join(' | ');
@@ -277,14 +406,16 @@ function runtimeQuestion(exercise, lesson) {
       ? ['Verdadeiro', 'Falso']
       : (exercise.type === 'ordering' || exercise.type === 'sequencing')
         ? array(parameters.items).map((item) => item.text)
-        : optionItems(parameters).map((item) => item.text ?? item.image),
+        : optionItems(parameters).map((item) => item.text ?? item.image ?? item.visual_description),
     correctAnswer, explanation: exercise.correct_answer_explanation,
     subjectId: lesson.subject, topicId: lesson.topic,
     difficulty: DIFFICULTY_TO_RUNTIME[exercise.difficulty],
     tags: array(exercise.tags), parameters, correct_answer: answer,
   };
   if (pairs.length) result.pairs = pairs;
-  if (parameters.sentence) result.template = parameters.sentence;
+  if (parameters.sentence || parameters.incomplete_text) {
+    result.template = parameters.sentence ?? parameters.incomplete_text;
+  }
   if (parameters.accepted_answers) result.acceptedAnswers = parameters.accepted_answers;
   return result;
 }
@@ -309,7 +440,7 @@ export function loadAndValidateSource(sourceDirectory) {
   const lessons = files.flatMap((path) => {
     const document = json(path);
     const values = Array.isArray(document.lessons) ? document.lessons : [document];
-    return values.map((lesson) => ({ lesson, path: relative(sourceDirectory, path) }));
+    return values.map((lesson) => ({ lesson: normalizeLesson(lesson), path: relative(sourceDirectory, path) }));
   });
   const lessonIds = lessons.map(({ lesson }) => lesson.id);
   assert(errors, new Set(lessonIds).size === lessonIds.length, sourceDirectory, 'IDs de aula duplicados.');
@@ -366,6 +497,8 @@ function buildArtifacts(source) {
       lessonId: lesson.id, subjectId: lesson.subject, topicId: lesson.topic,
       schoolYear: 5, summary: lesson.short_description,
       contentPages: lesson.content_pages, learningObjectives: lesson.learning_objectives,
+      unit: lesson.unit, topic: lesson.topic, shortDescription: lesson.short_description,
+      bnccCodes: lesson.bncc_codes, estimatedMinutes: lesson.estimated_minutes,
       skills: lesson.skills, keywords: lesson.keywords,
       questions: [...lesson.practice_exercises, ...lesson.extra_exercises].map((item) => runtimeQuestion(item, lesson)),
     };

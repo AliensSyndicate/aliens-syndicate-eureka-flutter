@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../enums/report_context.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/model_question.dart';
 import '../../services/service_registry.dart';
@@ -20,6 +21,8 @@ class AppReportBottomSheet extends StatefulWidget {
     this.question,
     this.subjectId,
     this.pageNumber,
+    this.reportContext,
+    this.options,
     super.key,
   });
 
@@ -28,6 +31,38 @@ class AppReportBottomSheet extends StatefulWidget {
   final Question? question;
   final String? subjectId;
   final int? pageNumber;
+  final ReportContext? reportContext;
+  final List<String>? options;
+
+  static List<String> optionsForContext(ReportContext context) =>
+      switch (context) {
+        ReportContext.subject => const [
+          AppStrings.reportOptionWritingError,
+          AppStrings.reportOptionLogicError,
+          AppStrings.reportOptionOtherError,
+        ],
+        ReportContext.lessonContent => const [
+          AppStrings.reportOptionAudioIncorrect,
+          AppStrings.reportOptionAudioMissing,
+          AppStrings.reportOptionWritingError,
+          AppStrings.reportOptionLogicError,
+          AppStrings.reportOptionOtherError,
+        ],
+        ReportContext.lessonActivity => const [
+          AppStrings.reportOptionWrongAnswer,
+          AppStrings.reportOptionWritingError,
+          AppStrings.reportOptionLogicError,
+          AppStrings.reportOptionOtherError,
+        ],
+        ReportContext.general => const [
+          AppStrings.reportOptionAudioIncorrect,
+          AppStrings.reportOptionAudioMissing,
+          AppStrings.reportOptionWritingError,
+          AppStrings.reportOptionLogicError,
+          AppStrings.reportOptionWrongAnswer,
+          AppStrings.reportOptionOtherError,
+        ],
+      };
 
   static Future<void> show(
     BuildContext context, {
@@ -36,6 +71,8 @@ class AppReportBottomSheet extends StatefulWidget {
     Question? question,
     String? subjectId,
     int? pageNumber,
+    ReportContext? reportContext,
+    List<String>? options,
   }) => AppBottomSheet.show<void>(
     context,
     title: AppStrings.reportProblemTitle,
@@ -45,6 +82,8 @@ class AppReportBottomSheet extends StatefulWidget {
       question: question,
       subjectId: subjectId,
       pageNumber: pageNumber,
+      reportContext: reportContext,
+      options: options,
     ),
   );
 
@@ -57,14 +96,24 @@ class _AppReportBottomSheetState extends State<AppReportBottomSheet> {
   final Set<String> _selectedOptions = <String>{};
   bool _isSubmitting = false;
 
-  static const List<String> _options = [
-    AppStrings.reportOptionAudioIncorrect,
-    AppStrings.reportOptionAudioMissing,
-    AppStrings.reportOptionWritingError,
-    AppStrings.reportOptionLogicError,
-    AppStrings.reportOptionWrongAnswer,
-    AppStrings.reportOptionOtherError,
-  ];
+  List<String> get _options {
+    if (widget.options != null && widget.options!.isNotEmpty) {
+      return widget.options!;
+    }
+    if (widget.reportContext != null) {
+      return AppReportBottomSheet.optionsForContext(widget.reportContext!);
+    }
+    if (widget.question != null) {
+      return AppReportBottomSheet.optionsForContext(ReportContext.lessonActivity);
+    }
+    if (widget.lessonId != null) {
+      return AppReportBottomSheet.optionsForContext(ReportContext.lessonContent);
+    }
+    if (widget.subjectId != null) {
+      return AppReportBottomSheet.optionsForContext(ReportContext.subject);
+    }
+    return AppReportBottomSheet.optionsForContext(ReportContext.general);
+  }
 
   @override
   void dispose() {

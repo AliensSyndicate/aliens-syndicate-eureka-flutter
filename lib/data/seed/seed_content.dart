@@ -196,7 +196,7 @@ final seedLessons = <Lesson>[
       _orderingQuestion(
         'fraction_ordering_1',
         'Ordene as palavras para formar a frase:',
-        ['Uma', 'fração', 'representa', 'partes', 'iguais', 'de', 'um', 'todo'],
+        ['Uma', 'fração', 'representa', 'partes', 'iguais', 'de um', 'todo'],
         'Uma fração representa partes iguais de um todo',
         'mathematics',
         'fractions',

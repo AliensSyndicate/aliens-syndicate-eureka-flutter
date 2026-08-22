@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
 import '../../app/components/app_report_bottom_sheet.dart';
 import '../../controllers/controller_lesson.dart';
 import '../../enums/learning_mode.dart';
 import '../../enums/question_type.dart';
+import '../../enums/report_context.dart';
 import '../../enums/subject_type.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/model_lesson.dart';
@@ -88,7 +88,10 @@ class _PageLessonState extends State<PageLesson> {
     },
     child: Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: LessonAppBar(onClose: () => Navigator.maybePop(context)),
+      appBar: LessonAppBar(
+        onClose: () => Navigator.maybePop(context),
+        onReport: _handleAppBarReport,
+      ),
       body: Stack(
         children: [
           PageView.builder(
@@ -303,7 +306,6 @@ class _PageLessonState extends State<PageLesson> {
                       question.correctAnswerForFeedback,
                     ),
               explanation: result ? null : question.incorrectFeedback,
-              onReport: () => _reportError(question: question),
             ),
           ),
       ],
@@ -323,14 +325,39 @@ class _PageLessonState extends State<PageLesson> {
     setState(() => submitting = false);
   }
 
-  Future<void> _reportError({Question? question}) => AppReportBottomSheet.show(
-    context,
-    lessonId: widget.lesson.id,
-    lessonTitle: widget.lesson.title,
-    question: question,
-    subjectId: widget.lesson.subject.name,
-    pageNumber: currentPage + 1,
-  );
+  Future<void> _handleAppBarReport() {
+    final page = currentPage;
+    if (controller.isContentPage(page)) {
+      return AppReportBottomSheet.show(
+        context,
+        lessonId: widget.lesson.id,
+        lessonTitle: widget.lesson.title,
+        subjectId: widget.lesson.subject.name,
+        pageNumber: page + 1,
+        reportContext: ReportContext.lessonContent,
+      );
+    } else if (page == controller.summaryPage) {
+      return AppReportBottomSheet.show(
+        context,
+        lessonId: widget.lesson.id,
+        lessonTitle: widget.lesson.title,
+        subjectId: widget.lesson.subject.name,
+        pageNumber: page + 1,
+        reportContext: ReportContext.subject,
+      );
+    } else {
+      final question = controller.currentQuestion;
+      return AppReportBottomSheet.show(
+        context,
+        lessonId: widget.lesson.id,
+        lessonTitle: widget.lesson.title,
+        question: question,
+        subjectId: widget.lesson.subject.name,
+        pageNumber: page + 1,
+        reportContext: ReportContext.lessonActivity,
+      );
+    }
+  }
 
   void _goToPage(int page) {
     final reduceMotion = MediaQuery.disableAnimationsOf(context);

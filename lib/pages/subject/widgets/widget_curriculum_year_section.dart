@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../models/content/model_content_manifest.dart';
 import '../../../models/model_lesson.dart';
+import '../../../services/service_registry.dart';
 import '../../../ui/ui_card.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_icon.dart';
@@ -29,9 +30,6 @@ class CurriculumYearSection extends StatelessWidget {
     final completedLessons = year.lessons
         .where((lesson) => completedLessonIds.contains(lesson.id))
         .length;
-    final overallProgress = year.lessons.isEmpty
-        ? 0
-        : ((completedLessons / year.lessons.length) * 100).round();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: UiSpacing.sectionSpacing),
@@ -41,7 +39,10 @@ class CurriculumYearSection extends StatelessWidget {
           Row(
             children: [
               Expanded(child: Text(year.title, style: UiText.h5)),
-              _ProgressTag(progress: overallProgress),
+              _FractionProgressTag(
+                completed: completedLessons,
+                total: year.lessons.length,
+              ),
             ],
           ),
           const SizedBox(height: UiSpacing.sm),
@@ -91,27 +92,35 @@ class _ContentItem extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    label: AppStrings.lessonSemantics(lesson.title, isCompleted),
-    child: InkWell(
-      onTap: onTap,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: UiCard.subjectHeight),
-        child: Row(
-          children: [
-            const SizedBox(width: UiSpacing.md),
-            _StatusIcon(isCompleted: isCompleted, color: color),
-            const SizedBox(width: UiSpacing.sm),
-            Expanded(child: Text(lesson.title, style: UiText.p)),
-            const SizedBox(width: UiSpacing.sm),
-            _ProgressTag(progress: isCompleted ? 100 : 0),
-            const SizedBox(width: UiSpacing.md),
-          ],
+  Widget build(BuildContext context) {
+    final totalPages = ServiceRegistry.content.pageCountForLesson(lesson);
+    final completedPages = isCompleted ? totalPages : 0;
+
+    return Semantics(
+      button: true,
+      label: AppStrings.lessonSemantics(lesson.title, isCompleted),
+      child: InkWell(
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: UiCard.subjectHeight),
+          child: Row(
+            children: [
+              const SizedBox(width: UiSpacing.md),
+              _StatusIcon(isCompleted: isCompleted, color: color),
+              const SizedBox(width: UiSpacing.sm),
+              Expanded(child: Text(lesson.title, style: UiText.p)),
+              const SizedBox(width: UiSpacing.sm),
+              _FractionProgressTag(
+                completed: completedPages,
+                total: totalPages,
+              ),
+              const SizedBox(width: UiSpacing.md),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _StatusIcon extends StatelessWidget {
@@ -136,13 +145,18 @@ class _StatusIcon extends StatelessWidget {
   );
 }
 
-class _ProgressTag extends StatelessWidget {
-  const _ProgressTag({required this.progress});
-  final int progress;
+class _FractionProgressTag extends StatelessWidget {
+  const _FractionProgressTag({
+    required this.completed,
+    required this.total,
+  });
+
+  final int completed;
+  final int total;
 
   @override
   Widget build(BuildContext context) => Text(
-    AppStrings.percent(progress),
+    AppStrings.progressRatio(completed, total),
     style: UiText.p.copyWith(
       color: UiColor.textSecondary,
       fontWeight: FontWeight.w800,

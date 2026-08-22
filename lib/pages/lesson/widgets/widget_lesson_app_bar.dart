@@ -8,9 +8,10 @@ import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
 
 class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const LessonAppBar({required this.onClose, super.key});
+  const LessonAppBar({required this.onClose, this.onReport, super.key});
 
   final VoidCallback onClose;
+  final VoidCallback? onReport;
 
   @override
   Size get preferredSize => const Size.fromHeight(UiSize.homeAppBarHeight);
@@ -51,7 +52,24 @@ class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       title: const SizedBox.shrink(),
       actionsPadding: const EdgeInsets.only(right: UiSpacing.xxs),
-      actions: const [SizedBox(width: sideWidth - UiSpacing.xxs)],
+      actions: [
+        if (onReport != null)
+          Center(
+            child: SizedBox.square(
+              dimension: UiSize.touchTarget,
+              child: IconButton(
+                tooltip: AppStrings.reportError,
+                onPressed: onReport,
+                icon: UiIcon.report(
+                  size: UiSize.iconMd,
+                  color: UiColor.textPrimary,
+                ),
+              ),
+            ),
+          )
+        else
+          const SizedBox(width: sideWidth - UiSpacing.xxs),
+      ],
     );
   }
 }

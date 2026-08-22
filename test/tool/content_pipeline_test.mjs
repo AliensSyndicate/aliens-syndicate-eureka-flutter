@@ -8,9 +8,18 @@ import { compileContent, ContentValidationError, loadAndValidateSource, validate
 const subjects = ['portuguese', 'mathematics', 'science', 'geography', 'history'];
 
 function exercise(id, usage, type = 'true_false', difficulty = 'easy') {
+  const contexts = ['observe', 'identifique', 'compare', 'aplique', 'justifique'];
+  const context = contexts[(Number(id.at(-1)) || 1) - 1] ?? 'investigue';
   const variants = {
     true_false: { parameters: {}, correct_answer: { value: true } },
-    essay: { parameters: {}, correct_answer: { model_answer: 'Uma resposta-modelo completa.' } },
+    essay: {
+      parameters: {
+        minimum_words: 20, maximum_words: 80,
+        required_concepts: ['conceito'], evaluation_mode: 'semantic',
+        rubric: ['Explica o conceito com clareza.'],
+      },
+      correct_answer: { reference_answer: 'Uma resposta-modelo completa sobre o conceito.' },
+    },
     text_input: {
       parameters: { accepted_answers: ['conceito'], case_sensitive: false, ignore_accents: false },
       correct_answer: { value: 'conceito' },
@@ -18,7 +27,7 @@ function exercise(id, usage, type = 'true_false', difficulty = 'easy') {
   };
   return {
     id, usage, type, difficulty,
-    statement: 'O enunciado é verdadeiro.', instruction: 'Marque verdadeiro ou falso.',
+    statement: `${context} o conceito apresentado em ${id}.`, instruction: 'Resolva conforme o enunciado.',
     ...variants[type],
     correct_answer_explanation: 'A afirmação apresenta corretamente o conceito avaliado.',
   };
@@ -45,19 +54,26 @@ function fixture() {
       title: 'Uma aula válida', short_description: 'Descrição curta da aula.',
       bncc_codes: [], skills: ['identify_concept'],
       learning_objectives: ['Identificar o conceito estudado.'], estimated_minutes: 12,
-      content_pages: Array.from({ length: 4 }, (_, index) => ({
-        page: index + 1, type: ['hook', 'discovery', 'explanation', 'recap'][index],
-        title: `Página ${index + 1}`, text: 'Texto pedagógico claro e objetivo.',
+      content_pages: Array.from({ length: 6 }, (_, index) => ({
+        page: index + 1,
+        type: ['hook', 'discovery', 'explanation', 'example', 'application', 'recap'][index],
+        title: `Página ${index + 1}`,
+        text: Array.from({ length: 10 }, () =>
+          'O texto desenvolve o conceito com contexto, explicação, exemplo, raciocínio e aplicação prática.').join(' '),
         visual_description: '', key_concept: 'Conceito principal.',
       })),
       practice_exercises: [
         exercise(`${id}_practice_1`, 'practice', 'true_false', 'easy'),
-        exercise(`${id}_practice_2`, 'practice', 'text_input', 'easy'),
+        exercise(`${id}_practice_2`, 'practice', 'text_input', 'medium'),
         exercise(`${id}_practice_3`, 'practice', 'essay', 'medium'),
-        exercise(`${id}_practice_4`, 'practice', 'true_false', 'medium'),
+        exercise(`${id}_practice_4`, 'practice', 'true_false', 'hard'),
         exercise(`${id}_practice_5`, 'practice', 'essay', 'hard'),
       ],
-      extra_exercises: Array.from({ length: 3 }, (_, index) => exercise(`${id}_extra_${index + 1}`, 'simulator_explore')),
+      extra_exercises: [
+        exercise(`${id}_extra_1`, 'simulator_explore', 'true_false', 'medium'),
+        exercise(`${id}_extra_2`, 'simulator_explore', 'true_false', 'hard'),
+        exercise(`${id}_extra_3`, 'simulator_explore', 'true_false', 'hard'),
+      ],
       keywords: ['conceito'], prerequisites: [], difficulty: 'easy', version: 1, status: 'reviewed',
     };
     writeFileSync(join(source, 'lessons', `${id}.json`), JSON.stringify(lesson));
@@ -82,6 +98,37 @@ test('compila fonte mestre em release compatível e reproduzível', () => {
   assert.equal(readFileSync(join(result.releaseDirectory, 'content_manifest.json'), 'utf8'), first);
 });
 
+test('aceita o schema camelCase definido pelo prompt-mestre', () => {
+  const sourceDirectory = fixture();
+  const outputDirectory = mkdtempSync(join(tmpdir(), 'eureka-content-release-'));
+  const path = join(sourceDirectory, 'lessons', 'grade05_portuguese_unit_topic_lesson.json');
+  const lesson = JSON.parse(readFileSync(path, 'utf8'));
+  const rename = (target, source) => {
+    lesson[target] = lesson[source];
+    delete lesson[source];
+  };
+  rename('shortDescription', 'short_description');
+  rename('bnccCodes', 'bncc_codes');
+  rename('learningObjectives', 'learning_objectives');
+  rename('estimatedMinutes', 'estimated_minutes');
+  rename('contentPages', 'content_pages');
+  rename('practiceExercises', 'practice_exercises');
+  rename('extraExercises', 'extra_exercises');
+  lesson.contentPages[4].type = 'commonMistake';
+  for (const exercise of [...lesson.practiceExercises, ...lesson.extraExercises]) {
+    exercise.correctAnswer = exercise.correct_answer;
+    exercise.correctAnswerExplanation = exercise.correct_answer_explanation;
+    delete exercise.correct_answer;
+    delete exercise.correct_answer_explanation;
+    exercise.type = {
+      true_false: 'trueFalse', text_input: 'textInput', essay: 'essay',
+    }[exercise.type];
+  }
+  writeFileSync(path, JSON.stringify(lesson));
+
+  assert.doesNotThrow(() => compileContent({ sourceDirectory, outputDirectory }));
+});
+
 test('rejeita aula que não possui exatamente cinco exercícios de prática', () => {
   const sourceDirectory = fixture();
   const path = join(sourceDirectory, 'lessons', 'grade05_portuguese_unit_topic_lesson.json');
@@ -102,11 +149,13 @@ test('rejeita distribuição editorial inválida nas práticas', () => {
   lesson.practice_exercises[2].type = 'true_false';
   lesson.practice_exercises[2].parameters = {};
   lesson.practice_exercises[2].correct_answer = { value: true };
-  lesson.practice_exercises[4].difficulty = 'medium';
+  lesson.practice_exercises[0].difficulty = 'medium';
+  lesson.extra_exercises[0].difficulty = 'easy';
   writeFileSync(path, JSON.stringify(lesson));
   assert.throws(() => loadAndValidateSource(sourceDirectory), (error) => {
     assert.match(error.message, /no máximo 2 exercícios do mesmo tipo/);
-    assert.match(error.message, /exatamente 2 easy, 2 medium e 1 hard/);
+    assert.match(error.message, /exatamente 1 easy, 2 medium e 2 hard/);
+    assert.match(error.message, /exatamente 1 medium e 2 hard/);
     return true;
   });
 });

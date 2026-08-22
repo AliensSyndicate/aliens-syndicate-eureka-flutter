@@ -29,13 +29,14 @@ class Question {
          'mas recebeu ${options.length}.',
        ),
        assert(
-         type != QuestionType.matching || (pairs != null && pairs.length == 5),
-         'Questão "$id": matching deve ter exatamente 5 pares.',
+         type != QuestionType.matching ||
+             (pairs != null && pairs.length >= 3 && pairs.length <= 6),
+         'Questão "$id": matching deve ter de 3 a 6 pares.',
        ),
        assert(
          type != QuestionType.memory ||
-             (pairs != null && pairs.length >= 2 && pairs.length <= 8),
-         'Questão "$id": memory deve ter de 2 a 8 pares.',
+             (pairs != null && pairs.length >= 4 && pairs.length <= 6),
+         'Questão "$id": memory deve ter de 4 a 6 pares.',
        ),
        assert(
          type != QuestionType.trueFalse || options.length == 2,
@@ -44,6 +45,11 @@ class Question {
        assert(
          type != QuestionType.imageChoice || options.length == 4,
          'Questão "$id": imageChoice deve ter exatamente 4 imagens.',
+       ),
+       assert(
+         (type != QuestionType.ordering && type != QuestionType.sequencing) ||
+             (options.length >= 4 && options.length <= 7),
+         'Questão "$id": ordering e sequencing devem ter de 4 a 7 itens.',
        ),
        assert(
          (type != QuestionType.fillBlank &&

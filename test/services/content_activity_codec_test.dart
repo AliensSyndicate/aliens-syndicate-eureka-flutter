@@ -51,10 +51,10 @@ void main() {
 
   test('aceita nomes snake_case e converte option_id no texto da opção', () {
     final decoded = ContentActivityCodec.decode({
-      'questions': [_exercise(1, 'practice')],
+      'questions': _completeQuestionSet(),
     });
 
-    final question = decoded!.questions.single;
+    final question = decoded!.questions[1];
     expect(question.type, QuestionType.multipleChoice);
     expect(question.prompt, 'Quanto é 1 + 1?');
     expect(question.instruction, 'Escolha uma alternativa.');
@@ -63,24 +63,27 @@ void main() {
     expect(question.difficulty, 2);
   });
 
-  test('descarta questão inválida sem lançar', () {
-    final decoded = ContentActivityCodec.decode({
-      'questions': [
-        {..._exercise(1, 'practice'), 'type': 'unknown_type'},
-        {..._exercise(2, 'practice'), 'statement': ''},
-      ],
-    });
+  test(
+    'rejeita atividade quando questões inválidas quebram o contrato 5 + 3',
+    () {
+      final decoded = ContentActivityCodec.decode({
+        'questions': [
+          {..._exercise(1, 'practice'), 'type': 'unknown_type'},
+          {..._exercise(2, 'practice'), 'statement': ''},
+        ],
+      });
 
-    expect(decoded, isNotNull);
-    expect(decoded!.questions, isEmpty);
-  });
+      expect(decoded, isNull);
+    },
+  );
 
   test('sequencing preserva o separador usado pelo componente', () {
     final decoded = ContentActivityCodec.decode({
       'subject_id': 'science',
       'topic_id': 'water_cycle',
-      'questions': [
-        {
+      'questions': _completeQuestionSet(
+        replacementIndex: 5,
+        replacement: {
           'id': 'cycle_order',
           'usage': 'simulator_explore',
           'type': 'sequencing',
@@ -92,22 +95,43 @@ void main() {
               {'id': 'a', 'text': 'Evaporação'},
               {'id': 'b', 'text': 'Condensação'},
               {'id': 'c', 'text': 'Precipitação'},
+              {'id': 'd', 'text': 'Infiltração'},
             ],
           },
           'correct_answer': {
-            'ordered_ids': ['a', 'b', 'c'],
+            'ordered_ids': ['a', 'b', 'c', 'd'],
           },
           'correct_answer_explanation': 'Essa é a sequência do ciclo.',
         },
-      ],
+      ),
     });
 
     expect(
-      decoded!.questions.single.correctAnswer,
-      'Evaporação | Condensação | Precipitação',
+      decoded!.questions
+          .singleWhere((item) => item.id == 'cycle_order')
+          .correctAnswer,
+      'Evaporação | Condensação | Precipitação | Infiltração',
     );
   });
+
+  test('rejeita distribuição diferente de 5 práticas e 3 extras', () {
+    final questions = _completeQuestionSet();
+    questions[4] = {...questions[4], 'usage': 'simulator_explore'};
+
+    expect(ContentActivityCodec.decode({'questions': questions}), isNull);
+  });
 }
+
+List<Map<String, dynamic>> _completeQuestionSet({
+  int? replacementIndex,
+  Map<String, dynamic>? replacement,
+}) => [
+  for (var index = 0; index < 8; index++)
+    if (index == replacementIndex)
+      replacement!
+    else
+      _exercise(index, index < 5 ? 'practice' : 'simulator_explore'),
+];
 
 Map<String, dynamic> _exercise(int index, String usage) => {
   'id': 'question_$index',

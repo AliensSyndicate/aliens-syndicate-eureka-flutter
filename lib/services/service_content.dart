@@ -85,6 +85,44 @@ class ContentService {
         .toList();
   }
 
+  int pageCountForLesson(Lesson lesson) {
+    if (lesson.questions.isNotEmpty) {
+      final contentPagesCount =
+          lesson.contentPages.isEmpty ? 1 : lesson.contentPages.length;
+      return contentPagesCount + lesson.questions.length;
+    }
+    final references = lesson.activities.isNotEmpty
+        ? lesson.activities
+        : [
+            ActivityReference(
+              id: lesson.activityId ?? '${lesson.id}_v1',
+              version: lesson.activityVersion,
+            ),
+          ];
+    for (final reference in references) {
+      final payload = _activityCache.read(reference.id, reference.version);
+      if (payload != null && _isValidActivityPayload(payload, reference)) {
+        final decoded = ContentActivityCodec.decode(payload);
+        if (decoded != null) {
+          final contentPagesCount =
+              decoded.contentPages.isEmpty ? 1 : decoded.contentPages.length;
+          return contentPagesCount + decoded.questions.length;
+        }
+      }
+      final seedId = reference.id.replaceFirst(RegExp(r'_v\d+$'), '');
+      for (final seed in seedLessons) {
+        if (seed.id == seedId) {
+          final contentPagesCount =
+              seed.contentPages.isEmpty ? 1 : seed.contentPages.length;
+          return contentPagesCount + seed.questions.length;
+        }
+      }
+    }
+    final contentPagesCount =
+        lesson.contentPages.isEmpty ? 1 : lesson.contentPages.length;
+    return contentPagesCount + lesson.questions.length;
+  }
+
   Future<Lesson> loadActivity(Lesson lesson) async {
     if (lesson.questions.isNotEmpty) return Future.value(lesson);
     if (lesson.activities.isEmpty && lesson.activityId == null) return lesson;

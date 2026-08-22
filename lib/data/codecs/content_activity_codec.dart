@@ -50,20 +50,14 @@ abstract final class ContentActivityCodec {
               )
               .whereType<Question>()
               .toList();
-      final hasSeparatedExercises =
-          payload.containsKey('practice_exercises') ||
-          payload.containsKey('extra_exercises');
-      if (hasSeparatedExercises &&
-          (questions
-                      .where((item) => item.usage == QuestionUsage.practice)
-                      .length !=
-                  5 ||
-              questions
-                      .where(
-                        (item) => item.usage == QuestionUsage.simulatorExplore,
-                      )
-                      .length !=
-                  3)) {
+      if (questions
+                  .where((item) => item.usage == QuestionUsage.practice)
+                  .length !=
+              5 ||
+          questions
+                  .where((item) => item.usage == QuestionUsage.simulatorExplore)
+                  .length !=
+              3) {
         return null;
       }
       if (questions.map((item) => item.id).toSet().length != questions.length) {
@@ -110,7 +104,12 @@ abstract final class ContentActivityCodec {
       final optionMaps = _maps(parameters['options']);
       final optionTextById = {
         for (final option in optionMaps)
-          _string(option['id']): _string(option['text']),
+          _string(option['id']): _string(
+            option['text'] ??
+                option['image'] ??
+                option['visual_description'] ??
+                option['visualDescription'],
+          ),
       };
       var options = optionMaps.isNotEmpty
           ? optionTextById.values.toList()
@@ -131,13 +130,14 @@ abstract final class ContentActivityCodec {
       final acceptedAnswers = _strings(
         parameters['accepted_answers'] ?? parameters['acceptedAnswers'],
       );
-      if (type == QuestionType.sequencing && answer['ordered_ids'] is List) {
-        final items = _maps(parameters['items']);
+      if (type == QuestionType.sequencing &&
+          (answer['ordered_ids'] is List || answer['orderedIds'] is List)) {
+        final items = _maps(parameters['items'] ?? parameters['steps']);
         final byId = {
           for (final item in items) _string(item['id']): _string(item['text']),
         };
         correctAnswer = _strings(
-          answer['ordered_ids'],
+          answer['ordered_ids'] ?? answer['orderedIds'],
         ).map((id) => byId[id]).whereType<String>().join(' | ');
       }
       if (type == QuestionType.trueFalse) {
@@ -153,13 +153,17 @@ abstract final class ContentActivityCodec {
         }.where((value) => value.isNotEmpty).toList();
       }
       final template = _nullableString(
-        map['template'] ?? parameters['sentence'] ?? parameters['template'],
+        map['template'] ??
+            parameters['sentence'] ??
+            parameters['incomplete_text'] ??
+            parameters['incompleteText'] ??
+            parameters['template'],
       );
       return Question(
         id: _requiredString(map['id']),
         prompt: _requiredString(map['statement'] ?? map['prompt']),
         instruction: _string(map['instruction']),
-        usage: _usage(map['usage']),
+        usage: _requiredUsage(map['usage']),
         type: type,
         options: options,
         correctAnswer: _requiredString(correctAnswer),
@@ -209,8 +213,18 @@ abstract final class ContentActivityCodec {
           )
           .toList();
     }
-    final left = _maps(parameters['left_items']);
-    final right = _maps(parameters['right_items']);
+    if (type == QuestionType.memory) {
+      return _maps(parameters['pairs'])
+          .map(
+            (pair) => MatchingPair(
+              left: _requiredString(pair['first']),
+              right: _requiredString(pair['second']),
+            ),
+          )
+          .toList();
+    }
+    final left = _maps(parameters['left_items'] ?? parameters['leftItems']);
+    final right = _maps(parameters['right_items'] ?? parameters['rightItems']);
     final rightById = {
       for (final item in right) _string(item['id']): _string(item['text']),
     };
@@ -238,6 +252,9 @@ abstract final class ContentActivityCodec {
     if (answer.containsKey('option_id')) {
       return optionTextById[_string(answer['option_id'])];
     }
+    if (answer.containsKey('optionId')) {
+      return optionTextById[_string(answer['optionId'])];
+    }
     if (answer.containsKey('value')) return answer['value'].toString();
     if (answer['ordered_ids'] is List) {
       final items = _maps(parameters['items']);
@@ -249,6 +266,13 @@ abstract final class ContentActivityCodec {
       ).map((id) => byId[id]).whereType<String>().join(' ');
     }
     if (answer['pairs'] is List) return '__matching_done__';
+    if (answer['pair_ids'] is List || answer['pairIds'] is List) {
+      return '__memory_done__';
+    }
+    if (answer.containsKey('reference_answer')) {
+      return answer['reference_answer'];
+    }
+    if (answer.containsKey('referenceAnswer')) return answer['referenceAnswer'];
     return null;
   }
 
@@ -279,10 +303,14 @@ abstract final class ContentActivityCodec {
     return null;
   }
 
-  static QuestionUsage _usage(Object? value) =>
-      _string(value).replaceAll('_', '').toLowerCase() == 'simulatorexplore'
-      ? QuestionUsage.simulatorExplore
-      : QuestionUsage.practice;
+  static QuestionUsage _requiredUsage(Object? value) {
+    return switch (_string(value).replaceAll('_', '').toLowerCase()) {
+      'practice' => QuestionUsage.practice,
+      'simulatorexplore' => QuestionUsage.simulatorExplore,
+      _ => throw const FormatException('usage inválido.'),
+    };
+  }
+
   static int _difficulty(Object? value) => switch (value) {
     'easy' => 1,
     'medium' => 2,
