@@ -8,6 +8,8 @@ import '../../ui/ui_icon.dart';
 import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
+import '../../services/service_registry.dart';
+import '../../l10n/app_strings.dart';
 import 'widgets/widget_social_avatar.dart';
 import 'widgets/widget_social_post.dart';
 import 'widgets/widget_social_skeleton.dart';
@@ -20,15 +22,23 @@ class PageSocial extends StatefulWidget {
 }
 
 class _PageSocialState extends State<PageSocial> {
-  late final SocialController controller;
+  SocialController? controller;
+  late final bool socialAvailable;
   late final ScrollController scrollController;
   @override
   void initState() {
     super.initState();
-    controller = widget.controller ?? SocialController(MockSocialRepository());
+    socialAvailable =
+        widget.controller != null || ServiceRegistry.user.isAuthenticated;
+    if (socialAvailable) {
+      controller =
+          widget.controller ?? SocialController(MockSocialRepository());
+    }
     scrollController = ScrollController()..addListener(_onScroll);
-    controller.addListener(_refresh);
-    if (controller.status == SocialFeedStatus.initial) controller.loadInitial();
+    controller?.addListener(_refresh);
+    if (controller?.status == SocialFeedStatus.initial) {
+      controller?.loadInitial();
+    }
   }
 
   void _refresh() {
@@ -36,76 +46,83 @@ class _PageSocialState extends State<PageSocial> {
   }
 
   void _onScroll() {
-    if (scrollController.position.extentAfter < 320) controller.loadMore();
+    if (scrollController.position.extentAfter < 320) controller?.loadMore();
   }
 
   @override
   void dispose() {
-    controller.removeListener(_refresh);
+    controller?.removeListener(_refresh);
     scrollController.dispose();
-    if (widget.controller == null) controller.dispose();
+    if (widget.controller == null) controller?.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => SafeArea(
-    child: Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            UiSpacing.pageHorizontal,
-            UiSpacing.pageVertical,
-            UiSpacing.xs,
-            0,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Semantics(
-                  header: true,
-                  child: Text('Novidades', style: UiText.h3),
+  Widget build(BuildContext context) {
+    if (!socialAvailable) {
+      return _SocialLocked(onTap: () => context.go('/home'));
+    }
+    return SafeArea(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              UiSpacing.pageHorizontal,
+              UiSpacing.pageVertical,
+              UiSpacing.xs,
+              0,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    child: Text(AppStrings.socialNews, style: UiText.h3),
+                  ),
                 ),
-              ),
-              _HeaderAction(
-                label: 'Ranking',
-                icon: UiIcon.trophy(size: UiSize.iconSm),
-                onTap: () => context.push('/social/ranking'),
-              ),
-              _HeaderAction(
-                label: 'Amigos',
-                icon: UiIcon.group(size: UiSize.iconSm),
-                onTap: () => context.push('/social/friends'),
-              ),
-            ],
+                _HeaderAction(
+                  label: AppStrings.socialRanking,
+                  icon: UiIcon.trophy(size: UiSize.iconSm),
+                  onTap: () => context.push('/social/ranking'),
+                ),
+                _HeaderAction(
+                  label: AppStrings.socialFriends,
+                  icon: UiIcon.group(size: UiSize.iconSm),
+                  onTap: () => context.push('/social/friends'),
+                ),
+              ],
+            ),
           ),
-        ),
-        Expanded(child: _body()),
-      ],
-    ),
-  );
+          Expanded(child: _body()),
+        ],
+      ),
+    );
+  }
+
   Widget _body() {
-    if (controller.status == SocialFeedStatus.loading) {
+    final activeController = controller!;
+    if (activeController.status == SocialFeedStatus.loading) {
       return const SocialSkeleton();
     }
-    if (controller.status == SocialFeedStatus.error &&
-        controller.posts.isEmpty) {
+    if (activeController.status == SocialFeedStatus.error &&
+        activeController.posts.isEmpty) {
       return _MessageState(
-        message: 'Não foi possível carregar as novidades.',
-        action: 'Tentar novamente',
-        onTap: controller.loadInitial,
+        message: AppStrings.socialLoadError,
+        action: AppStrings.tryAgain,
+        onTap: activeController.loadInitial,
       );
     }
-    if (controller.status == SocialFeedStatus.empty) {
+    if (activeController.status == SocialFeedStatus.empty) {
       return _MessageState(
-        message: 'Quando seus amigos estudarem, as novidades aparecem aqui.',
-        action: 'Encontrar amigos',
+        message: AppStrings.socialEmpty,
+        action: AppStrings.socialFindFriends,
         onTap: () => context.push('/social/friends'),
       );
     }
     return RefreshIndicator(
       color: UiColor.accent,
       backgroundColor: UiColor.surface,
-      onRefresh: controller.refresh,
+      onRefresh: activeController.refresh,
       child: ListView.separated(
         key: const Key('social_feed'),
         controller: scrollController,
@@ -113,12 +130,14 @@ class _PageSocialState extends State<PageSocial> {
         padding: const EdgeInsets.symmetric(
           horizontal: UiSpacing.pageHorizontal,
         ),
-        itemCount: controller.posts.length + (controller.hasMore ? 1 : 0),
-        separatorBuilder: (_, index) => index < controller.posts.length - 1
+        itemCount:
+            activeController.posts.length + (activeController.hasMore ? 1 : 0),
+        separatorBuilder: (_, index) =>
+            index < activeController.posts.length - 1
             ? const Divider(height: 1, color: UiColor.divider)
             : const SizedBox.shrink(),
         itemBuilder: (context, index) {
-          if (index == controller.posts.length) {
+          if (index == activeController.posts.length) {
             return const Padding(
               padding: EdgeInsets.all(UiSpacing.md),
               child: Center(
@@ -132,16 +151,18 @@ class _PageSocialState extends State<PageSocial> {
               ),
             );
           }
-          final post = controller.posts[index];
+          final post = activeController.posts[index];
           return SocialPostWidget(
             post: post,
-            onLike: () => controller.toggleLike(post.id),
+            onLike: () => activeController.toggleLike(post.id),
             onLikesTap: () async {
-              final users = await controller.repository.loadLikes(post.id);
+              final users = await activeController.repository.loadLikes(
+                post.id,
+              );
               if (!context.mounted) return;
               AppBottomSheet.show<void>(
                 context,
-                title: 'Curtidas',
+                title: AppStrings.socialLikes,
                 content: Column(
                   children: [
                     for (final user in users)
@@ -173,7 +194,7 @@ class _HeaderAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
-    label: 'Abrir $label',
+    label: AppStrings.openSection(label),
     child: InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(UiSize.touchTarget / 2),
@@ -188,6 +209,37 @@ class _HeaderAction extends StatelessWidget {
               Text(label, style: UiText.label),
             ],
           ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _SocialLocked extends StatelessWidget {
+  const _SocialLocked({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    child: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(UiSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            UiIcon.group(size: UiSize.avatarLg, color: UiColor.textSecondary),
+            const SizedBox(height: UiSpacing.md),
+            Text(
+              AppStrings.socialRequiresAccount,
+              style: UiText.p,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: UiSpacing.md),
+            TextButton(
+              onPressed: onTap,
+              child: const Text(AppStrings.backToHome),
+            ),
+          ],
         ),
       ),
     ),

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../enums/learning_mode.dart';
 import '../../models/content/model_content_manifest.dart';
 import '../../models/model_lesson.dart';
-import '../../pages/auth/page_auth.dart';
 import '../../pages/explore/page_explore.dart';
 import '../../pages/home/page_home.dart';
 import '../../pages/lesson/page_lesson.dart';
@@ -23,6 +22,7 @@ import '../../pages/social/page_friends.dart';
 import '../../pages/social/page_ranking.dart';
 import '../../pages/subject/page_subject_lessons.dart';
 import '../../ui/ui_motion.dart';
+import '../../services/service_registry.dart';
 import 'navigation_app.dart';
 
 abstract final class AppRoute {
@@ -34,7 +34,6 @@ abstract final class AppRoute {
   static const simulationResult = 'simulationResult';
   static const simulationReview = 'simulationReview';
   static const profile = 'profile';
-  static const auth = 'auth';
   static const subject = 'subject';
   static const lesson = 'lesson';
   static const lessonLoading = 'lessonLoading';
@@ -113,11 +112,15 @@ final GoRouter appRouter = GoRouter(
                 GoRoute(
                   path: 'friends',
                   name: AppRoute.socialFriends,
+                  redirect: (context, state) =>
+                      ServiceRegistry.user.isAuthenticated ? null : '/social',
                   builder: (context, state) => const PageFriends(),
                 ),
                 GoRoute(
                   path: 'ranking',
                   name: AppRoute.socialRanking,
+                  redirect: (context, state) =>
+                      ServiceRegistry.user.isAuthenticated ? null : '/social',
                   builder: (context, state) => const PageRanking(),
                 ),
               ],
@@ -193,12 +196,6 @@ final GoRouter appRouter = GoRouter(
           controller: (state.extra as SimulationRouteArguments).controller,
         ),
       ),
-    ),
-    GoRoute(
-      path: '/auth',
-      name: AppRoute.auth,
-      pageBuilder: (context, state) =>
-          _transitionPage(state: state, child: const PageAuth()),
     ),
     GoRoute(
       path: '/subject',

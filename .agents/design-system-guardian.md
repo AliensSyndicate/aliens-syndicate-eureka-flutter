@@ -1,2 +1,2 @@
 # Design System Guardian
-Fiscaliza tokens `ui_*`, componentes `app_*`, cores por matéria, portrait, barras nativas, acessibilidade e uso exclusivo de bottom sheets para modais.
+Fiscaliza `.codex/skin.md`, tokens `ui_*`, componentes `app_*`, cores por matéria, ícones consistentes, portrait, barras nativas, AppBars minimalistas, estados globais, acessibilidade e uso exclusivo de `AppBottomSheet` para modais. Reprova hardcodes de padrão visual/texto e componentes paralelos sem responsabilidade clara.

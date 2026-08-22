@@ -1,4 +1,6 @@
+import 'package:eureka/controllers/controller_social.dart';
 import 'package:eureka/pages/social/page_social.dart';
+import 'package:eureka/repositories/repository_mock_social.dart';
 import 'package:eureka/ui/ui_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,10 +8,12 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('renderiza feed e permite curtir publicação', (tester) async {
     final semantics = tester.ensureSemantics();
+    final controller = SocialController(MockSocialRepository());
+    addTearDown(controller.dispose);
     await tester.pumpWidget(
       MaterialApp(
         theme: UiTheme.dark,
-        home: const Scaffold(body: PageSocial()),
+        home: Scaffold(body: PageSocial(controller: controller)),
       ),
     );
     expect(find.text('Novidades'), findsOneWidget);
@@ -38,10 +42,12 @@ void main() {
   });
   testWidgets('atalhos de ranking e amigos possuem semântica', (tester) async {
     final semantics = tester.ensureSemantics();
+    final controller = SocialController(MockSocialRepository());
+    addTearDown(controller.dispose);
     await tester.pumpWidget(
       MaterialApp(
         theme: UiTheme.dark,
-        home: const Scaffold(body: PageSocial()),
+        home: Scaffold(body: PageSocial(controller: controller)),
       ),
     );
     await tester.pump(const Duration(milliseconds: 200));

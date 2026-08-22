@@ -12,6 +12,15 @@ abstract final class AppStrings {
       simulation = 'Simulado',
       profile = 'Profile',
       socialSoon = 'Em breve, conquistas e desafios com amigos.',
+      socialNews = 'Novidades',
+      socialRanking = 'Ranking',
+      socialFriends = 'Amigos',
+      socialLikes = 'Curtidas',
+      socialLoadError = 'Não foi possível carregar as novidades.',
+      socialEmpty = 'Quando seus amigos estudarem, as novidades aparecem aqui.',
+      socialFindFriends = 'Encontrar amigos',
+      socialRequiresAccount =
+          'Social, Amigos e Ranking ficam disponíveis depois que você salvar seu progresso com uma conta.',
       exploreHint = 'Busque uma matéria ou conteúdo',
       exploreSearchHint = 'O que você quer aprender?',
       exploreRecentSearches = 'Buscas recentes',
@@ -40,8 +49,7 @@ abstract final class AppStrings {
       noXpOutsideJourney = 'Este modo é para estudar e não concede XP.',
       selectAtLeastOne = 'Selecione pelo menos um conteúdo.',
       startSimulation = 'Começar simulado',
-      simulationIntro =
-          'Monte um treino do seu jeito e acompanhe seu desempenho.',
+      simulationIntro = 'Monte um treino do seu jeito e acompanhe seu desempenho.',
       simulationContinueSaved = 'Continuar simulado',
       simulationSelectSubjects = 'Escolha uma ou mais matérias',
       simulationContents = 'Conteúdos',
@@ -120,8 +128,6 @@ abstract final class AppStrings {
       falseLabel = 'Falso',
       xpLabel = 'Pontos de experiência',
       levelLabel = 'Nível atual',
-      createEurekaAccount = 'Criar conta Eureka',
-      createEurekaAccountDescription = 'Salve seu progresso na nuvem, acesse de outros dispositivos e mantenha seus dados seguros.',
       stageElementarySchoolShort = 'EF',
       stageHighSchoolShort = 'EM',
       lessonCompletedSemantics = 'concluído',
@@ -158,6 +164,7 @@ abstract final class AppStrings {
 
   static String lessonPage(int current, int total, String label) =>
       '$current de $total - $label';
+  static String openSection(String label) => 'Abrir $label';
   static String selectedContents(int count) =>
       count == 1 ? '1 conteúdo selecionado' : '$count conteúdos selecionados';
   static String simulationConfirmation(

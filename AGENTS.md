@@ -1,8 +1,8 @@
 # Instruções do projeto Eureka
 
-Trate a especificação da V1 e `.codex/rules/` como fonte de verdade. Código e identificadores em inglês; comentários e documentação em português; UI em pt-BR via recursos centralizados.
+Trate `.codex/rules/product-master.md`, `.codex/rules/` e `.codex/skin.md` como fonte de verdade. `product-v1.md` define apenas o recorte da release atual. Código e identificadores em inglês; comentários e documentação em português; UI em pt-BR via recursos centralizados.
 
-Para criação, revisão ou publicação de conteúdo pedagógico do 5º ano, siga integralmente `.codex/rules/content-grade5.md`. Em caso de conflito, a especificação da V1 continua definindo o escopo do produto, enquanto essa regra define o contrato pedagógico e estrutural do conteúdo.
+Para criação, revisão ou publicação de conteúdo pedagógico do 5º ano, siga integralmente `.codex/rules/content-grade5.md`. Em caso de conflito, `.codex/rules/product-master.md` define o produto, `.codex/rules/product-v1.md` define o recorte da entrega atual e a regra de conteúdo define o contrato pedagógico e estrutural.
 
 - Não acesse Firebase ou Hive em pages/widgets; use services e repositories.
 - Toda regra de negócio deve ficar no service responsável. Pontuação fica em `service_scoring.dart`.

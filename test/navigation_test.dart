@@ -26,7 +26,6 @@ void main() {
     expect(appRouter.namedLocation(AppRoute.explore), '/explore');
     expect(appRouter.namedLocation(AppRoute.simulation), '/simulation');
     expect(appRouter.namedLocation(AppRoute.profile), '/profile');
-    expect(appRouter.namedLocation(AppRoute.auth), '/auth');
     expect(appRouter.namedLocation(AppRoute.subject), '/subject');
     expect(appRouter.namedLocation(AppRoute.lessonLoading), '/lesson/loading');
     expect(appRouter.namedLocation(AppRoute.lesson), '/lesson');
