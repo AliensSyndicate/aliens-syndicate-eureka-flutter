@@ -1,5 +1,4 @@
 import 'package:eureka/app/components/subject_card.dart';
-import 'package:eureka/pages/home/widgets/widget_login.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,13 +45,8 @@ class _PageHomeState extends State<PageHome> {
       children: [
         AppHomeBar(
           xp: progress.xp,
-          seriesLabel: AppStrings.highSchoolSeries(schoolYear),
           onXpTap: () =>
               _showValue(AppStrings.xpLabel, AppStrings.xpValue(progress.xp)),
-          onSeriesTap: () => _showValue(
-            AppStrings.levelLabel,
-            AppStrings.levelValue(progress.level),
-          ),
         ),
         Expanded(
           child: FutureBuilder<List<SubjectContentManifest>>(
@@ -75,16 +69,6 @@ class _PageHomeState extends State<PageHome> {
                   }
                 }
               }
-              if (lastLesson == null) {
-                for (final subject in items) {
-                  if (subject.id != 'mathematics') continue;
-                  final lessons = subject.availableLessonsForYear(schoolYear);
-                  if (lessons.isNotEmpty) {
-                    lastSubject = subject;
-                    lastLesson = lessons.first;
-                  }
-                }
-              }
               final recommendation = ServiceRegistry.recommendation.recommend(
                 items,
                 schoolYear,
@@ -98,16 +82,15 @@ class _PageHomeState extends State<PageHome> {
                   bottom: UiSpacing.pageVertical,
                 ),
                 children: [
-                  if (!ServiceRegistry.user.isAuthenticated) ...[
-                    LoginCard(onTap: () => context.pushNamed(AppRoute.auth)),
-                    const SizedBox(height: UiSpacing.sectionSpacing),
-                  ],
                   if (recommendation != null) ...[
                     Text(AppStrings.recommendedForYou, style: UiText.h4),
                     const SizedBox(height: UiSpacing.sm),
                     RecommendationCard(
                       recommendation: recommendation,
-                      onTap: () => _continueLesson(recommendation.lesson),
+                      onTap: () => _continueLesson(
+                        recommendation.lesson,
+                        mode: LearningMode.review,
+                      ),
                     ),
                     const SizedBox(height: UiSpacing.sectionSpacing),
                   ],
@@ -168,26 +151,13 @@ class _PageHomeState extends State<PageHome> {
         ],
       );
 
-  Future<void> _continueLesson(Lesson lesson) async {
-    final activity = await ServiceRegistry.content.loadActivity(lesson);
-    if (!mounted) return;
-    if (activity.questions.isEmpty) {
-      await AppBottomSheet.show<void>(
-        context,
-        title: lesson.title,
-        content: const Text(AppStrings.contentUnavailable),
-        actions: [
-          AppButton(
-            label: AppStrings.finish,
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      );
-      return;
-    }
+  Future<void> _continueLesson(
+    Lesson lesson, {
+    LearningMode mode = LearningMode.journey,
+  }) async {
     await context.pushNamed(
-      AppRoute.lesson,
-      extra: LessonRouteArguments(lesson: activity, mode: LearningMode.journey),
+      AppRoute.lessonLoading,
+      extra: LessonLoadingRouteArguments(lesson: lesson, mode: mode),
     );
     if (mounted) setState(() {});
   }

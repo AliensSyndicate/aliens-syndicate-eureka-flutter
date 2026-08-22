@@ -8,15 +8,16 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 void main() {
   late Directory tempDirectory;
+  late Box<dynamic> box;
 
   setUpAll(() async {
     tempDirectory = Directory.systemTemp.createTempSync('eureka_sheet_test_');
     Hive.init(tempDirectory.path);
-    await Hive.openBox<dynamic>('eureka');
+    box = await Hive.openBox<dynamic>('eureka');
   });
 
   tearDownAll(() async {
-    await Hive.close();
+    await box.close();
     tempDirectory.deleteSync(recursive: true);
   });
 

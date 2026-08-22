@@ -1,12 +1,16 @@
+import '../enums/social_event_type.dart';
+
 class SocialEvent {
   const SocialEvent({
     required this.id,
     required this.type,
     required this.createdAt,
-    required this.title,
+    required this.userId,
+    this.metadata = const {},
   });
   final String id;
-  final String type;
+  final String userId;
+  final SocialEventType type;
   final DateTime createdAt;
-  final String title;
+  final Map<String, Object> metadata;
 }

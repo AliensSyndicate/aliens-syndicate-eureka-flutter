@@ -46,9 +46,7 @@ class ReportModel {
     id: map['id'] as String? ?? '',
     userId: map['userId'] as String? ?? '',
     reasons:
-        (map['reasons'] as List<dynamic>?)
-            ?.map((e) => e.toString())
-            .toList() ??
+        (map['reasons'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
         const [],
     details: map['details'] as String?,
     lessonId: map['lessonId'] as String?,

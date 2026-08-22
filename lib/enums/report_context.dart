@@ -1,6 +1,1 @@
-enum ReportContext {
-  subject,
-  lessonContent,
-  lessonActivity,
-  general,
-}
+enum ReportContext { subject, lessonContent, lessonActivity, general }

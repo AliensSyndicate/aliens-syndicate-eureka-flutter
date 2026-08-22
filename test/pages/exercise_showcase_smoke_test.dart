@@ -11,7 +11,9 @@ void main() {
       .firstWhere((lesson) => lesson.id == 'fractions_intro')
       .questions;
 
-  Future<void> pump(WidgetTester tester, Question question, {
+  Future<void> pump(
+    WidgetTester tester,
+    Question question, {
     required bool current,
     String answer = '',
   }) async {
@@ -64,8 +66,7 @@ void main() {
       tester,
     ) async {
       final answer = switch (question.type) {
-        QuestionType.matching ||
-        QuestionType.memory => question.correctAnswer,
+        QuestionType.matching || QuestionType.memory => question.correctAnswer,
         QuestionType.essay => 'Uma fração é uma parte de um todo inteiro.',
         _ => question.correctAnswer,
       };

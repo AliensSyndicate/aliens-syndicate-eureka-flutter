@@ -22,6 +22,7 @@ class QuestionSelectionService {
     String? lastQuestionId,
   }) {
     if (showcaseMode) return List.of(pool);
+    if (pool.length <= count) return List.of(pool);
 
     final ordered = [...pool]..shuffle(_random);
     if (ordered.length > 1 && ordered.first.id == lastQuestionId) {

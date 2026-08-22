@@ -12,4 +12,14 @@ void main() {
     );
     expect(result?.subject.id, 'science');
   });
+
+  test('não inventa ponto a melhorar sem erros registrados', () {
+    final manifest = buildSeedContentManifest();
+    final result = RecommendationService().recommend(
+      manifest.subjectsForYear(5),
+      5,
+      const {},
+    );
+    expect(result, isNull);
+  });
 }

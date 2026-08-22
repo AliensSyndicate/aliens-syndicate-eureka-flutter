@@ -30,6 +30,7 @@ void main() {
     expect(appRouter.namedLocation(AppRoute.subject), '/subject');
     expect(appRouter.namedLocation(AppRoute.lessonLoading), '/lesson/loading');
     expect(appRouter.namedLocation(AppRoute.lesson), '/lesson');
+    expect(appRouter.namedLocation(AppRoute.activityResult), '/lesson/result');
   });
 
   test('usa a transição de tela centralizada no design system', () {

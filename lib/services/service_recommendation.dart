@@ -7,6 +7,7 @@ class RecommendationService {
     int schoolYear,
     Map<String, int> difficultyScores,
   ) {
+    if (difficultyScores.values.every((score) => score <= 0)) return null;
     final candidates = subjects
         .where(
           (subject) => subject.availableLessonsForYear(schoolYear).isNotEmpty,
@@ -23,9 +24,12 @@ class RecommendationService {
       return a.title.compareTo(b.title);
     });
     final subject = candidates.first;
-    return LearningRecommendation(
-      subject: subject,
-      lesson: subject.availableLessonsForYear(schoolYear).first,
+    final lessons = subject.availableLessonsForYear(schoolYear);
+    lessons.sort(
+      (a, b) => (difficultyScores[b.topicId] ?? 0).compareTo(
+        difficultyScores[a.topicId] ?? 0,
+      ),
     );
+    return LearningRecommendation(subject: subject, lesson: lessons.first);
   }
 }

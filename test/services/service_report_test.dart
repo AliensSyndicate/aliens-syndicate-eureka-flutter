@@ -45,7 +45,10 @@ void main() {
     );
 
     final success = await service.sendReport(
-      reasons: const ['O áudio parece incorreto', 'Conteúdo com erro de escrita.'],
+      reasons: const [
+        'O áudio parece incorreto',
+        'Conteúdo com erro de escrita.',
+      ],
       details: 'Texto na questão 2 tem erro de grafia.',
       lessonId: 'math_lesson_1',
       lessonTitle: 'Frações',
@@ -58,7 +61,10 @@ void main() {
     expect(success, isTrue);
     expect(fakeRepo.submittedReports.length, 1);
     final report = fakeRepo.submittedReports.first;
-    expect(report.reasons, ['O áudio parece incorreto', 'Conteúdo com erro de escrita.']);
+    expect(report.reasons, [
+      'O áudio parece incorreto',
+      'Conteúdo com erro de escrita.',
+    ]);
     expect(report.details, 'Texto na questão 2 tem erro de grafia.');
     expect(report.lessonId, 'math_lesson_1');
     expect(report.lessonTitle, 'Frações');

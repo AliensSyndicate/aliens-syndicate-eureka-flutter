@@ -2,8 +2,12 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../repositories/repository_firestore_content.dart';
 import '../repositories/repository_firestore_report.dart';
+import '../repositories/repository_local_search.dart';
 import '../data/local/hive_content_manifest_cache.dart';
 import '../data/local/hive_content_activity_cache.dart';
+import '../data/local/hive_explore_history.dart';
+import '../data/local/hive_explore_recents.dart';
+import '../data/local/hive_simulation_repository.dart';
 import 'service_progress.dart';
 import 'service_user.dart';
 import 'service_answer.dart';
@@ -32,10 +36,11 @@ abstract final class ServiceRegistry {
   );
   static ScoringService get scoring => ScoringService();
   static SimulationService get simulation => SimulationService();
+  static HiveSimulationRepository get simulationRepository =>
+      HiveSimulationRepository(_box);
   static RecommendationService get recommendation => RecommendationService();
-  // TODO: voltar para QuestionSelectionService() após validar os componentes.
   static QuestionSelectionService get questionSelection =>
-      QuestionSelectionService(showcaseMode: true);
+      QuestionSelectionService();
   static ReportService? _report;
   static ReportService get report => _report ??= ReportService(
     repository: FirebaseService.isAvailable
@@ -43,4 +48,15 @@ abstract final class ServiceRegistry {
         : null,
     userService: user,
   );
+
+  /// Repositório de busca do Explorar (implementação local).
+  static LocalSearchRepository? _search;
+  static LocalSearchRepository get search =>
+      _search ??= LocalSearchRepository(content);
+
+  /// Histórico de queries do Explorar (Hive).
+  static HiveExploreHistory get exploreHistory => HiveExploreHistory(_box);
+
+  /// Lessons recentemente acessadas pelo Explorar (Hive).
+  static HiveExploreRecents get exploreRecents => HiveExploreRecents(_box);
 }

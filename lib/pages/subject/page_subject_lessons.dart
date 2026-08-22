@@ -32,7 +32,7 @@ class PageSubjectLessons extends StatelessWidget {
         .completedLessonIds
         .toSet();
     final color = UiColor.forSubject(subject.type);
-    final allLessons = subject.lessons;
+    final allLessons = subject.lessonsForYear(schoolYear);
     final completedCount = allLessons
         .where((lesson) => completed.contains(lesson.id))
         .length;

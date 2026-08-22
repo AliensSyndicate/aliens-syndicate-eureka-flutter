@@ -5,7 +5,7 @@ abstract final class AppStrings {
   static const appName = 'Eureka',
       subjectsTitle = 'Matérias',
       continueWhereStopped = 'Continuar de onde parou',
-      recommendedForYou = 'Recomendado para você',
+      recommendedForYou = 'Vale revisar',
       home = 'Home',
       social = 'Social',
       explore = 'Explorar',
@@ -13,6 +13,17 @@ abstract final class AppStrings {
       profile = 'Profile',
       socialSoon = 'Em breve, conquistas e desafios com amigos.',
       exploreHint = 'Busque uma matéria ou conteúdo',
+      exploreSearchHint = 'O que você quer aprender?',
+      exploreRecentSearches = 'Buscas recentes',
+      exploreContinueLearning = 'Continuar estudando',
+      exploreBySubject = 'Explore por matéria',
+      exploreClearHistory = 'Limpar',
+      exploreEmptyTitle = 'Não encontramos esse conteúdo.',
+      exploreEmptySubtitle = 'Tente buscar de outro jeito.',
+      exploreFilterSubject = 'Matéria',
+      exploreFilterYear = 'Ano',
+      exploreFilterAll = 'Todas',
+      exploreFilterAllYears = 'Todos',
       start = 'Começar',
       temporaryAccount = 'Conta temporária',
       selectToReview = 'Selecionar para revisar',
@@ -20,6 +31,8 @@ abstract final class AppStrings {
       checkAnswer = 'Verificar',
       finish = 'Concluir',
       correctFeedback = 'Muito bem!',
+      almostFeedback = 'Quase.',
+      continueLabel = 'Continuar',
       correctTitle = 'Correto!',
       incorrectTitle = 'Incorreto!',
       correctAnswer = 'Resposta correta',
@@ -27,19 +40,55 @@ abstract final class AppStrings {
       noXpOutsideJourney = 'Este modo é para estudar e não concede XP.',
       selectAtLeastOne = 'Selecione pelo menos um conteúdo.',
       startSimulation = 'Começar simulado',
+      simulationIntro =
+          'Monte um treino do seu jeito e acompanhe seu desempenho.',
+      simulationContinueSaved = 'Continuar simulado',
+      simulationSelectSubjects = 'Escolha uma ou mais matérias',
+      simulationContents = 'Conteúdos',
+      simulationSelectContents = 'Escolha o que quer treinar',
+      simulationQuestions = 'Questões',
+      simulationTime = 'Tempo',
+      simulationTightTime = 'Essa quantidade de questões nesse tempo pode ficar apertada.',
+      simulationAllContents = 'Todos os conteúdos selecionados',
+      simulationExit = 'Sair',
+      simulationExitTitle = 'Sair do simulado?',
+      simulationExitDescription = 'Seu progresso deste simulado será encerrado.',
+      simulationContinue = 'Continuar',
+      simulationOpenQuestionPanel = 'Abrir painel de questões',
+      simulationFinishTitle = 'Finalizar simulado?',
+      simulationFinishDescription = 'Suas respostas serão corrigidas agora.',
+      simulationFinishAnyway = 'Finalizar mesmo assim',
+      simulationReview = 'Revisar',
+      simulationReviewLater = 'Revisar depois',
+      simulationMarkedForReview = 'Marcada para revisão',
+      simulationResult = 'Resultado',
+      simulationTimeEnded = 'O tempo terminou. Suas respostas foram salvas.',
+      simulationCorrect = 'acertos',
+      simulationIncorrect = 'erros',
+      simulationBlank = 'em branco',
+      simulationUsedTime = 'tempo utilizado',
+      simulationBySubject = 'Por matéria',
+      simulationByContent = 'Por conteúdo',
+      simulationReviewAnswers = 'Revisar respostas',
+      simulationAnother = 'Fazer outro simulado',
+      simulationExcellent = 'Excelente resultado.',
+      simulationWellDone = 'Mandou bem.',
+      simulationAlmostThere = 'Quase lá.',
+      simulationNotAnswered = 'Não respondida',
+      simulationYourAnswer = 'Sua resposta',
+      previous = 'Anterior',
+      next = 'Próxima',
+      skip = 'Pular',
       emptyResults = 'Nenhum conteúdo encontrado.',
-      contentUnavailable =
-          'Esta atividade ainda não está disponível offline. Verifique sua conexão e tente novamente.',
+      contentUnavailable = 'Esta atividade ainda não está disponível offline. Verifique sua conexão e tente novamente.',
       loadingContent = 'Carregando conteúdo',
       lessonLoadingTitle = "A chama do conhecimento\nestá acesa.",
-      lessonCampfireIllustration =
-          'Ilustração de uma chama acesa sobre dois troncos.',
+      lessonCampfireIllustration = 'Ilustração de uma chama acesa sobre dois troncos.',
       closeActivity = 'Fechar atividade',
       back = 'Voltar',
       reportError = 'Reportar erro',
       reportProblemTitle = 'Reporte um problema',
-      reportProblemDescription =
-          'Selecione as opções que melhor descrevem o problema encontrado:',
+      reportProblemDescription = 'Selecione as opções que melhor descrevem o problema encontrado:',
       reportOptionAudioIncorrect = 'O áudio parece incorreto',
       reportOptionAudioMissing = 'Falta áudio no texto',
       reportOptionWritingError = 'Conteúdo com erro de escrita.',
@@ -53,8 +102,10 @@ abstract final class AppStrings {
       reportSentFailure = 'Não foi possível enviar o relato no momento.',
       lessonContent = 'Conteúdo',
       activitiesSummary = 'Resumo das atividades',
-      activitiesSummaryIntro =
-          'Veja como você se saiu nas atividades desta aula.',
+      activityResult = 'Resultado da atividade',
+      activityReviewSuggestion = 'Vale revisar este conteúdo mais uma vez.',
+      backToHome = 'Voltar para Home',
+      activitiesSummaryIntro = 'Veja como você se saiu nas atividades desta aula.',
       activityNotDone = 'Não feito',
       activityCorrect = 'Correta',
       activityIncorrect = 'Incorreta',
@@ -70,8 +121,7 @@ abstract final class AppStrings {
       xpLabel = 'Pontos de experiência',
       levelLabel = 'Nível atual',
       createEurekaAccount = 'Criar conta Eureka',
-      createEurekaAccountDescription =
-          'Salve seu progresso na nuvem, acesse de outros dispositivos e mantenha seus dados seguros.',
+      createEurekaAccountDescription = 'Salve seu progresso na nuvem, acesse de outros dispositivos e mantenha seus dados seguros.',
       stageElementarySchoolShort = 'EF',
       stageHighSchoolShort = 'EM',
       lessonCompletedSemantics = 'concluído',
@@ -108,6 +158,27 @@ abstract final class AppStrings {
 
   static String lessonPage(int current, int total, String label) =>
       '$current de $total - $label';
+  static String selectedContents(int count) =>
+      count == 1 ? '1 conteúdo selecionado' : '$count conteúdos selecionados';
+  static String simulationConfirmation(
+    int questions,
+    String subjects,
+    int minutes,
+  ) => '$questions questões\n$subjects\n$minutes minutos';
+  static String remainingTime(String value) => 'Tempo restante: $value';
+  static String unansweredWarning(int count) => count == 1
+      ? 'Você deixou 1 questão em branco.'
+      : 'Você deixou $count questões em branco.';
+  static String questionState(
+    int number,
+    bool answered,
+    bool marked,
+    bool current,
+  ) =>
+      'Questão $number, ${current ? 'atual, ' : ''}${answered ? 'respondida' : 'não respondida'}${marked ? ', marcada para revisão' : ''}';
+  static String simulationStrength(String content) =>
+      'Você mandou melhor em $content.';
+  static String simulationImprove(String content) => 'Vale revisar $content.';
   static String xpValue(int value) => '$value XP';
   static String levelValue(int value) => 'Você está no nível $value.';
   static String schoolYear(int year) => '$yearº ano';
@@ -119,6 +190,9 @@ abstract final class AppStrings {
   static String correctAnswerValue(String answer) => '$correctAnswer\n$answer';
   static String activitiesSummaryResult(int correct, int total) =>
       'Você acertou $correct de $total atividades.';
+  static String activityDuration(int minutes) =>
+      'Você terminou em $minutes min.';
+  static String activityEarnedXp(int value) => 'Você ganhou $value XP.';
   static String essayCounter(int length, int maxLength) => '$length/$maxLength';
   static String memoryPairs(int found, int total) => '$found/$total';
   static String percent(num value) => '$value%';

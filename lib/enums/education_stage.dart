@@ -11,8 +11,9 @@ extension EducationStageLabel on EducationStage {
   };
 
   String yearLabel(int year) => switch (this) {
-    EducationStage.elementarySchool =>
-      AppStrings.stageElementarySchoolYear(year),
+    EducationStage.elementarySchool => AppStrings.stageElementarySchoolYear(
+      year,
+    ),
     EducationStage.highSchool => AppStrings.stageHighSchoolYear(year),
   };
 }

@@ -9,9 +9,18 @@ import '../../pages/explore/page_explore.dart';
 import '../../pages/home/page_home.dart';
 import '../../pages/lesson/page_lesson.dart';
 import '../../pages/lesson/page_lesson_loading.dart';
+import '../../pages/lesson/page_activity_result.dart';
 import '../../pages/profile/page_profile.dart';
 import '../../pages/simulation/page_simulation.dart';
+import '../../pages/simulation/page_simulation_question.dart';
+import '../../pages/simulation/page_simulation_result.dart';
+import '../../pages/simulation/page_simulation_review.dart';
+import '../../controllers/controller_simulation.dart';
+import '../../models/model_simulation.dart';
+import '../../models/model_activity_result.dart';
 import '../../pages/social/page_social.dart';
+import '../../pages/social/page_friends.dart';
+import '../../pages/social/page_ranking.dart';
 import '../../pages/subject/page_subject_lessons.dart';
 import '../../ui/ui_motion.dart';
 import 'navigation_app.dart';
@@ -21,11 +30,17 @@ abstract final class AppRoute {
   static const social = 'social';
   static const explore = 'explore';
   static const simulation = 'simulation';
+  static const simulationQuestion = 'simulationQuestion';
+  static const simulationResult = 'simulationResult';
+  static const simulationReview = 'simulationReview';
   static const profile = 'profile';
   static const auth = 'auth';
   static const subject = 'subject';
   static const lesson = 'lesson';
   static const lessonLoading = 'lessonLoading';
+  static const activityResult = 'activityResult';
+  static const socialFriends = 'socialFriends';
+  static const socialRanking = 'socialRanking';
 }
 
 class SubjectRouteArguments {
@@ -52,6 +67,26 @@ class LessonLoadingRouteArguments {
   final LearningMode mode;
 }
 
+class ActivityResultRouteArguments {
+  const ActivityResultRouteArguments(this.result);
+  final ActivityResult result;
+}
+
+class SimulationRouteArguments {
+  const SimulationRouteArguments(this.controller);
+  final SimulationController controller;
+}
+
+class SimulationResultRouteArguments extends SimulationRouteArguments {
+  const SimulationResultRouteArguments({
+    required SimulationController controller,
+    required this.result,
+    this.expired = false,
+  }) : super(controller);
+  final SimulationResult result;
+  final bool expired;
+}
+
 final GoRouter appRouter = GoRouter(
   initialLocation: '/home',
   routes: [
@@ -74,6 +109,18 @@ final GoRouter appRouter = GoRouter(
               path: '/social',
               name: AppRoute.social,
               builder: (context, state) => const PageSocial(),
+              routes: [
+                GoRoute(
+                  path: 'friends',
+                  name: AppRoute.socialFriends,
+                  builder: (context, state) => const PageFriends(),
+                ),
+                GoRoute(
+                  path: 'ranking',
+                  name: AppRoute.socialRanking,
+                  builder: (context, state) => const PageRanking(),
+                ),
+              ],
             ),
           ],
         ),
@@ -107,6 +154,47 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
     GoRoute(
+      path: '/simulation/question',
+      name: AppRoute.simulationQuestion,
+      redirect: (context, state) =>
+          state.extra is SimulationRouteArguments ? null : '/simulation',
+      pageBuilder: (context, state) => _transitionPage(
+        state: state,
+        child: PageSimulationQuestion(
+          controller: (state.extra as SimulationRouteArguments).controller,
+        ),
+      ),
+    ),
+    GoRoute(
+      path: '/simulation/result',
+      name: AppRoute.simulationResult,
+      redirect: (context, state) =>
+          state.extra is SimulationResultRouteArguments ? null : '/simulation',
+      pageBuilder: (context, state) {
+        final arguments = state.extra as SimulationResultRouteArguments;
+        return _transitionPage(
+          state: state,
+          child: PageSimulationResult(
+            controller: arguments.controller,
+            result: arguments.result,
+            expired: arguments.expired,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/simulation/review',
+      name: AppRoute.simulationReview,
+      redirect: (context, state) =>
+          state.extra is SimulationRouteArguments ? null : '/simulation',
+      pageBuilder: (context, state) => _transitionPage(
+        state: state,
+        child: PageSimulationReview(
+          controller: (state.extra as SimulationRouteArguments).controller,
+        ),
+      ),
+    ),
+    GoRoute(
       path: '/auth',
       name: AppRoute.auth,
       pageBuilder: (context, state) =>
@@ -127,6 +215,18 @@ final GoRouter appRouter = GoRouter(
           ),
         );
       },
+    ),
+    GoRoute(
+      path: '/lesson/result',
+      name: AppRoute.activityResult,
+      redirect: (context, state) =>
+          state.extra is ActivityResultRouteArguments ? null : '/home',
+      pageBuilder: (context, state) => _transitionPage(
+        state: state,
+        child: PageActivityResult(
+          result: (state.extra as ActivityResultRouteArguments).result,
+        ),
+      ),
     ),
     GoRoute(
       path: '/lesson/loading',

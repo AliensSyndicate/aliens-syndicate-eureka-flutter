@@ -9,18 +9,10 @@ import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
 
 class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
-  const AppHomeBar({
-    required this.xp,
-    required this.seriesLabel,
-    required this.onXpTap,
-    required this.onSeriesTap,
-    super.key,
-  });
+  const AppHomeBar({required this.xp, required this.onXpTap, super.key});
 
   final int xp;
-  final String seriesLabel;
   final VoidCallback onXpTap;
-  final VoidCallback onSeriesTap;
 
   @override
   Size get preferredSize => const Size.fromHeight(UiSize.homeAppBarHeight);
@@ -34,25 +26,12 @@ class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           UiIcon.logo(size: UiSize.logoSize),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _BadgeButton(
-                text: '$xp',
-                textColor: UiColor.text,
-                icon: UiIcon.diamontXp(size: UiSize.iconMd),
-                semanticLabel: AppStrings.xpLabel,
-                onTap: onXpTap,
-              ),
-              const SizedBox(width: UiSpacing.xs),
-              _BadgeButton(
-                text: seriesLabel,
-                textColor: UiColor.text,
-                icon: UiIcon.backpack1Em(size: UiSize.iconMd),
-                semanticLabel: AppStrings.levelLabel,
-                onTap: onSeriesTap,
-              ),
-            ],
+          _BadgeButton(
+            text: '$xp',
+            textColor: UiColor.text,
+            icon: UiIcon.diamontXp(size: UiSize.iconMd),
+            semanticLabel: AppStrings.xpLabel,
+            onTap: onXpTap,
           ),
         ],
       ),

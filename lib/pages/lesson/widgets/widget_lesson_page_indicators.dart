@@ -67,10 +67,12 @@ class LessonPageIndicators extends StatelessWidget {
                   AppStrings.indicatorAnsweredCorrect,
                 LessonPageIndicatorStatus.incorrect =>
                   AppStrings.indicatorAnsweredIncorrect,
-                LessonPageIndicatorStatus.content => AppStrings.indicatorContent,
+                LessonPageIndicatorStatus.content =>
+                  AppStrings.indicatorContent,
                 LessonPageIndicatorStatus.unanswered =>
                   AppStrings.indicatorUnanswered,
-                LessonPageIndicatorStatus.summary => AppStrings.indicatorSummary,
+                LessonPageIndicatorStatus.summary =>
+                  AppStrings.indicatorSummary,
                 LessonPageIndicatorStatus.summaryDisabled =>
                   AppStrings.indicatorSummaryDisabled,
               };

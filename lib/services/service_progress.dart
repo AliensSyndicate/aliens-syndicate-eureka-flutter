@@ -34,13 +34,22 @@ class ProgressService {
     return _pendingLessonSave;
   }
 
-  UserProgress load() => UserProgress(
-    xp: _box.get('xp', defaultValue: 0) as int,
-    completedLessonIds: List<String>.from(
-      _box.get('completed_lessons', defaultValue: <String>[]),
-    ),
-    lastLessonId: _box.get('last_lesson_id') as String?,
-  );
+  UserProgress load() {
+    final rawXp = _box.get('xp', defaultValue: 0);
+    final rawCompleted = _box.get(
+      'completed_lessons',
+      defaultValue: <String>[],
+    );
+    final rawLastLesson = _box.get('last_lesson_id');
+    return UserProgress(
+      xp: rawXp is int ? rawXp : 0,
+      completedLessonIds: rawCompleted is List
+          ? rawCompleted.whereType<String>().toList()
+          : const [],
+      lastLessonId: rawLastLesson is String ? rawLastLesson : null,
+    );
+  }
+
   int completionPercentage(List<Lesson> lessons) {
     return SubjectProgressService().calculate(
       lessons,
@@ -51,7 +60,10 @@ class ProgressService {
   Map<String, int> loadDifficultyScores() {
     final stored = _box.get('difficulty_subjects');
     if (stored is! Map) return {};
-    return stored.map((key, value) => MapEntry(key.toString(), value as int));
+    return {
+      for (final entry in stored.entries)
+        if (entry.value is int) entry.key.toString(): entry.value as int,
+    };
   }
 
   Future<void> recordDifficulty(String subjectId) async {

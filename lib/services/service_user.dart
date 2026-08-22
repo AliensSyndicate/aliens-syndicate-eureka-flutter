@@ -14,7 +14,6 @@ class UserService {
   AppUser loadCurrentUser() {
     final stored = _box.get(_key);
     if (stored is Map) return AppUser.fromMap(stored);
-    _box.put(_key, temporaryUser.toMap());
     return temporaryUser;
   }
 

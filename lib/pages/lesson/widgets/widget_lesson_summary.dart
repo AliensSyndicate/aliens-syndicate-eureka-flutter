@@ -15,6 +15,7 @@ class LessonSummary extends StatelessWidget {
     required this.resultFor,
     required this.primaryColor,
     required this.onRetry,
+    this.onFinish,
     super.key,
   });
 
@@ -22,6 +23,7 @@ class LessonSummary extends StatelessWidget {
   final bool? Function(Question question) resultFor;
   final Color primaryColor;
   final VoidCallback onRetry;
+  final VoidCallback? onFinish;
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +101,13 @@ class LessonSummary extends StatelessWidget {
             );
           }),
           const SizedBox(height: UiSpacing.lg),
+          AppButton(
+            key: const ValueKey('lesson-summary-finish'),
+            label: AppStrings.finish,
+            color: primaryColor,
+            onPressed: onFinish,
+          ),
+          const SizedBox(height: UiSpacing.sm),
           AppButton(
             key: const ValueKey('lesson-summary-retry'),
             label: AppStrings.tryAgain,

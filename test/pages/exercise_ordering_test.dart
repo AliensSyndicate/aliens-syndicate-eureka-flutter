@@ -76,8 +76,12 @@ void main() {
     final draggableFinder = find.byType(LongPressDraggable<int>).last;
     final targetFinder = find.byType(DragTarget<int>).first;
 
-    final gesture = await tester.startGesture(tester.getCenter(draggableFinder));
-    await tester.pump(const Duration(milliseconds: 200)); // Aguarda delay do LongPress
+    final gesture = await tester.startGesture(
+      tester.getCenter(draggableFinder),
+    );
+    await tester.pump(
+      const Duration(milliseconds: 200),
+    ); // Aguarda delay do LongPress
     await gesture.moveTo(tester.getCenter(targetFinder));
     await tester.pumpAndSettle();
     await gesture.up();

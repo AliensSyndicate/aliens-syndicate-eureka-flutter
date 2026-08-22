@@ -30,7 +30,8 @@ void main() {
         home: Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
-              onPressed: () => AppSnackBar.showError(context, 'Falha ao enviar'),
+              onPressed: () =>
+                  AppSnackBar.showError(context, 'Falha ao enviar'),
               child: const Text('Mostrar'),
             ),
           ),

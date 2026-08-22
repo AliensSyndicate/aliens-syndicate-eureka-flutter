@@ -65,6 +65,68 @@ void main() {
     expect(restored.resultFor(question), isTrue);
   });
 
+  test('restaura a mesma seleção mesmo com outro gerador aleatório', () async {
+    final questions = [
+      for (var index = 0; index < 8; index++)
+        Question(
+          id: 'restore_$index',
+          prompt: 'Questão $index',
+          type: QuestionType.multipleChoice,
+          options: const ['A', 'B', 'C', 'D'],
+          correctAnswer: 'A',
+          subjectId: 'mathematics',
+          topicId: 'fractions',
+        ),
+    ];
+    final lesson = Lesson(
+      id: 'restore_selection',
+      title: 'Restauração',
+      summary: 'Resumo',
+      subject: SubjectType.mathematics,
+      questions: questions,
+    );
+    LessonController build(int seed) => LessonController(
+      lesson: lesson,
+      mode: LearningMode.journey,
+      answerService: AnswerService(),
+      scoringService: ScoringService(),
+      progressService: ProgressService(box),
+      questionSelectionService: QuestionSelectionService(random: Random(seed)),
+    );
+
+    final first = build(1);
+    await first.selectPage(first.firstQuestionPage);
+    await first.saveDraft(first.currentQuestion, 'A');
+    final selectedIds = first.visibleQuestions.map((item) => item.id).toList();
+
+    final restored = build(99);
+    expect(
+      restored.visibleQuestions.map((item) => item.id).toList(),
+      selectedIds,
+    );
+    expect(restored.answerFor(restored.currentQuestion), 'A');
+  });
+
+  test('conclusão explícita é idempotente', () async {
+    for (var page = 1; page <= controller.totalQuestions; page++) {
+      await controller.selectPage(page);
+      await controller.saveDraft(
+        controller.currentQuestion,
+        controller.currentQuestion.correctAnswer,
+      );
+      await controller.submit(controller.currentQuestion.correctAnswer);
+    }
+
+    await controller.complete();
+    final firstProgress = ProgressService(box).load();
+    await controller.complete();
+    final secondProgress = ProgressService(box).load();
+
+    expect(controller.isCompleted, isTrue);
+    expect(secondProgress.xp, firstProgress.xp);
+    expect(secondProgress.completedLessonIds, firstProgress.completedLessonIds);
+  });
+
   test('erro conta como respondido sem bloquear outra pagina', () async {
     await controller.selectPage(2);
     final question = controller.currentQuestion;
@@ -148,6 +210,7 @@ void main() {
 
     expect(build(LearningMode.journey).visibleQuestions, hasLength(5));
     expect(build(LearningMode.explore).visibleQuestions, hasLength(3));
+    expect(build(LearningMode.review).visibleQuestions, hasLength(3));
     expect(build(LearningMode.simulation).visibleQuestions, hasLength(3));
   });
 

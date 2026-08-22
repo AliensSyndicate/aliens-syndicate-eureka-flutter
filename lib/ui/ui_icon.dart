@@ -53,6 +53,17 @@ abstract final class UiIcon {
       huge(icon: HugeIcons.strokeRoundedStar, size: size, color: color);
   static Widget sparkles({double size = UiSize.icon, Color? color}) =>
       huge(icon: HugeIcons.strokeRoundedSparkles, size: size, color: color);
+  static Widget heart({
+    double size = UiSize.icon,
+    Color? color,
+    bool filled = false,
+  }) => Icon(
+    filled ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+    size: size,
+    color: color,
+  );
+  static Widget group({double size = UiSize.icon, Color? color}) =>
+      Icon(Icons.group_outlined, size: size, color: color);
 
   static Widget build({required String assetName, double size = UiSize.icon}) {
     return SizedBox(

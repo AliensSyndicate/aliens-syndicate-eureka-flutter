@@ -17,18 +17,34 @@ class LessonController {
     required QuestionSelectionService questionSelectionService,
   }) : _answerService = answerService,
        _scoringService = scoringService,
-       _progressService = progressService,
-       _questions = mode != LearningMode.journey
-           ? List.unmodifiable(lesson.extraQuestions)
-           : List.unmodifiable(
-               questionSelectionService.select(
-                 lesson.practiceQuestions,
-                 count: QuestionSelectionService.sessionSize,
-               ),
-             ) {
+       _progressService = progressService {
     final saved = _progressService.loadLessonSession(lesson.id);
-    _answers.addAll(saved.answers);
-    _results.addAll(saved.results);
+    final pool = mode != LearningMode.journey
+        ? lesson.extraQuestions
+        : lesson.practiceQuestions;
+    final savedById = {for (final question in pool) question.id: question};
+    final compatibleSaved =
+        saved.activityVersion == lesson.activityVersion &&
+        saved.questionIds.isNotEmpty &&
+        saved.questionIds.every(savedById.containsKey);
+    _questions = List.unmodifiable(
+      compatibleSaved
+          ? saved.questionIds.map((id) => savedById[id]!)
+          : mode != LearningMode.journey
+          ? pool
+          : questionSelectionService.select(
+              pool,
+              count: QuestionSelectionService.sessionSize,
+            ),
+    );
+    if (compatibleSaved ||
+        (saved.questionIds.isEmpty &&
+            saved.answers.isEmpty &&
+            saved.results.isEmpty)) {
+      _answers.addAll(saved.answers);
+      _results.addAll(saved.results);
+    }
+    _completed = compatibleSaved && saved.completed;
     currentPage = saved.currentPage.clamp(0, summaryPage);
   }
   final Lesson lesson;
@@ -36,10 +52,12 @@ class LessonController {
   final AnswerService _answerService;
   final ScoringService _scoringService;
   final ProgressService _progressService;
-  final List<Question> _questions;
+  late final List<Question> _questions;
   final Map<String, String> _answers = {};
   final Map<String, bool> _results = {};
   int currentPage = 0;
+  bool _completed = false;
+  bool get isCompleted => _completed;
   int get contentPageCount =>
       lesson.contentPages.isEmpty ? 1 : lesson.contentPages.length;
   int get firstQuestionPage => contentPageCount;
@@ -90,6 +108,7 @@ class LessonController {
     _results[currentQuestion.id] = correct;
     if (!correct) {
       await _progressService.recordDifficulty(currentQuestion.subjectId);
+      await _progressService.recordDifficulty(currentQuestion.topicId);
     }
     await _persist();
     return correct;
@@ -106,10 +125,16 @@ class LessonController {
       currentPage: currentPage,
       answers: Map.unmodifiable(_answers),
       results: Map.unmodifiable(_results),
+      questionIds: _questions.map((question) => question.id).toList(),
+      activityVersion: lesson.activityVersion,
+      completed: _completed,
     ),
   );
 
   Future<void> complete() async {
+    if (_completed) return;
+    _completed = true;
+    await _persist();
     if (mode == LearningMode.journey) {
       await _progressService.completeLesson(lesson.id, earnedXp);
     }
@@ -119,6 +144,7 @@ class LessonController {
     _answers.clear();
     _results.clear();
     currentPage = _questions.isEmpty ? 0 : firstQuestionPage;
+    _completed = false;
     await _persist();
   }
 }

@@ -104,13 +104,9 @@ class _AppReportBottomSheetState extends State<AppReportBottomSheet> {
       return AppReportBottomSheet.optionsForContext(widget.reportContext!);
     }
     if (widget.question != null) {
-      return AppReportBottomSheet.optionsForContext(ReportContext.lessonActivity);
-    }
-    if (widget.lessonId != null) {
-      return AppReportBottomSheet.optionsForContext(ReportContext.lessonContent);
-    }
-    if (widget.subjectId != null) {
-      return AppReportBottomSheet.optionsForContext(ReportContext.subject);
+      return AppReportBottomSheet.optionsForContext(
+        ReportContext.lessonActivity,
+      );
     }
     return AppReportBottomSheet.optionsForContext(ReportContext.general);
   }
@@ -153,8 +149,9 @@ class _AppReportBottomSheetState extends State<AppReportBottomSheet> {
 
     AppSnackBar.show(
       context,
-      message:
-          success ? AppStrings.reportSentSuccess : AppStrings.reportSentFailure,
+      message: success
+          ? AppStrings.reportSentSuccess
+          : AppStrings.reportSentFailure,
       type: success ? AppSnackBarType.success : AppSnackBarType.error,
     );
   }

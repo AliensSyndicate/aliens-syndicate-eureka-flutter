@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../models/content/model_content_manifest.dart';
 import '../../../models/model_lesson.dart';
-import '../../../services/service_registry.dart';
 import '../../../ui/ui_card.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_icon.dart';
@@ -93,9 +92,6 @@ class _ContentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalPages = ServiceRegistry.content.pageCountForLesson(lesson);
-    final completedPages = isCompleted ? totalPages : 0;
-
     return Semantics(
       button: true,
       label: AppStrings.lessonSemantics(lesson.title, isCompleted),
@@ -110,10 +106,7 @@ class _ContentItem extends StatelessWidget {
               const SizedBox(width: UiSpacing.sm),
               Expanded(child: Text(lesson.title, style: UiText.p)),
               const SizedBox(width: UiSpacing.sm),
-              _FractionProgressTag(
-                completed: completedPages,
-                total: totalPages,
-              ),
+              _FractionProgressTag(completed: isCompleted ? 1 : 0, total: 1),
               const SizedBox(width: UiSpacing.md),
             ],
           ),
@@ -146,17 +139,14 @@ class _StatusIcon extends StatelessWidget {
 }
 
 class _FractionProgressTag extends StatelessWidget {
-  const _FractionProgressTag({
-    required this.completed,
-    required this.total,
-  });
+  const _FractionProgressTag({required this.completed, required this.total});
 
   final int completed;
   final int total;
 
   @override
   Widget build(BuildContext context) => Text(
-    AppStrings.progressRatio(completed, total),
+    AppStrings.percent(total == 0 ? 0 : ((completed / total) * 100).round()),
     style: UiText.p.copyWith(
       color: UiColor.textSecondary,
       fontWeight: FontWeight.w800,

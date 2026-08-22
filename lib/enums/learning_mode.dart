@@ -1,1 +1,1 @@
-enum LearningMode { journey, explore, simulation }
+enum LearningMode { journey, explore, review, simulation }

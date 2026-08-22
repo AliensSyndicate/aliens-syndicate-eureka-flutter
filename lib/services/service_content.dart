@@ -85,10 +85,72 @@ class ContentService {
         .toList();
   }
 
+  /// Busca em todos os anos do manifesto — usado exclusivamente pelo Explorar.
+  ///
+  /// Normaliza acentos para tolerar buscas como `fracao → Fração`.
+  /// Os resultados são ordenados: correspondências do ano [preferredYear] primeiro.
+  List<Lesson> searchAllLessons(
+    String query, {
+    int preferredYear = 5,
+    String? subjectId,
+    int? schoolYear,
+  }) {
+    final value = _normalize(query.trim());
+    final all = _manifest.lessons;
+    final filtered = all.where((lesson) {
+      if (subjectId != null) {
+        // Filtragem por matéria via nome da SubjectContentManifest não está
+        // disponível direto no Lesson; usamos subject.name como proxy.
+        final subjectMatch = lesson.subject.name == subjectId;
+        if (!subjectMatch) return false;
+      }
+      if (schoolYear != null && lesson.schoolYear != schoolYear) return false;
+      if (value.isEmpty) return true;
+      final haystack = _normalize(
+        '${lesson.title} ${lesson.summary} ${lesson.skills.join(' ')}',
+      );
+      return haystack.contains(value);
+    }).toList();
+
+    // Ordena: ano preferido primeiro, depois por título normalizado.
+    filtered.sort((a, b) {
+      final aPreferred = a.schoolYear == preferredYear ? 0 : 1;
+      final bPreferred = b.schoolYear == preferredYear ? 0 : 1;
+      final yearCmp = aPreferred.compareTo(bPreferred);
+      if (yearCmp != 0) return yearCmp;
+      return _normalize(a.title).compareTo(_normalize(b.title));
+    });
+
+    return filtered;
+  }
+
+  /// Retorna o nome da matéria para uma lesson, buscando no manifesto.
+  String subjectNameForLesson(Lesson lesson) {
+    for (final subject in _manifest.subjects) {
+      if (subject.type == lesson.subject) return subject.title;
+    }
+    return lesson.subject.name;
+  }
+
+  /// Retorna todas as matérias do manifesto (todos os anos habilitados).
+  List<SubjectContentManifest> getAllSubjects() =>
+      List.unmodifiable(_manifest.sortedSubjects);
+
+  static String _normalize(String value) => value
+      .toLowerCase()
+      .replaceAll(RegExp('[áàâãä]'), 'a')
+      .replaceAll(RegExp('[éèêë]'), 'e')
+      .replaceAll(RegExp('[íìîï]'), 'i')
+      .replaceAll(RegExp('[óòôõö]'), 'o')
+      .replaceAll(RegExp('[úùûü]'), 'u')
+      .replaceAll('ç', 'c')
+      .replaceAll('ñ', 'n');
+
   int pageCountForLesson(Lesson lesson) {
     if (lesson.questions.isNotEmpty) {
-      final contentPagesCount =
-          lesson.contentPages.isEmpty ? 1 : lesson.contentPages.length;
+      final contentPagesCount = lesson.contentPages.isEmpty
+          ? 1
+          : lesson.contentPages.length;
       return contentPagesCount + lesson.questions.length;
     }
     final references = lesson.activities.isNotEmpty
@@ -104,22 +166,25 @@ class ContentService {
       if (payload != null && _isValidActivityPayload(payload, reference)) {
         final decoded = ContentActivityCodec.decode(payload);
         if (decoded != null) {
-          final contentPagesCount =
-              decoded.contentPages.isEmpty ? 1 : decoded.contentPages.length;
+          final contentPagesCount = decoded.contentPages.isEmpty
+              ? 1
+              : decoded.contentPages.length;
           return contentPagesCount + decoded.questions.length;
         }
       }
       final seedId = reference.id.replaceFirst(RegExp(r'_v\d+$'), '');
       for (final seed in seedLessons) {
         if (seed.id == seedId) {
-          final contentPagesCount =
-              seed.contentPages.isEmpty ? 1 : seed.contentPages.length;
+          final contentPagesCount = seed.contentPages.isEmpty
+              ? 1
+              : seed.contentPages.length;
           return contentPagesCount + seed.questions.length;
         }
       }
     }
-    final contentPagesCount =
-        lesson.contentPages.isEmpty ? 1 : lesson.contentPages.length;
+    final contentPagesCount = lesson.contentPages.isEmpty
+        ? 1
+        : lesson.contentPages.length;
     return contentPagesCount + lesson.questions.length;
   }
 

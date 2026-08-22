@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
 import '../../app/components/app_report_bottom_sheet.dart';
+import '../../app/navigation/navigation_router.dart';
 import '../../controllers/controller_lesson.dart';
 import '../../enums/learning_mode.dart';
 import '../../enums/question_type.dart';
@@ -11,6 +14,7 @@ import '../../enums/report_context.dart';
 import '../../enums/subject_type.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/model_lesson.dart';
+import '../../models/model_activity_result.dart';
 import '../../models/model_question.dart';
 import '../../models/content/model_content_page.dart';
 import '../../services/service_lesson_narration.dart';
@@ -22,7 +26,6 @@ import '../../ui/ui_spacing.dart';
 import 'widgets/exercise_content.dart';
 import 'widgets/widget_lesson_activity.dart';
 import 'widgets/widget_lesson_app_bar.dart';
-import 'widgets/widget_lesson_feedback_card.dart';
 import 'widgets/widget_lesson_header.dart';
 import 'widgets/widget_lesson_page_indicators.dart';
 import 'widgets/widget_lesson_summary.dart';
@@ -43,6 +46,8 @@ class _PageLessonState extends State<PageLesson> {
   final GlobalKey fixedHeaderKey = GlobalKey();
   double fixedHeaderHeight = 0;
   bool submitting = false;
+  bool finishing = false;
+  late final DateTime startedAt;
 
   Color get subjectColor => UiColor.forSubject(widget.lesson.subject);
   int get currentPage => controller.currentPage;
@@ -51,6 +56,7 @@ class _PageLessonState extends State<PageLesson> {
   @override
   void initState() {
     super.initState();
+    startedAt = DateTime.now();
     controller = LessonController(
       lesson: widget.lesson,
       mode: widget.mode,
@@ -79,41 +85,33 @@ class _PageLessonState extends State<PageLesson> {
   }
 
   @override
-  Widget build(BuildContext context) => PopScope(
-    canPop: true,
-    onPopInvokedWithResult: (didPop, result) {
-      if (didPop && controller.answeredQuestions == controller.totalQuestions) {
-        unawaited(controller.complete());
-      }
-    },
-    child: Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: LessonAppBar(
-        onClose: () => Navigator.maybePop(context),
-        onReport: _handleAppBarReport,
-      ),
-      body: Stack(
-        children: [
-          PageView.builder(
-            key: const ValueKey('lesson-activities-pager'),
-            controller: pageController,
-            scrollDirection: Axis.horizontal,
-            itemCount: totalPages,
-            onPageChanged: (page) {
-              unawaited(controller.selectPage(page));
-              unawaited(narrationController.stop());
-              setState(() {});
-            },
-            itemBuilder: (context, index) => _lessonPage(index),
-          ),
-          Positioned(
-            top: MediaQuery.paddingOf(context).top + UiSize.homeAppBarHeight,
-            left: 0,
-            right: 0,
-            child: _fixedHeader(),
-          ),
-        ],
-      ),
+  Widget build(BuildContext context) => Scaffold(
+    extendBodyBehindAppBar: true,
+    appBar: LessonAppBar(
+      onClose: () => Navigator.maybePop(context),
+      onReport: _handleAppBarReport,
+    ),
+    body: Stack(
+      children: [
+        PageView.builder(
+          key: const ValueKey('lesson-activities-pager'),
+          controller: pageController,
+          scrollDirection: Axis.horizontal,
+          itemCount: totalPages,
+          onPageChanged: (page) {
+            unawaited(controller.selectPage(page));
+            unawaited(narrationController.stop());
+            setState(() {});
+          },
+          itemBuilder: (context, index) => _lessonPage(index),
+        ),
+        Positioned(
+          top: MediaQuery.paddingOf(context).top + UiSize.homeAppBarHeight,
+          left: 0,
+          right: 0,
+          child: _fixedHeader(),
+        ),
+      ],
     ),
   );
 
@@ -208,6 +206,7 @@ class _PageLessonState extends State<PageLesson> {
     resultFor: controller.resultFor,
     primaryColor: subjectColor,
     onRetry: _retryActivities,
+    onFinish: controller.canOpenSummary && !finishing ? _finishLesson : null,
   );
 
   Future<void> _retryActivities() async {
@@ -284,30 +283,6 @@ class _PageLessonState extends State<PageLesson> {
                   : null,
             ),
           ),
-        if (result != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              UiSpacing.pageHorizontal,
-              0,
-              UiSpacing.pageHorizontal,
-              0,
-            ),
-            child: LessonFeedbackCard(
-              key: ValueKey('feedback-${question.id}'),
-              status: result
-                  ? LessonFeedbackStatus.success
-                  : LessonFeedbackStatus.error,
-              title: result
-                  ? AppStrings.correctTitle
-                  : AppStrings.incorrectTitle,
-              message: result
-                  ? null
-                  : AppStrings.correctAnswerValue(
-                      question.correctAnswerForFeedback,
-                    ),
-              explanation: result ? null : question.incorrectFeedback,
-            ),
-          ),
       ],
     );
   }
@@ -320,9 +295,48 @@ class _PageLessonState extends State<PageLesson> {
   Future<void> _verify(Question question) async {
     if (submitting || controller.resultFor(question) != null) return;
     setState(() => submitting = true);
-    await controller.submit(controller.answerFor(question) ?? '');
+    final correct = await controller.submit(
+      controller.answerFor(question) ?? '',
+    );
     if (!mounted) return;
     setState(() => submitting = false);
+    await AppBottomSheet.show<void>(
+      context,
+      title: correct ? AppStrings.correctFeedback : AppStrings.almostFeedback,
+      titleColor: correct ? UiColor.success : UiColor.warning,
+      content: Text(
+        correct
+            ? question.explanation
+            : '${AppStrings.correctAnswerValue(question.correctAnswerForFeedback)}\n\n${question.incorrectFeedback}',
+      ),
+      actions: [
+        AppButton(
+          label: AppStrings.continueLabel,
+          color: correct ? UiColor.success : UiColor.warning,
+          onPressed: () => Navigator.pop(context),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _finishLesson() async {
+    if (finishing || !controller.canOpenSummary) return;
+    setState(() => finishing = true);
+    await controller.complete();
+    if (!mounted) return;
+    context.pushReplacementNamed(
+      AppRoute.activityResult,
+      extra: ActivityResultRouteArguments(
+        ActivityResult(
+          lesson: widget.lesson,
+          correctAnswers: controller.correctAnswers,
+          totalQuestions: controller.totalQuestions,
+          earnedXp: controller.earnedXp,
+          duration: DateTime.now().difference(startedAt),
+          reviewTopics: controller.reviewTopics,
+        ),
+      ),
+    );
   }
 
   Future<void> _handleAppBarReport() {
