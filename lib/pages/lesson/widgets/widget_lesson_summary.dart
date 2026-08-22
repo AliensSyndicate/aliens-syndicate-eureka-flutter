@@ -62,7 +62,7 @@ class LessonSummary extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(bottom: UiSpacing.md),
               child: Semantics(
-                label: 'Atividade $position, $status',
+                label: AppStrings.activityItemSemantics(position, status),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -85,7 +85,7 @@ class LessonSummary extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Atividade $position · $status',
+                            AppStrings.activityItemSummary(position, status),
                             style: UiText.label.copyWith(color: color),
                           ),
                           const SizedBox(height: UiSpacing.xxs),

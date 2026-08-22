@@ -80,9 +80,6 @@ abstract final class UiColor {
     SubjectType.sociology => sociology,
   };
 
-  static Color subjectStripe(SubjectType value) =>
-      Color.lerp(forSubject(value), text, .12)!;
-
   static Color subjectBorder(SubjectType value) =>
       Color.lerp(forSubject(value), background, .24)!;
 }

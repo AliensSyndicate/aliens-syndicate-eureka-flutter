@@ -1,4 +1,5 @@
 import '../../enums/question_type.dart';
+import '../../l10n/app_strings.dart';
 import '../../models/content/model_content_page.dart';
 import '../../models/model_matching_pair.dart';
 import '../../models/model_question.dart';
@@ -24,8 +25,6 @@ class DecodedContentActivity {
   final int estimatedMinutes;
 }
 
-/// Converte tanto o payload legado quanto o schema editorial V2 em domínio.
-/// Um item inválido é descartado; um documento inválido nunca lança para a UI.
 abstract final class ContentActivityCodec {
   static DecodedContentActivity? decode(Map<String, dynamic> payload) {
     try {
@@ -142,10 +141,10 @@ abstract final class ContentActivityCodec {
         ).map((id) => byId[id]).whereType<String>().join(' | ');
       }
       if (type == QuestionType.trueFalse) {
-        options = const ['Verdadeiro', 'Falso'];
+        options = const [AppStrings.trueLabel, AppStrings.falseLabel];
         correctAnswer = _string(correctAnswer).toLowerCase() == 'true'
-            ? 'Verdadeiro'
-            : 'Falso';
+            ? AppStrings.trueLabel
+            : AppStrings.falseLabel;
       }
       if (type == QuestionType.fillBlank && options.isEmpty) {
         options = <String>{

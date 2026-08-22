@@ -374,32 +374,7 @@ class _PageLessonState extends State<PageLesson> {
     );
   }
 
-  String _activityName(QuestionType type) => switch (type) {
-    QuestionType.multipleChoice => 'Escolha uma resposta',
-    QuestionType.textInput => 'Complete a resposta',
-    QuestionType.essay => 'Palavra',
-    QuestionType.fillBlank => 'Complete os espaços',
-    QuestionType.ordering => 'Organize as palavras',
-    QuestionType.sequencing => 'Organize a sequência',
-    QuestionType.matching => 'Faça as associações',
-    QuestionType.memory => 'Jogo da memória',
-    QuestionType.trueFalse => 'Verdadeiro ou falso',
-    QuestionType.imageChoice => 'Escolha uma imagem',
-    QuestionType.wordCompletion => 'Complete a palavra',
-  };
+  String _activityName(QuestionType type) => AppStrings.activityName(type);
 
-  String _subjectName(SubjectType subject) => switch (subject) {
-    SubjectType.portuguese => 'Português',
-    SubjectType.english => 'Inglês',
-    SubjectType.spanish => 'Espanhol',
-    SubjectType.mathematics => 'Matemática',
-    SubjectType.science => 'Ciências',
-    SubjectType.biology => 'Biologia',
-    SubjectType.physics => 'Física',
-    SubjectType.chemistry => 'Química',
-    SubjectType.history => 'História',
-    SubjectType.geography => 'Geografia',
-    SubjectType.philosophy => 'Filosofia',
-    SubjectType.sociology => 'Sociologia',
-  };
+  String _subjectName(SubjectType subject) => AppStrings.subjectName(subject);
 }

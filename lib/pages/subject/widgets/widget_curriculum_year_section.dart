@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_strings.dart';
 import '../../../models/content/model_content_manifest.dart';
 import '../../../models/model_lesson.dart';
 import '../../../ui/ui_card.dart';
@@ -92,7 +93,7 @@ class _ContentItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
-    label: '${lesson.title}, ${isCompleted ? 'concluído' : '0 por cento'}',
+    label: AppStrings.lessonSemantics(lesson.title, isCompleted),
     child: InkWell(
       onTap: onTap,
       child: ConstrainedBox(
@@ -141,7 +142,7 @@ class _ProgressTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-    '$progress%',
+    AppStrings.percent(progress),
     style: UiText.p.copyWith(
       color: UiColor.textSecondary,
       fontWeight: FontWeight.w800,

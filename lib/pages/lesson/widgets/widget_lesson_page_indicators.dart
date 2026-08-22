@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_strings.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_motion.dart';
 import '../../../ui/ui_radius.dart';
@@ -62,14 +63,16 @@ class LessonPageIndicators extends StatelessWidget {
                 LessonPageIndicatorStatus.summaryDisabled => UiColor.outline,
               };
               final state = switch (status) {
-                LessonPageIndicatorStatus.correct => 'respondida corretamente',
+                LessonPageIndicatorStatus.correct =>
+                  AppStrings.indicatorAnsweredCorrect,
                 LessonPageIndicatorStatus.incorrect =>
-                  'respondida incorretamente',
-                LessonPageIndicatorStatus.content => 'conteúdo',
-                LessonPageIndicatorStatus.unanswered => 'ainda não respondida',
-                LessonPageIndicatorStatus.summary => 'resumo disponível',
+                  AppStrings.indicatorAnsweredIncorrect,
+                LessonPageIndicatorStatus.content => AppStrings.indicatorContent,
+                LessonPageIndicatorStatus.unanswered =>
+                  AppStrings.indicatorUnanswered,
+                LessonPageIndicatorStatus.summary => AppStrings.indicatorSummary,
                 LessonPageIndicatorStatus.summaryDisabled =>
-                  'resumo com atividades pendentes',
+                  AppStrings.indicatorSummaryDisabled,
               };
               return <Widget>[
                 TweenAnimationBuilder<double>(
@@ -83,7 +86,11 @@ class LessonPageIndicators extends StatelessWidget {
                     button: true,
                     enabled: true,
                     selected: selected,
-                    label: 'Página ${index + 1} de ${statuses.length}, $state',
+                    label: AppStrings.pageIndicatorSemantics(
+                      index + 1,
+                      statuses.length,
+                      state,
+                    ),
                     child: InkWell(
                       key: ValueKey('lesson-page-indicator-$index'),
                       onTap: () => onSelected(index),

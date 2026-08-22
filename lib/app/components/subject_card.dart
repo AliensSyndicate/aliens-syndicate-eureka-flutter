@@ -1,6 +1,7 @@
 import 'package:eureka/enums/subject_type.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_strings.dart';
 import '../../../models/content/model_content_manifest.dart';
 import '../../../ui/ui_card.dart';
 import '../../../ui/ui_color.dart';
@@ -84,7 +85,7 @@ class SubjectCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '$progress%',
+                      AppStrings.percent(progress),
                       style: UiText.h6.copyWith(color: subjectColor),
                     ),
                   ],

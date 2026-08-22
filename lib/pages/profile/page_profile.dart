@@ -38,7 +38,7 @@ class PageProfile extends StatelessWidget {
         const SizedBox(height: UiSpacing.xl),
         ListTile(
           leading: UiIcon.flash(),
-          title: Text('${progress.xp} XP'),
+          title: Text(AppStrings.xpValue(progress.xp)),
           subtitle: Text(AppStrings.level(progress.level)),
         ),
         ListTile(

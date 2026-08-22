@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_strings.dart';
 import '../../../ui/ui_card.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_gradient.dart';
@@ -42,7 +43,7 @@ class LoginCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Criar conta Eureka',
+                        AppStrings.createEurekaAccount,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: UiText.h5.copyWith(
@@ -52,7 +53,7 @@ class LoginCard extends StatelessWidget {
                       ),
                       const SizedBox(height: UiSpacing.xxs),
                       Text(
-                        'Salve seu progresso na nuvem, acesse de outros dispositivos e mantenha seus dados seguros.',
+                        AppStrings.createEurekaAccountDescription,
                         style: UiText.label.copyWith(
                           color: UiColor.background.withValues(alpha: .85),
                         ),

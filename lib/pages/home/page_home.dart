@@ -46,7 +46,7 @@ class _PageHomeState extends State<PageHome> {
       children: [
         AppHomeBar(
           xp: progress.xp,
-          seriesLabel: '1 EM',
+          seriesLabel: AppStrings.highSchoolSeries(schoolYear),
           onXpTap: () =>
               _showValue(AppStrings.xpLabel, AppStrings.xpValue(progress.xp)),
           onSeriesTap: () => _showValue(

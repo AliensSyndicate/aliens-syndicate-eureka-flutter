@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_strings.dart';
 import '../../../models/content/model_content_manifest.dart';
 import '../../../models/model_lesson.dart';
 import '../../../ui/ui_card.dart';
@@ -106,7 +107,7 @@ class ContinueLearningCard extends StatelessWidget {
                       ),
                       const SizedBox(width: UiSpacing.sm),
                       Text(
-                        '$progress%',
+                        AppStrings.percent(progress),
                         style: UiText.h6.copyWith(
                           color: UiColor.background,
                           fontWeight: FontWeight.w800,

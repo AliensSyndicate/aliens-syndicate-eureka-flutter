@@ -129,7 +129,10 @@ class SubjectLessonsAppBar extends StatelessWidget
                                 Align(
                                   alignment: Alignment.center,
                                   child: Text(
-                                    '$completedLessons/$totalLessons',
+                                    AppStrings.progressRatio(
+                                      completedLessons,
+                                      totalLessons,
+                                    ),
                                     textAlign: TextAlign.center,
                                     textHeightBehavior:
                                         const TextHeightBehavior(
