@@ -10,6 +10,11 @@ service cloud.firestore {
       allow read: if resource.data.published == true;
       allow write: if false;
     }
+    // Relatos de problemas podem ser enviados por usuários; leitura e edição restritas ao painel/backend.
+    match /reports/{reportId} {
+      allow create: if request.resource.data.userId is string;
+      allow read, update, delete: if false;
+    }
     // A V1 não envia progresso local ao Firebase. Liberar somente após autenticação e revisão LGPD.
     match /users/{userId}/{document=**} { allow read, write: if false; }
     match /{document=**} { allow read, write: if false; }

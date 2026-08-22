@@ -22,10 +22,10 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final enabled = isEnabled;
     final activeColor = color ?? UiColor.primary;
-    final topColor = enabled ? activeColor : UiColor.surfaceElevated;
+    final topColor = enabled ? activeColor : UiColor.surface;
     final depthColor = enabled
         ? Color.lerp(activeColor, UiColor.background, .28)!
-        : UiColor.divider;
+        : UiColor.outline;
     return Semantics(
       button: true,
       enabled: enabled,
@@ -62,15 +62,18 @@ class AppButton extends StatelessWidget {
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(UiButton.radius),
+                    side: enabled
+                        ? BorderSide.none
+                        : const BorderSide(color: UiColor.outline, width: 1.5),
                   ),
-                  textStyle: UiText.h6.copyWith(),
+                  textStyle: UiText.h6.copyWith(fontWeight: FontWeight.w700),
                 ),
                 child: isLoading
                     ? const SizedBox.square(
                         dimension: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 3,
-                          color: UiColor.background,
+                          color: UiColor.accent,
                         ),
                       )
                     : Text(label.toUpperCase()),

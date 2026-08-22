@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/components/app_bottom_sheet.dart';
-import '../../app/components/app_button.dart';
+import '../../app/components/app_report_bottom_sheet.dart';
 import '../../app/navigation/navigation_router.dart';
 import '../../enums/learning_mode.dart';
 import '../../l10n/app_strings.dart';
@@ -76,16 +75,10 @@ class PageSubjectLessons extends StatelessWidget {
   }
 
   Future<void> _showReportError(BuildContext context) =>
-      AppBottomSheet.show<void>(
+      AppReportBottomSheet.show(
         context,
-        title: AppStrings.reportError,
-        content: const Text(AppStrings.reportErrorUnavailable),
-        actions: [
-          AppButton(
-            label: AppStrings.finish,
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
+        subjectId: subject.type.name,
+        lessonTitle: subject.title,
       );
 
   Future<void> _openLesson(BuildContext context, Lesson lesson) async {

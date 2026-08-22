@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
+import '../../app/components/app_report_bottom_sheet.dart';
 import '../../controllers/controller_lesson.dart';
 import '../../enums/learning_mode.dart';
 import '../../enums/question_type.dart';
@@ -322,13 +323,13 @@ class _PageLessonState extends State<PageLesson> {
     setState(() => submitting = false);
   }
 
-  Future<void> _reportError({Question? question}) => AppBottomSheet.show<void>(
+  Future<void> _reportError({Question? question}) => AppReportBottomSheet.show(
     context,
-    title: AppStrings.reportError,
-    content: Text(
-      '${question?.prompt ?? _pageName(currentPage)}\n'
-      '${AppStrings.reportErrorUnavailable}',
-    ),
+    lessonId: widget.lesson.id,
+    lessonTitle: widget.lesson.title,
+    question: question,
+    subjectId: widget.lesson.subject.name,
+    pageNumber: currentPage + 1,
   );
 
   void _goToPage(int page) {

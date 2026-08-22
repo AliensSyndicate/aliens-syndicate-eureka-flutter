@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import '../../../models/model_matching_pair.dart';
 import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
-import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_option.dart';
 import '../../../ui/ui_spacing.dart';
 import 'exercise_question_prompt.dart';
@@ -281,7 +280,7 @@ class _MatchingChip extends StatelessWidget {
             onTap: onTap,
             borderRadius: BorderRadius.circular(UiOption.radius),
             child: Container(
-              constraints: const BoxConstraints(minHeight: 52),
+              constraints: const BoxConstraints(minHeight: 64),
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               decoration: BoxDecoration(
@@ -292,12 +291,6 @@ class _MatchingChip extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (showResult) ...[
-                    state == _MatchingState.correct
-                        ? UiIcon.correct(color: color, size: 16)
-                        : UiIcon.incorrect(color: color, size: 16),
-                    const SizedBox(width: 6),
-                  ],
                   Flexible(
                     child: Text(
                       label,
