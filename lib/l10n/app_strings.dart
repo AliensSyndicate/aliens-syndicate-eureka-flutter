@@ -154,6 +154,7 @@ abstract final class AppStrings {
       essayHint = 'Escreva...',
       trueLabel = 'Verdadeiro',
       falseLabel = 'Falso',
+      turmaLabel = 'Turma',
       xpLabel = 'Pontos de experiência',
       levelLabel = 'Nível atual',
       stageElementarySchoolShort = 'EF',
@@ -259,7 +260,8 @@ abstract final class AppStrings {
   static String simulationImprove(String content) => 'Vale revisar $content.';
   static String xpValue(int value) => '$value XP';
   static String levelValue(int value) => 'Você está no nível $value.';
-  static String schoolYear(int year) => '$yearº ano';
+  static String schoolYear(int year) =>
+      year <= 9 ? '$yearº EF' : '${year > 9 ? year - 9 : year}º EM';
   static String level(int value) => 'Nível $value';
   static String completedLessons(int value) =>
       value == 1 ? '1 lição concluída' : '$value lições concluídas';

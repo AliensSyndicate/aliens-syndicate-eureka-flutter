@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+
 import '../data/local/hive_explore_history.dart';
 import '../data/local/hive_explore_recents.dart';
 import '../enums/explore_state.dart';
@@ -8,12 +10,7 @@ import '../models/content/model_content_manifest.dart';
 import '../models/explore/model_search_filter.dart';
 import '../models/explore/model_search_result.dart';
 import '../models/model_lesson.dart';
-import 'package:flutter/foundation.dart';
 
-/// Controller do módulo Explorar.
-///
-/// Gerencia debounce, cancelamento de respostas antigas, histórico (Hive)
-/// e estado da tela. A UI observa via [ListenableBuilder].
 class ExploreController extends ChangeNotifier {
   ExploreController({
     required SearchRepository repository,

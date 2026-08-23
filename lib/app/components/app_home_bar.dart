@@ -9,10 +9,18 @@ import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
 
 class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
-  const AppHomeBar({required this.xp, required this.onXpTap, super.key});
+  const AppHomeBar({
+    required this.xp,
+    required this.onXpTap,
+    this.schoolYear,
+    this.onSchoolYearTap,
+    super.key,
+  });
 
   final int xp;
   final VoidCallback onXpTap;
+  final int? schoolYear;
+  final VoidCallback? onSchoolYearTap;
 
   @override
   Size get preferredSize => const Size.fromHeight(UiSize.homeAppBarHeight);
@@ -22,16 +30,33 @@ class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
     height: preferredSize.height,
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: UiSpacing.pageHorizontal),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          UiIcon.logo(size: UiSize.logoSize),
-          _BadgeButton(
-            text: '$xp',
-            textColor: UiColor.text,
-            icon: UiIcon.diamontXp(size: UiSize.iconMd),
-            semanticLabel: AppStrings.xpLabel,
-            onTap: onXpTap,
+          Center(
+            child: UiIcon.logo(size: UiSize.logoSize),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _BadgeButton(
+                text: '$xp',
+                textColor: UiColor.text,
+                icon: UiIcon.diamontXp(size: UiSize.iconMd),
+                semanticLabel: AppStrings.xpLabel,
+                onTap: onXpTap,
+              ),
+              if (schoolYear != null && onSchoolYearTap != null)
+                _BadgeButton(
+                  text: AppStrings.schoolYear(schoolYear!),
+                  textColor: UiColor.text,
+                  icon: UiIcon.backpackForYear(schoolYear!, size: UiSize.iconMd),
+                  semanticLabel: AppStrings.turmaLabel,
+                  onTap: onSchoolYearTap!,
+                )
+              else
+                const SizedBox.shrink(),
+            ],
           ),
         ],
       ),
@@ -68,24 +93,21 @@ class _BadgeButton extends StatelessWidget {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         hoverColor: Colors.transparent,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: UiSpacing.sm),
-          child: SizedBox(
-            height: UiSize.buttonHeightSm,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                icon,
-                const SizedBox(width: 4),
-                Text(
-                  text,
-                  style: UiText.h6.copyWith(
-                    color: textColor,
-                    fontWeight: FontWeight.w800,
-                  ),
+        child: SizedBox(
+          height: UiSize.buttonHeightSm,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              icon,
+              const SizedBox(width: 4),
+              Text(
+                text,
+                style: UiText.h6.copyWith(
+                  color: textColor,
+                  fontWeight: FontWeight.w800,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

@@ -154,4 +154,23 @@ abstract final class UiIcon {
       build(assetName: 'backpack_2_em', size: size);
   static Widget backpack3Em({double size = UiSize.iconNavigation}) =>
       build(assetName: 'backpack_3_em', size: size);
+
+  static Widget backpackForYear(
+    int schoolYear, {
+    double size = UiSize.iconNavigation,
+  }) => switch (schoolYear) {
+    1 => backpack1Ef1(size: size),
+    2 => backpack2Ef1(size: size),
+    3 => backpack3Ef1(size: size),
+    4 => backpack4Ef1(size: size),
+    5 => backpack5Ef1(size: size),
+    6 => backpack6Ef2(size: size),
+    7 => backpack7E2(size: size),
+    8 => backpack8Ef2(size: size),
+    9 => backpack9Ef2(size: size),
+    10 => backpack1Em(size: size),
+    11 => backpack2Em(size: size),
+    12 => backpack3Em(size: size),
+    _ => backpack5Ef1(size: size),
+  };
 }

@@ -1,4 +1,5 @@
-import 'package:eureka/app/components/subject_card.dart';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,19 +9,12 @@ import '../../app/components/app_home_bar.dart';
 import '../../app/navigation/navigation_router.dart';
 import '../../config/config_product.dart';
 import '../../controllers/controller_home.dart';
-import '../../enums/login_context.dart';
-import '../../enums/learning_mode.dart';
+import '../../enums/subject_type.dart';
 import '../../l10n/app_strings.dart';
-import '../../models/auth/model_login_request.dart';
 import '../../models/content/model_content_manifest.dart';
-import '../../models/model_lesson.dart';
 import '../../services/service_registry.dart';
-import '../../ui/ui_spacing.dart';
-import '../../ui/ui_text.dart';
-import 'widgets/widget_continue_learning_card.dart';
 import 'widgets/widget_home_cards_skeleton.dart';
-import 'widgets/widget_login.dart';
-import 'widgets/widget_recommendation_card.dart';
+import 'widgets/widget_planet_button.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({super.key});
@@ -48,8 +42,13 @@ class _PageHomeState extends State<PageHome> {
       children: [
         AppHomeBar(
           xp: progress.xp,
+          schoolYear: schoolYear,
           onXpTap: () =>
               _showValue(AppStrings.xpLabel, AppStrings.xpValue(progress.xp)),
+          onSchoolYearTap: () => _showValue(
+            AppStrings.turmaLabel,
+            AppStrings.schoolYear(schoolYear),
+          ),
         ),
         Expanded(
           child: FutureBuilder<List<SubjectContentManifest>>(
@@ -59,97 +58,128 @@ class _PageHomeState extends State<PageHome> {
                 return const HomeCardsSkeleton();
               }
               final items = snapshot.data!;
-              final savedProgress = ServiceRegistry.progress.load();
-              SubjectContentManifest? lastSubject;
-              Lesson? lastLesson;
-              for (final subject in items) {
-                for (final lesson in subject.availableLessonsForYear(
-                  schoolYear,
-                )) {
-                  if (lesson.id == savedProgress.lastLessonId) {
-                    final session = ServiceRegistry.progress.loadLessonSession(
-                      lesson.id,
-                    );
-                    if (!session.completed &&
-                        (session.answers.isNotEmpty ||
-                            session.currentPage > 0)) {
-                      lastSubject = subject;
-                      lastLesson = lesson;
-                    }
-                  }
-                }
-              }
-              final recommendation = ServiceRegistry.recommendation.recommend(
+              if (items.isEmpty) return const SizedBox.shrink();
+
+              final portuguese = _findSubject(items, SubjectType.portuguese, 0);
+              final mathematics = _findSubject(
                 items,
-                schoolYear,
-                ServiceRegistry.progress.loadDifficultyScores(),
+                SubjectType.mathematics,
+                1,
               );
-              return ListView(
-                padding: EdgeInsets.only(
-                  left: UiSpacing.pageHorizontal,
-                  right: UiSpacing.pageHorizontal,
-                  top: UiSpacing.sm,
-                  bottom: UiSpacing.pageVertical,
-                ),
-                children: [
-                  if (!ServiceRegistry.user.isAuthenticated) ...[
-                    LoginCard(onTap: _openLogin),
-                    const SizedBox(height: UiSpacing.sectionSpacing),
-                  ],
-                  if (recommendation != null) ...[
-                    Text(AppStrings.recommendedForYou, style: UiText.h4),
-                    const SizedBox(height: UiSpacing.sm),
-                    RecommendationCard(
-                      recommendation: recommendation,
-                      onTap: () => _continueLesson(
-                        recommendation.lesson,
-                        mode: LearningMode.review,
-                      ),
-                    ),
-                    const SizedBox(height: UiSpacing.sectionSpacing),
-                  ],
-                  if (lastSubject != null && lastLesson != null) ...[
-                    Text(AppStrings.continueWhereStopped, style: UiText.h4),
-                    const SizedBox(height: UiSpacing.sm),
-                    ContinueLearningCard(
-                      subject: lastSubject,
-                      lesson: lastLesson,
-                      progress: ServiceRegistry.progress.completionPercentage(
-                        lastSubject.lessonsForYear(schoolYear),
-                      ),
-                      onTap: () => _continueLesson(lastLesson!),
-                    ),
-                    const SizedBox(height: UiSpacing.sectionSpacing),
-                  ],
-                  Text(AppStrings.subjectsTitle, style: UiText.h4),
-                  const SizedBox(height: UiSpacing.sm),
-                  ...items.map((subject) {
-                    final progressPercentage = ServiceRegistry.progress
-                        .completionPercentage(
-                          subject.lessonsForYear(schoolYear),
-                        );
-                    return SubjectCard(
-                      subject: subject,
-                      progress: progressPercentage,
-                      onTap: () async {
-                        await context.pushNamed(
-                          AppRoute.subject,
-                          extra: SubjectRouteArguments(
-                            subject: subject,
-                            schoolYear: schoolYear,
+              final science = _findSubject(items, SubjectType.science, 2);
+              final geography = _findSubject(items, SubjectType.geography, 3);
+              final history = _findSubject(items, SubjectType.history, 4);
+
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final w = constraints.maxWidth;
+                  final h = constraints.maxHeight;
+
+                  final islandSize = math.min(w * 0.38, h * 0.23);
+                  final historySize = math.min(w * 0.42, h * 0.25);
+
+                  return SizedBox(
+                    width: w,
+                    height: h,
+                    child: Stack(
+                      children: [
+                        // 1. Português (topo esquerdo)
+                        if (portuguese != null)
+                          Positioned(
+                            left: w * 0.02,
+                            top: h * 0.01,
+                            child: PlanetButton(
+                              subject: portuguese,
+                              size: islandSize,
+                              animationIndex: 0,
+                              onTap: () => _openSubject(portuguese),
+                            ),
                           ),
-                        );
-                        if (mounted) setState(() {});
-                      },
-                    );
-                  }),
-                ],
+
+                        // 2. Matemática (topo direito)
+                        if (mathematics != null)
+                          Positioned(
+                            right: w * 0.02,
+                            top: h * 0.07,
+                            child: PlanetButton(
+                              subject: mathematics,
+                              size: islandSize,
+                              animationIndex: 1,
+                              onTap: () => _openSubject(mathematics),
+                            ),
+                          ),
+
+                        // 3. Ciências (meio esquerdo)
+                        if (science != null)
+                          Positioned(
+                            left: w * 0.02,
+                            top: h * 0.36,
+                            child: PlanetButton(
+                              subject: science,
+                              size: islandSize,
+                              animationIndex: 2,
+                              onTap: () => _openSubject(science),
+                            ),
+                          ),
+
+                        // 4. Geografia (meio direito)
+                        if (geography != null)
+                          Positioned(
+                            right: w * 0.02,
+                            top: h * 0.40,
+                            child: PlanetButton(
+                              subject: geography,
+                              size: islandSize,
+                              animationIndex: 3,
+                              onTap: () => _openSubject(geography),
+                            ),
+                          ),
+
+                        // 5. História (inferior centro)
+                        if (history != null)
+                          Positioned(
+                            left: (w - historySize) / 2,
+                            bottom: h * 0.02,
+                            child: PlanetButton(
+                              subject: history,
+                              size: historySize,
+                              animationIndex: 4,
+                              onTap: () => _openSubject(history),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                },
               );
             },
           ),
         ),
       ],
     );
+  }
+
+  SubjectContentManifest? _findSubject(
+    List<SubjectContentManifest> items,
+    SubjectType type,
+    int fallbackIndex,
+  ) {
+    for (final item in items) {
+      if (item.type == type) return item;
+    }
+    if (fallbackIndex < items.length) return items[fallbackIndex];
+    return null;
+  }
+
+  Future<void> _openSubject(SubjectContentManifest subject) async {
+    await context.pushNamed(
+      AppRoute.subject,
+      extra: SubjectRouteArguments(
+        subject: subject,
+        schoolYear: schoolYear,
+      ),
+    );
+    if (mounted) setState(() {});
   }
 
   Future<void> _showValue(String title, String value) =>
@@ -164,26 +194,4 @@ class _PageHomeState extends State<PageHome> {
           ),
         ],
       );
-
-  Future<void> _openLogin() async {
-    await context.pushNamed(
-      AppRoute.auth,
-      extra: const LoginRequest(
-        context: LoginContext.saveProgress,
-        returnLocation: '/home',
-      ),
-    );
-    if (mounted) setState(() {});
-  }
-
-  Future<void> _continueLesson(
-    Lesson lesson, {
-    LearningMode mode = LearningMode.journey,
-  }) async {
-    await context.pushNamed(
-      AppRoute.lessonLoading,
-      extra: LessonLoadingRouteArguments(lesson: lesson, mode: mode),
-    );
-    if (mounted) setState(() {});
-  }
 }
