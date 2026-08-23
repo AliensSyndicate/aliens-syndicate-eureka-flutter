@@ -270,6 +270,9 @@ abstract final class AppStrings {
   static String levelValue(int value) => 'Você está no nível $value.';
   static String schoolYear(int year) =>
       year <= 9 ? '$yearº EF' : '${year > 9 ? year - 9 : year}º EM';
+  static String schoolYearFull(int year) => year <= 9
+      ? '$yearº ano do Ensino Fundamental'
+      : '${year - 9}ª série do Ensino Médio';
   static String level(int value) => 'Nível $value';
   static String difficultyLevelName(int value) => switch (value) {
     1 => 'Nível Fácil',

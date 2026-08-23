@@ -12,7 +12,7 @@ abstract final class UiSize {
   static const progressHeight = 10.0;
   static const bottomNavigationHeight = 72.0;
   static const homeAppBarHeight = 64.0;
-  static const subjectAppBarHeight = 180.0;
+  static const subjectAppBarHeight = 219.0;
   static const numericButtonWidth = 56.0;
   static const avatarSm = 32.0;
   static const avatarMd = 48.0;

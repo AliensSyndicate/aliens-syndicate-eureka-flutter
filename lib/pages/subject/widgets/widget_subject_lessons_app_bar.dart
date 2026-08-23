@@ -4,11 +4,11 @@ import 'package:flutter/services.dart';
 import '../../../enums/subject_type.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../models/model_lesson.dart';
-import '../../../ui/ui_card.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_gradient.dart';
 import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_radius.dart';
+import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
 import '../../../ui/ui_text.dart';
 
@@ -19,8 +19,6 @@ class SubjectLessonsAppBar extends StatelessWidget
     required this.color,
     required this.subject,
     required this.schoolYear,
-    required this.completedLessons,
-    required this.totalLessons,
     required this.xp,
     required this.onBack,
     required this.onReport,
@@ -32,8 +30,6 @@ class SubjectLessonsAppBar extends StatelessWidget
   final Color color;
   final SubjectType subject;
   final int schoolYear;
-  final int completedLessons;
-  final int totalLessons;
   final int xp;
   final Lesson? lastCompletedLesson;
 
@@ -41,8 +37,8 @@ class SubjectLessonsAppBar extends StatelessWidget
   final VoidCallback onReport;
 
   static const _planetSize = 200.0;
-  static const _baseHeight = 164.0;
-  static const _lastLessonExtra = 22.0;
+  static const _baseHeight = UiSize.subjectAppBarHeight;
+  static const _lastLessonExtra = 24.0;
 
   @override
   Size get preferredSize => Size.fromHeight(
@@ -51,8 +47,6 @@ class SubjectLessonsAppBar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final progress = totalLessons == 0 ? 0.0 : completedLessons / totalLessons;
-
     return AppBar(
       automaticallyImplyLeading: false,
       toolbarHeight: preferredSize.height,
@@ -69,19 +63,20 @@ class SubjectLessonsAppBar extends StatelessWidget
         statusBarBrightness: Brightness.dark,
       ),
       flexibleSpace: Stack(
-        key: const ValueKey('subject-app-bar-background'),
         fit: StackFit.expand,
         clipBehavior: Clip.hardEdge,
         children: [
           Ink(
+            key: const ValueKey('subject-app-bar-background'),
             decoration: BoxDecoration(gradient: UiGradient.forSubject(subject)),
           ),
           Positioned(
             right: -40,
-            bottom: -48,
+            top: 0,
             child: IgnorePointer(
               child: Image.asset(
                 'assets/images/${subject.name}.png',
+                key: const ValueKey('subject-header-planet'),
                 width: _planetSize,
                 height: _planetSize,
                 fit: BoxFit.contain,
@@ -110,42 +105,56 @@ class SubjectLessonsAppBar extends StatelessWidget
                       ),
                     ],
                   ),
+                  const SizedBox(height: UiSpacing.xs),
                   Padding(
-                    padding: const EdgeInsets.only(
-                      left: UiSpacing.sm,
-                      right: _planetSize * 0.55,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: UiSpacing.sm,
                     ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: UiText.h4.copyWith(color: UiColor.textPrimary),
-                        ),
-                        Text(
-                          AppStrings.schoolYear(schoolYear),
-                          style: UiText.label.copyWith(
-                            color: UiColor.textPrimary.withValues(alpha: .75),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                                style: UiText.h4.copyWith(
+                                  color: UiColor.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: UiSpacing.xs),
+                              Text(
+                                AppStrings.schoolYearFull(schoolYear),
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                                style: UiText.p,
+                              ),
+                            ],
                           ),
                         ),
                         if (lastCompletedLesson != null) ...[
-                          const SizedBox(height: UiSpacing.xxs),
-                          _LastLessonRow(
-                            lesson: lastCompletedLesson!,
-                            color: color,
+                          const SizedBox(height: UiSpacing.xs),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: _planetSize * 0.45,
+                            ),
+                            child: _LastLessonRow(
+                              lesson: lastCompletedLesson!,
+                              color: color,
+                            ),
                           ),
                         ],
                         const SizedBox(height: UiSpacing.xs),
-                        _ProgressBar(
-                          progress: progress,
-                          completed: completedLessons,
-                          total: totalLessons,
-                          color: color,
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: _XpCard(xp: xp),
                         ),
-                        const SizedBox(height: UiSpacing.xxs),
-                        _XpBadge(xp: xp),
                       ],
                     ),
                   ),
@@ -184,64 +193,35 @@ class _LastLessonRow extends StatelessWidget {
   );
 }
 
-class _ProgressBar extends StatelessWidget {
-  const _ProgressBar({
-    required this.progress,
-    required this.completed,
-    required this.total,
-    required this.color,
-  });
-
-  final double progress;
-  final int completed;
-  final int total;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(UiRadius.pill),
-          child: LinearProgressIndicator(
-            key: const ValueKey('subject-progress-bar'),
-            value: progress,
-            minHeight: UiCard.progressTagHeight,
-            backgroundColor: UiColor.textPrimary.withValues(alpha: .22),
-            color: color,
-          ),
-        ),
-      ),
-      const SizedBox(width: UiSpacing.xs),
-      Text(
-        AppStrings.progressRatio(completed, total),
-        style: UiText.small.copyWith(
-          color: UiColor.textPrimary,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    ],
-  );
-}
-
-class _XpBadge extends StatelessWidget {
-  const _XpBadge({required this.xp});
+class _XpCard extends StatelessWidget {
+  const _XpCard({required this.xp});
 
   final int xp;
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      UiIcon.diamontXp(size: 18),
-      const SizedBox(width: UiSpacing.xxs),
-      Text(
-        AppStrings.xpValue(xp),
-        style: UiText.small.copyWith(
-          color: UiColor.textPrimary,
-          fontWeight: FontWeight.w700,
+  Widget build(BuildContext context) => Container(
+    key: const ValueKey('subject-xp-card'),
+    padding: const EdgeInsets.symmetric(
+      horizontal: UiSpacing.md,
+      vertical: UiSpacing.sm,
+    ),
+    decoration: BoxDecoration(
+      color: UiColor.background.withValues(alpha: .94),
+      borderRadius: BorderRadius.circular(UiRadius.card),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        UiIcon.diamontXp(size: 18),
+        const SizedBox(width: UiSpacing.xxs),
+        Text(
+          AppStrings.xpValue(xp),
+          style: UiText.p.copyWith(
+            color: UiColor.xp,
+            fontWeight: FontWeight.w700,
+          ),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 }

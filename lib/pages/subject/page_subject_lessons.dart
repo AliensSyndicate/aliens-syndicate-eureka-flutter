@@ -16,6 +16,7 @@ import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
 import 'widgets/widget_lesson_progress_card.dart';
 import 'widgets/widget_subject_lessons_app_bar.dart';
+import 'widgets/widget_subject_progress_card.dart';
 
 class PageSubjectLessons extends StatelessWidget {
   const PageSubjectLessons({
@@ -73,8 +74,6 @@ class PageSubjectLessons extends StatelessWidget {
         color: color,
         subject: subject.type,
         schoolYear: schoolYear,
-        completedLessons: completedCount,
-        totalLessons: allLessons.length,
         xp: progress.xp,
         lastCompletedLesson: lastCompletedLesson,
         onBack: context.pop,
@@ -82,13 +81,20 @@ class PageSubjectLessons extends StatelessWidget {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: UiSpacing.pageHorizontal,
-            vertical: UiSpacing.pageVertical,
+          padding: const EdgeInsets.fromLTRB(
+            UiSpacing.pageHorizontal,
+            UiSpacing.sectionSpacing,
+            UiSpacing.pageHorizontal,
+            UiSpacing.pageVertical,
           ),
           children: [
+            SubjectProgressCard(
+              completed: completedCount,
+              total: allLessons.length,
+              color: color,
+            ),
+            const SizedBox(height: UiSpacing.sectionSpacing),
             if (continueLesson != null) ...[
-              const SizedBox(height: UiSpacing.md),
               _LessonSection(
                 title: AppStrings.continueTitle,
                 lessons: [continueLesson],
@@ -168,12 +174,12 @@ class _LessonSection extends StatelessWidget {
     children: [
       Row(
         children: [
-          Text(title, style: UiText.h3.copyWith(color: UiColor.textPrimary)),
+          Text(title, style: UiText.h6.copyWith(color: UiColor.textPrimary)),
           if (count != null) ...[
             const SizedBox(width: UiSpacing.xs),
             Text(
               '$count',
-              style: UiText.h3.copyWith(color: UiColor.textSecondary),
+              style: UiText.h6.copyWith(color: UiColor.textSecondary),
             ),
           ],
         ],
