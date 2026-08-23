@@ -14,6 +14,7 @@ class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onXpTap,
     this.schoolYear,
     this.onSchoolYearTap,
+    this.hasNewSchoolYears = false,
     super.key,
   });
 
@@ -21,6 +22,7 @@ class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onXpTap;
   final int? schoolYear;
   final VoidCallback? onSchoolYearTap;
+  final bool hasNewSchoolYears;
 
   @override
   Size get preferredSize => const Size.fromHeight(UiSize.homeAppBarHeight);
@@ -33,9 +35,7 @@ class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Center(
-            child: UiIcon.logo(size: UiSize.logoSize),
-          ),
+          Center(child: UiIcon.logo(size: UiSize.logoSize)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -47,12 +47,18 @@ class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
                 onTap: onXpTap,
               ),
               if (schoolYear != null && onSchoolYearTap != null)
-                _BadgeButton(
-                  text: AppStrings.schoolYear(schoolYear!),
-                  textColor: UiColor.text,
-                  icon: UiIcon.backpackForYear(schoolYear!, size: UiSize.iconMd),
-                  semanticLabel: AppStrings.turmaLabel,
-                  onTap: onSchoolYearTap!,
+                _NewYearsBadge(
+                  visible: hasNewSchoolYears,
+                  child: _BadgeButton(
+                    text: AppStrings.schoolYear(schoolYear!),
+                    textColor: UiColor.text,
+                    icon: UiIcon.backpackForYear(
+                      schoolYear!,
+                      size: UiSize.iconMd,
+                    ),
+                    semanticLabel: AppStrings.turmaLabel,
+                    onTap: onSchoolYearTap!,
+                  ),
                 )
               else
                 const SizedBox.shrink(),
@@ -112,5 +118,33 @@ class _BadgeButton extends StatelessWidget {
         ),
       ),
     ),
+  );
+}
+
+class _NewYearsBadge extends StatelessWidget {
+  const _NewYearsBadge({required this.visible, required this.child});
+
+  final bool visible;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    clipBehavior: Clip.none,
+    children: [
+      child,
+      if (visible)
+        Positioned(
+          top: 8.0,
+          right: -8.0,
+          child: Container(
+            width: 10,
+            height: 10,
+            decoration: const BoxDecoration(
+              color: UiColor.error,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+    ],
   );
 }

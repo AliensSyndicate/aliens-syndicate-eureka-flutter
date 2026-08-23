@@ -1,5 +1,6 @@
 abstract final class ProductConfig {
   static const v1SchoolYear = 5;
+  static const availableSchoolYears = [v1SchoolYear];
   static const socialEnabled = false;
   static const authenticationEnabled = bool.fromEnvironment(
     'EUREKA_AUTH_ENABLED',

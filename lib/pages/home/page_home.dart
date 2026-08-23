@@ -226,6 +226,8 @@ class _PageHomeState extends State<PageHome> {
                     AppStrings.xpValue(progress.xp),
                   ),
                   onSchoolYearTap: _onSchoolYearTap,
+                  hasNewSchoolYears:
+                      ProductConfig.availableSchoolYears.length > 1,
                 ),
                 FutureBuilder<List<dynamic>>(
                   future: Future.wait([continueLearning, recommendation]),
@@ -349,7 +351,7 @@ class _PageHomeState extends State<PageHome> {
     final selected = await showSchoolYearSheet(
       context,
       currentYear: schoolYear,
-      availableYears: [ProductConfig.v1SchoolYear],
+      availableYears: ProductConfig.availableSchoolYears,
     );
     if (selected != null && selected != schoolYear && mounted) {
       setState(() {
