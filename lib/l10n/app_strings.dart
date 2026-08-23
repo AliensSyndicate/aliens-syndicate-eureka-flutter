@@ -8,6 +8,7 @@ abstract final class AppStrings {
       recommendationTitle = 'Recomendado',
       continueTitle = 'Continuar',
       subjectsTitle = 'Matérias',
+      lessonsTitle = 'Aulas',
       continueWhereStopped = 'Continuar de onde parou',
       recommendedForYou = 'Vale revisar',
       home = 'Home',
@@ -270,6 +271,13 @@ abstract final class AppStrings {
   static String schoolYear(int year) =>
       year <= 9 ? '$yearº EF' : '${year > 9 ? year - 9 : year}º EM';
   static String level(int value) => 'Nível $value';
+  static String difficultyLevelName(int value) => switch (value) {
+    1 => 'Nível Fácil',
+    2 => 'Nível Médio',
+    3 => 'Nível Difícil',
+    4 => 'Nível Avançado',
+    _ => 'Nível Desafio',
+  };
   static String completedLessons(int value) =>
       value == 1 ? '1 lição concluída' : '$value lições concluídas';
   static String recommendationReason(String lesson) =>
@@ -280,6 +288,8 @@ abstract final class AppStrings {
   static String activityDuration(int minutes) =>
       'Você terminou em $minutes min.';
   static String activityEarnedXp(int value) => 'Você ganhou $value XP.';
+  static String earnUpToXp(int value) => 'Ganhe até $value XP';
+  static String earnedXpGain(int value) => '+$value XP';
   static String essayCounter(int length, int maxLength) => '$length/$maxLength';
   static String memoryPairs(int found, int total) => '$found/$total';
   static String percent(num value) => '$value%';

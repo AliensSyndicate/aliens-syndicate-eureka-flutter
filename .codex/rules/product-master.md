@@ -26,6 +26,8 @@ Fonte normativa: `Eureka_Documento_Mestre_Produto_UX_Arquitetura_IA.docx`, vers�
 - Atividades normais usam `Verificar`, feedback por `AppBottomSheet` e não exibem cronômetro.
 - Revisão, Explorar e Simulado reutilizam a mesma engine de atividades, variando contexto e regras.
 - Simulado persiste sessão, calcula tempo por `endTime`, funciona offline após preparação, equilibra matérias/conteúdos e só corrige no resultado.
+- Na jornada curricular, cada atividade respondida corretamente concede 20 XP. Cada aula possui 5 atividades da jornada e, portanto, oferece no máximo 100 XP.
+- Antes de a aula ser iniciada, sua apresentação mostra `Ganhe até 100 XP`. Depois de iniciada, durante o andamento e após a conclusão, mostra `+{valor ganho} XP`, inclusive `+0 XP` quando ainda não houve acerto.
 
 ## Arquitetura e dados
 
@@ -37,4 +39,4 @@ Fonte normativa: `Eureka_Documento_Mestre_Produto_UX_Arquitetura_IA.docx`, vers�
 
 ## Pendências explícitas
 
-Melhor nota versus última, thresholds de selos, Platina, streak, missões, economia, achievements amplos, XP exato por ação, regras exatas de domínio, áudio/autoplay, notificações, favoritos, download manual, mascote fixo e modo responsável/pais.
+Melhor nota versus última, thresholds de selos, Platina, streak, missões, economia, achievements amplos, regras exatas de domínio ainda não definidas, áudio/autoplay, notificações, favoritos, download manual, mascote fixo e modo responsável/pais.

@@ -82,4 +82,10 @@ abstract final class UiColor {
 
   static Color subjectBorder(SubjectType value) =>
       Color.lerp(forSubject(value), background, .24)!;
+
+  static Color forDifficulty(int level) => switch (level) {
+    1 => success,
+    2 => warning,
+    _ => error,
+  };
 }

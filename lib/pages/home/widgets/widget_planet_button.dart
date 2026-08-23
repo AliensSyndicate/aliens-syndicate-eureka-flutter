@@ -100,8 +100,8 @@ class _PlanetButtonState extends State<PlanetButton>
                   shadows: const [
                     Shadow(
                       color: Colors.black87,
-                      offset: Offset(0, 2),
-                      blurRadius: 4,
+                      offset: Offset(0, 1),
+                      blurRadius: 1,
                     ),
                   ],
                 ),
@@ -119,8 +119,8 @@ class _PlanetButtonState extends State<PlanetButton>
                     shadows: const [
                       Shadow(
                         color: Colors.black87,
-                        offset: Offset(0, 2),
-                        blurRadius: 4,
+                        offset: Offset(0, 1),
+                        blurRadius: 1,
                       ),
                     ],
                   ),
