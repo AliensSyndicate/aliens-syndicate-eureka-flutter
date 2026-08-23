@@ -27,22 +27,26 @@ class PageSubjectLessons extends StatelessWidget {
   Widget build(BuildContext context) {
     final years = [...subject.schoolYearsForYear(schoolYear)]
       ..sort((a, b) => a.order.compareTo(b.order));
-    final completed = ServiceRegistry.progress
-        .load()
-        .completedLessonIds
-        .toSet();
+    final progress = ServiceRegistry.progress.load();
+    final completed = progress.completedLessonIds.toSet();
     final color = UiColor.forSubject(subject.type);
     final allLessons = subject.lessonsForYear(schoolYear);
-    final completedCount = allLessons
+    final completedCount =
+        allLessons.where((l) => completed.contains(l.id)).length;
+    final lastCompletedLesson = allLessons
         .where((lesson) => completed.contains(lesson.id))
-        .length;
+        .lastOrNull;
+
     return Scaffold(
       appBar: SubjectLessonsAppBar(
         title: subject.title,
         color: color,
         subject: subject.type,
+        schoolYear: schoolYear,
         completedLessons: completedCount,
         totalLessons: allLessons.length,
+        xp: progress.xp,
+        lastCompletedLesson: lastCompletedLesson,
         onBack: context.pop,
         onReport: () => _showReportError(context),
       ),

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
 import '../../app/components/app_home_bar.dart';
+import '../../app/components/show_school_year_sheet.dart';
 import '../../app/navigation/navigation_router.dart';
 import '../../config/config_product.dart';
 import '../../controllers/controller_home.dart';
@@ -34,19 +35,23 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
-  late final int schoolYear;
-  late final Future<List<SubjectContentManifest>> subjects;
-  late final Future<ContinueLearningData?> continueLearning;
-  late final Future<ContinueLearningData?> recommendation;
+  late int schoolYear;
+  late Future<List<SubjectContentManifest>> subjects;
+  late Future<ContinueLearningData?> continueLearning;
+  late Future<ContinueLearningData?> recommendation;
 
   @override
   void initState() {
     super.initState();
     schoolYear = ProductConfig.v1SchoolYear;
+    _loadData(schoolYear);
+  }
+
+  void _loadData(int year) {
     final homeController = HomeController(ServiceRegistry.content);
-    subjects = homeController.loadSubjects(schoolYear);
-    continueLearning = homeController.loadContinueLearning(schoolYear);
-    recommendation = homeController.loadRecommendation(schoolYear);
+    subjects = homeController.loadSubjects(year);
+    continueLearning = homeController.loadContinueLearning(year);
+    recommendation = homeController.loadRecommendation(year);
   }
 
   @override
@@ -204,7 +209,6 @@ class _PageHomeState extends State<PageHome> {
           ),
         ),
 
-        // 2. Camada fixa e transparente no topo (AppBar + Carrossel de Cards)
         Positioned(
           top: 0,
           left: 0,
@@ -221,10 +225,7 @@ class _PageHomeState extends State<PageHome> {
                     AppStrings.xpLabel,
                     AppStrings.xpValue(progress.xp),
                   ),
-                  onSchoolYearTap: () => _showValue(
-                    AppStrings.turmaLabel,
-                    AppStrings.schoolYear(schoolYear),
-                  ),
+                  onSchoolYearTap: _onSchoolYearTap,
                 ),
                 FutureBuilder<List<dynamic>>(
                   future: Future.wait([continueLearning, recommendation]),
@@ -342,6 +343,20 @@ class _PageHomeState extends State<PageHome> {
         .where((l) => progress.completedLessonIds.contains(l.id))
         .length;
     return AppStrings.progressRatio(completed, lessons.length);
+  }
+
+  Future<void> _onSchoolYearTap() async {
+    final selected = await showSchoolYearSheet(
+      context,
+      currentYear: schoolYear,
+      availableYears: [ProductConfig.v1SchoolYear],
+    );
+    if (selected != null && selected != schoolYear && mounted) {
+      setState(() {
+        schoolYear = selected;
+        _loadData(selected);
+      });
+    }
   }
 
   Future<void> _showValue(String title, String value) =>

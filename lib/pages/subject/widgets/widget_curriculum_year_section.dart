@@ -26,24 +26,12 @@ class CurriculumYearSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final completedLessons = year.lessons
-        .where((lesson) => completedLessonIds.contains(lesson.id))
-        .length;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: UiSpacing.sectionSpacing),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(child: Text(year.title, style: UiText.h5)),
-              _FractionProgressTag(
-                completed: completedLessons,
-                total: year.lessons.length,
-              ),
-            ],
-          ),
+          Text(year.title, style: UiText.h5),
           const SizedBox(height: UiSpacing.sm),
           Container(
             key: ValueKey('curriculum-content-${year.id}'),
