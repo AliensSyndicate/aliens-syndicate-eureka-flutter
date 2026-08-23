@@ -9,12 +9,20 @@ import '../../app/components/app_home_bar.dart';
 import '../../app/navigation/navigation_router.dart';
 import '../../config/config_product.dart';
 import '../../controllers/controller_home.dart';
+import '../../enums/learning_mode.dart';
+import '../../enums/login_context.dart';
 import '../../enums/subject_type.dart';
 import '../../l10n/app_strings.dart';
+import '../../models/auth/model_login_request.dart';
 import '../../models/content/model_content_manifest.dart';
 import '../../services/service_registry.dart';
+import '../../ui/ui_spacing.dart';
+import '../auth/login_bottom_sheet.dart';
+import 'widgets/widget_continue_learning_card.dart';
 import 'widgets/widget_home_cards_skeleton.dart';
+import 'widgets/widget_login.dart';
 import 'widgets/widget_planet_button.dart';
+import 'widgets/widget_recommendation_card.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({super.key});
@@ -26,17 +34,23 @@ class PageHome extends StatefulWidget {
 class _PageHomeState extends State<PageHome> {
   late final int schoolYear;
   late final Future<List<SubjectContentManifest>> subjects;
+  late final Future<ContinueLearningData?> continueLearning;
+  late final Future<ContinueLearningData?> recommendation;
 
   @override
   void initState() {
     super.initState();
     schoolYear = ProductConfig.v1SchoolYear;
-    subjects = HomeController(ServiceRegistry.content).loadSubjects(schoolYear);
+    final homeController = HomeController(ServiceRegistry.content);
+    subjects = homeController.loadSubjects(schoolYear);
+    continueLearning = homeController.loadContinueLearning(schoolYear);
+    recommendation = homeController.loadRecommendation(schoolYear);
   }
 
   @override
   Widget build(BuildContext context) {
     final progress = ServiceRegistry.progress.load();
+    final isGuest = !ServiceRegistry.user.isAuthenticated;
 
     return Column(
       children: [
@@ -49,6 +63,83 @@ class _PageHomeState extends State<PageHome> {
             AppStrings.turmaLabel,
             AppStrings.schoolYear(schoolYear),
           ),
+        ),
+        FutureBuilder<List<dynamic>>(
+          future: Future.wait([continueLearning, recommendation]),
+          builder: (context, snapshot) {
+            final continueData = snapshot.hasData
+                ? snapshot.data![0] as ContinueLearningData?
+                : null;
+            final recData = snapshot.hasData
+                ? snapshot.data![1] as ContinueLearningData?
+                : null;
+
+            final hasAnyCard =
+                continueData != null || recData != null || isGuest;
+            if (!hasAnyCard) return const SizedBox.shrink();
+
+            return Container(
+              height: 92.0,
+              margin: EdgeInsets.zero,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: UiSpacing.pageHorizontal,
+                ),
+                children: [
+                  if (isGuest) ...[
+                    LoginCard(
+                      onTap: () async {
+                        final authenticated = await showLoginBottomSheet(
+                          context,
+                          const LoginRequest(
+                            context: LoginContext.saveProgress,
+                          ),
+                        );
+                        if (authenticated && mounted) {
+                          setState(() {});
+                        }
+                      },
+                    ),
+                    const SizedBox(width: UiSpacing.sm),
+                  ],
+                  if (recData != null) ...[
+                    RecommendationCard(
+                      subject: recData.subject,
+                      lesson: recData.lesson,
+                      onTap: () async {
+                        await context.pushNamed(
+                          AppRoute.lesson,
+                          extra: LessonRouteArguments(
+                            lesson: recData.lesson,
+                            mode: LearningMode.journey,
+                          ),
+                        );
+                        if (mounted) setState(() {});
+                      },
+                    ),
+                    const SizedBox(width: UiSpacing.sm),
+                  ],
+                  if (continueData != null)
+                    ContinueLearningCard(
+                      subject: continueData.subject,
+                      lesson: continueData.lesson,
+                      onTap: () async {
+                        await context.pushNamed(
+                          AppRoute.lesson,
+                          extra: LessonRouteArguments(
+                            lesson: continueData.lesson,
+                            mode: LearningMode.journey,
+                          ),
+                        );
+                        if (mounted) setState(() {});
+                      },
+                    ),
+                ],
+              ),
+            );
+          },
         ),
         Expanded(
           child: FutureBuilder<List<SubjectContentManifest>>(
@@ -73,81 +164,90 @@ class _PageHomeState extends State<PageHome> {
               return LayoutBuilder(
                 builder: (context, constraints) {
                   final w = constraints.maxWidth;
-                  final h = constraints.maxHeight;
+                  final contentHeight = math.max(constraints.maxHeight, 560.0);
+                  final basePlanetSize =
+                      math.min(w * 0.36, contentHeight * 0.22);
 
-                  final islandSize = math.min(w * 0.38, h * 0.23);
-                  final historySize = math.min(w * 0.42, h * 0.25);
+                  final sizePortuguese = basePlanetSize * 1.05;
+                  final sizeMathematics = basePlanetSize * 0.92;
+                  final sizeScience = basePlanetSize * 1.15;
+                  final sizeGeography = basePlanetSize * 0.96;
+                  final sizeHistory = basePlanetSize * 1.08;
 
-                  return SizedBox(
-                    width: w,
-                    height: h,
-                    child: Stack(
-                      children: [
-                        // 1. Português (topo esquerdo)
-                        if (portuguese != null)
-                          Positioned(
-                            left: w * 0.02,
-                            top: h * 0.01,
-                            child: PlanetButton(
-                              subject: portuguese,
-                              size: islandSize,
-                              animationIndex: 0,
-                              onTap: () => _openSubject(portuguese),
+                  return SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: SizedBox(
+                      width: w,
+                      height: contentHeight,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          // 1. Português (órbita superior esquerda)
+                          if (portuguese != null)
+                            Positioned(
+                              left: w * 0.05,
+                              top: (contentHeight * 0.01) + 20.0,
+                              child: PlanetButton(
+                                subject: portuguese,
+                                size: sizePortuguese,
+                                animationIndex: 0,
+                                onTap: () => _openSubject(portuguese),
+                              ),
                             ),
-                          ),
 
-                        // 2. Matemática (topo direito)
-                        if (mathematics != null)
-                          Positioned(
-                            right: w * 0.02,
-                            top: h * 0.07,
-                            child: PlanetButton(
-                              subject: mathematics,
-                              size: islandSize,
-                              animationIndex: 1,
-                              onTap: () => _openSubject(mathematics),
+                          // 2. Matemática (órbita média direita)
+                          if (mathematics != null)
+                            Positioned(
+                              left: w * 0.56,
+                              top: contentHeight * 0.14,
+                              child: PlanetButton(
+                                subject: mathematics,
+                                size: sizeMathematics,
+                                animationIndex: 1,
+                                onTap: () => _openSubject(mathematics),
+                              ),
                             ),
-                          ),
 
-                        // 3. Ciências (meio esquerdo)
-                        if (science != null)
-                          Positioned(
-                            left: w * 0.02,
-                            top: h * 0.36,
-                            child: PlanetButton(
-                              subject: science,
-                              size: islandSize,
-                              animationIndex: 2,
-                              onTap: () => _openSubject(science),
+                          // 3. Ciências (órbita central esquerda)
+                          if (science != null)
+                            Positioned(
+                              left: w * 0.16,
+                              top: contentHeight * 0.37,
+                              child: PlanetButton(
+                                subject: science,
+                                size: sizeScience,
+                                animationIndex: 2,
+                                onTap: () => _openSubject(science),
+                              ),
                             ),
-                          ),
 
-                        // 4. Geografia (meio direito)
-                        if (geography != null)
-                          Positioned(
-                            right: w * 0.02,
-                            top: h * 0.40,
-                            child: PlanetButton(
-                              subject: geography,
-                              size: islandSize,
-                              animationIndex: 3,
-                              onTap: () => _openSubject(geography),
+                          // 4. Geografia (órbita média inferior direita)
+                          if (geography != null)
+                            Positioned(
+                              left: w * 0.58,
+                              top: contentHeight * 0.55,
+                              child: PlanetButton(
+                                subject: geography,
+                                size: sizeGeography,
+                                animationIndex: 3,
+                                onTap: () => _openSubject(geography),
+                              ),
                             ),
-                          ),
 
-                        // 5. História (inferior centro)
-                        if (history != null)
-                          Positioned(
-                            left: (w - historySize) / 2,
-                            bottom: h * 0.02,
-                            child: PlanetButton(
-                              subject: history,
-                              size: historySize,
-                              animationIndex: 4,
-                              onTap: () => _openSubject(history),
+                          // 5. História (órbita inferior central)
+                          if (history != null)
+                            Positioned(
+                              left: w * 0.28,
+                              top: contentHeight * 0.74,
+                              child: PlanetButton(
+                                subject: history,
+                                size: sizeHistory,
+                                animationIndex: 4,
+                                onTap: () => _openSubject(history),
+                              ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -174,10 +274,7 @@ class _PageHomeState extends State<PageHome> {
   Future<void> _openSubject(SubjectContentManifest subject) async {
     await context.pushNamed(
       AppRoute.subject,
-      extra: SubjectRouteArguments(
-        subject: subject,
-        schoolYear: schoolYear,
-      ),
+      extra: SubjectRouteArguments(subject: subject, schoolYear: schoolYear),
     );
     if (mounted) setState(() {});
   }
