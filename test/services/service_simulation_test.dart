@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'dart:math';
 
 import 'package:eureka/models/model_simulation.dart';
+import '../helpers/simulation_fixtures.dart';
 
 void main() {
   test('separa tópicos fortes e de revisão', () {
@@ -20,7 +21,7 @@ void main() {
   });
 
   test('calcula erros, brancos, tempo e desempenho por matéria', () {
-    final lessons = seedLessons.take(2).toList();
+    final lessons = simulationLessons().take(2).toList();
     final questions = SimulationService(
       random: Random(4),
     ).buildQuestions(lessons, count: 4);
@@ -52,19 +53,46 @@ void main() {
   test('seleção usa somente questões próprias de simulado e sem repetição', () {
     final selected = SimulationService(
       random: Random(7),
-    ).buildQuestions(seedLessons, count: 20);
+    ).buildQuestions(simulationLessons(), count: 9);
 
     expect(
       selected.map((item) => item.question.id).toSet(),
       hasLength(selected.length),
     );
     expect(
-      selected.every(
-        (item) =>
-            item.question.usage.name == 'simulatorExplore' ||
-            item.question.usage.name == 'practice',
-      ),
+      selected.every((item) => item.question.usage.name == 'simulatorExplore'),
       isTrue,
     );
+  });
+
+  test('não reduz silenciosamente quando o pool é insuficiente', () {
+    expect(
+      () => SimulationService().buildQuestions(
+        simulationLessons(questionsPerLesson: 3).take(1).toList(),
+        count: 10,
+      ),
+      throwsA(
+        isA<SimulationCapacityException>()
+            .having((error) => error.requested, 'requested', 10)
+            .having((error) => error.available, 'available', 3),
+      ),
+    );
+  });
+
+  test('entrega quantidade exata e balanceada entre matérias', () {
+    final selected = SimulationService(
+      random: Random(11),
+    ).buildQuestions(simulationLessons(), count: 8);
+    final counts = <String, int>{};
+    for (final item in selected) {
+      counts.update(
+        item.question.subjectId,
+        (value) => value + 1,
+        ifAbsent: () => 1,
+      );
+    }
+    final values = counts.values.toList();
+    expect(selected, hasLength(8));
+    expect(values.reduce(max) - values.reduce(min), lessThanOrEqualTo(1));
   });
 }

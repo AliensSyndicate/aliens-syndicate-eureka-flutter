@@ -2,12 +2,16 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../repositories/repository_firestore_content.dart';
 import '../repositories/repository_firestore_report.dart';
+import '../repositories/repository_firebase_auth.dart';
 import '../repositories/repository_local_search.dart';
 import '../data/local/hive_content_manifest_cache.dart';
 import '../data/local/hive_content_activity_cache.dart';
 import '../data/local/hive_explore_history.dart';
 import '../data/local/hive_explore_recents.dart';
 import '../data/local/hive_simulation_repository.dart';
+import '../data/local/hive_progress_repository.dart';
+import '../data/local/hive_user_repository.dart';
+import '../data/local/hive_preferences_repository.dart';
 import 'service_progress.dart';
 import 'service_user.dart';
 import 'service_answer.dart';
@@ -18,13 +22,23 @@ import 'service_firebase.dart';
 import 'service_recommendation.dart';
 import 'service_question_selection.dart';
 import 'service_report.dart';
+import 'service_preferences.dart';
+import 'service_auth.dart';
+import '../interfaces/repository_auth.dart';
+import '../interfaces/service_analytics.dart';
 
 /// Ponto único de composição das dependências locais da V1.
 abstract final class ServiceRegistry {
   static Box<dynamic> get _box => Hive.box<dynamic>('eureka');
   static Box<dynamic> get _contentBox => Hive.box<dynamic>('content_cache_v1');
-  static UserService get user => UserService(_box);
-  static ProgressService get progress => ProgressService(_box);
+  static UserService get user => UserService(HiveUserRepository(_box));
+  static ProgressService get progress =>
+      ProgressService(HiveProgressRepository(_box));
+  static PreferencesService get preferences =>
+      PreferencesService(HivePreferencesRepository(_box));
+  static AuthRepository? _auth;
+  static AuthRepository get auth =>
+      _auth ??= FirebaseAuthRepository(AuthService(), HiveUserRepository(_box));
   static AnswerService get answer => AnswerService();
   static ContentService? _content;
   static ContentService get content => _content ??= ContentService(
@@ -36,6 +50,7 @@ abstract final class ServiceRegistry {
   );
   static ScoringService get scoring => ScoringService();
   static SimulationService get simulation => SimulationService();
+  static AnalyticsService get analytics => NoopAnalyticsService();
   static HiveSimulationRepository get simulationRepository =>
       HiveSimulationRepository(_box);
   static RecommendationService get recommendation => RecommendationService();

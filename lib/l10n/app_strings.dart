@@ -1,5 +1,6 @@
 import '../enums/question_type.dart';
 import '../enums/subject_type.dart';
+import '../enums/login_context.dart';
 
 abstract final class AppStrings {
   static const appName = 'Eureka',
@@ -19,6 +20,11 @@ abstract final class AppStrings {
       socialLoadError = 'Não foi possível carregar as novidades.',
       socialEmpty = 'Quando seus amigos estudarem, as novidades aparecem aqui.',
       socialFindFriends = 'Encontrar amigos',
+      friendsSearchHint = 'Buscar por nome público',
+      rankingTitle = 'Ranking',
+      rankingDivision = '5º ano · 1ª divisão',
+      rankingStudentCount = '20 alunos nesta divisão',
+      rankingNextDivision = 'Faltam 120 XP para subir de divisão.',
       socialRequiresAccount =
           'Social, Amigos e Ranking ficam disponíveis depois que você salvar seu progresso com uma conta.',
       exploreHint = 'Busque uma matéria ou conteúdo',
@@ -35,6 +41,27 @@ abstract final class AppStrings {
       exploreFilterAllYears = 'Todos',
       start = 'Começar',
       temporaryAccount = 'Conta temporária',
+      saveMyProgress = 'Salvar meu progresso',
+      createEurekaAccount = 'Criar conta Eureka',
+      createEurekaAccountDescription = 'Salve seu progresso na nuvem, acesse de outros dispositivos e mantenha seus dados seguros.',
+      connectedAccount = 'Conta conectada',
+      continueWithGoogle = 'Continuar com Google',
+      continueWithApple = 'Continuar com Apple',
+      continueWithoutAccount = 'Agora não',
+      authUnavailable = 'A entrada com conta ainda não está disponível.',
+      authTermsPrefix = 'Ao continuar, você concorda com os ',
+      termsOfUse = 'Termos de Uso',
+      privacyPolicy = 'Política de Privacidade',
+      andLabel = ' e a ',
+      signOut = 'Sair',
+      signOutTitle = 'Sair da conta?',
+      signOutDescription = 'Seu progresso continuará disponível neste aparelho.',
+      stayConnected = 'Continuar conectado',
+      preferences = 'Preferências',
+      narrationPreference = 'Leitura em voz alta',
+      narrationPreferenceDescription = 'Permitir narração dos conteúdos.',
+      reducedMotionPreference = 'Reduzir movimentos',
+      reducedMotionPreferenceDescription = 'Diminuir animações não essenciais.',
       selectToReview = 'Selecionar para revisar',
       startActivity = 'Começar atividade',
       checkAnswer = 'Verificar',
@@ -78,6 +105,7 @@ abstract final class AppStrings {
       simulationBySubject = 'Por matéria',
       simulationByContent = 'Por conteúdo',
       simulationReviewAnswers = 'Revisar respostas',
+      simulationReviewContent = 'Revisar conteúdo',
       simulationAnother = 'Fazer outro simulado',
       simulationExcellent = 'Excelente resultado.',
       simulationWellDone = 'Mandou bem.',
@@ -164,15 +192,58 @@ abstract final class AppStrings {
 
   static String lessonPage(int current, int total, String label) =>
       '$current de $total - $label';
+  static String loginTitle(LoginContext loginContext) => switch (loginContext) {
+    LoginContext.saveProgress => 'Salve seu progresso',
+    LoginContext.social => 'Entre para ver seus amigos',
+    LoginContext.ranking => 'Entre para participar do ranking',
+    LoginContext.friends => 'Entre para adicionar amigos',
+    LoginContext.sync => 'Continue em qualquer aparelho',
+    LoginContext.profile => 'Entre no Eureka',
+  };
+  static String loginDescription(
+    LoginContext loginContext,
+  ) => switch (loginContext) {
+    LoginContext.saveProgress =>
+      'Entre para não perder seu histórico e continuar em outros aparelhos.',
+    LoginContext.social =>
+      'O Social fica disponível quando você entra no Eureka.',
+    LoginContext.ranking =>
+      'Salve seu progresso e compare sua evolução com alunos do seu ano.',
+    LoginContext.friends =>
+      'Sua conta mantém suas amizades e progresso sincronizados.',
+    LoginContext.sync || LoginContext.profile =>
+      'Salve suas atividades e continue de onde parou em qualquer aparelho.',
+  };
   static String openSection(String label) => 'Abrir $label';
+  static String addFriend(String name) => 'Adicionar $name';
+  static String friendSummary(int schoolYear, int xp) =>
+      '$schoolYearº ano · $xp XP';
   static String selectedContents(int count) =>
       count == 1 ? '1 conteúdo selecionado' : '$count conteúdos selecionados';
+  static String simulationInsufficientQuestions(int requested, int available) =>
+      'Há $available questões disponíveis para esta seleção, mas você escolheu '
+      '$requested. Selecione mais conteúdos ou reduza a quantidade.';
   static String simulationConfirmation(
     int questions,
     String subjects,
     int minutes,
   ) => '$questions questões\n$subjects\n$minutes minutos';
   static String remainingTime(String value) => 'Tempo restante: $value';
+  static String remainingTimeSemantics(Duration duration) {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    final seconds = duration.inSeconds.remainder(60);
+    final parts = <String>[];
+    if (hours > 0) parts.add(hours == 1 ? '1 hora' : '$hours horas');
+    if (minutes > 0) {
+      parts.add(minutes == 1 ? '1 minuto' : '$minutes minutos');
+    }
+    if (seconds > 0 || parts.isEmpty) {
+      parts.add(seconds == 1 ? '1 segundo' : '$seconds segundos');
+    }
+    return 'Tempo restante: ${parts.join(' e ')}';
+  }
+
   static String unansweredWarning(int count) => count == 1
       ? 'Você deixou 1 questão em branco.'
       : 'Você deixou $count questões em branco.';

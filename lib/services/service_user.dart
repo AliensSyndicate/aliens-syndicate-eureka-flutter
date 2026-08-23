@@ -1,10 +1,9 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import '../interfaces/repository_user.dart';
 import '../models/model_user.dart';
 
 class UserService {
-  UserService(this._box);
-  final Box<dynamic> _box;
-  static const _key = 'current_user';
+  UserService(this._repository);
+  final UserRepository _repository;
   static const temporaryUser = AppUser(
     id: 'local_test_user',
     displayName: 'Explorador',
@@ -12,9 +11,7 @@ class UserService {
     isTemporary: true,
   );
   AppUser loadCurrentUser() {
-    final stored = _box.get(_key);
-    if (stored is Map) return AppUser.fromMap(stored);
-    return temporaryUser;
+    return _repository.loadCurrentUser() ?? temporaryUser;
   }
 
   bool get isAuthenticated => !loadCurrentUser().isTemporary;

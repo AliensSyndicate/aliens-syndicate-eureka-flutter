@@ -8,8 +8,10 @@ import '../../app/components/app_home_bar.dart';
 import '../../app/navigation/navigation_router.dart';
 import '../../config/config_product.dart';
 import '../../controllers/controller_home.dart';
+import '../../enums/login_context.dart';
 import '../../enums/learning_mode.dart';
 import '../../l10n/app_strings.dart';
+import '../../models/auth/model_login_request.dart';
 import '../../models/content/model_content_manifest.dart';
 import '../../models/model_lesson.dart';
 import '../../services/service_registry.dart';
@@ -17,6 +19,7 @@ import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
 import 'widgets/widget_continue_learning_card.dart';
 import 'widgets/widget_home_cards_skeleton.dart';
+import 'widgets/widget_login.dart';
 import 'widgets/widget_recommendation_card.dart';
 
 class PageHome extends StatefulWidget {
@@ -64,8 +67,15 @@ class _PageHomeState extends State<PageHome> {
                   schoolYear,
                 )) {
                   if (lesson.id == savedProgress.lastLessonId) {
-                    lastSubject = subject;
-                    lastLesson = lesson;
+                    final session = ServiceRegistry.progress.loadLessonSession(
+                      lesson.id,
+                    );
+                    if (!session.completed &&
+                        (session.answers.isNotEmpty ||
+                            session.currentPage > 0)) {
+                      lastSubject = subject;
+                      lastLesson = lesson;
+                    }
                   }
                 }
               }
@@ -82,6 +92,10 @@ class _PageHomeState extends State<PageHome> {
                   bottom: UiSpacing.pageVertical,
                 ),
                 children: [
+                  if (!ServiceRegistry.user.isAuthenticated) ...[
+                    LoginCard(onTap: _openLogin),
+                    const SizedBox(height: UiSpacing.sectionSpacing),
+                  ],
                   if (recommendation != null) ...[
                     Text(AppStrings.recommendedForYou, style: UiText.h4),
                     const SizedBox(height: UiSpacing.sm),
@@ -150,6 +164,17 @@ class _PageHomeState extends State<PageHome> {
           ),
         ],
       );
+
+  Future<void> _openLogin() async {
+    await context.pushNamed(
+      AppRoute.auth,
+      extra: const LoginRequest(
+        context: LoginContext.saveProgress,
+        returnLocation: '/home',
+      ),
+    );
+    if (mounted) setState(() {});
+  }
 
   Future<void> _continueLesson(
     Lesson lesson, {

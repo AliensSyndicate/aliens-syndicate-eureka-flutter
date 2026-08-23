@@ -2,6 +2,7 @@ import '../enums/learning_mode.dart';
 import '../models/model_lesson.dart';
 import '../models/model_question.dart';
 import '../models/model_lesson_session.dart';
+import '../models/model_activity_result.dart';
 import '../services/service_answer.dart';
 import '../services/service_progress.dart';
 import '../services/service_question_selection.dart';
@@ -131,13 +132,33 @@ class LessonController {
     ),
   );
 
-  Future<void> complete() async {
+  Future<void> complete({
+    Duration duration = Duration.zero,
+    DateTime? now,
+  }) async {
     if (_completed) return;
     _completed = true;
     await _persist();
     if (mode == LearningMode.journey) {
       await _progressService.completeLesson(lesson.id, earnedXp);
     }
+    final completedAt = now ?? DateTime.now();
+    await _progressService.saveActivityResult(
+      ActivityResultSnapshot(
+        attemptId: '${lesson.id}-${completedAt.microsecondsSinceEpoch}',
+        lessonId: lesson.id,
+        lessonTitle: lesson.title,
+        subjectId: lesson.subject.name,
+        activityVersion: lesson.activityVersion,
+        questionIds: _questions.map((question) => question.id).toList(),
+        correctAnswers: correctAnswers,
+        totalQuestions: totalQuestions,
+        earnedXp: earnedXp,
+        duration: duration.isNegative ? Duration.zero : duration,
+        reviewTopics: reviewTopics,
+        completedAt: completedAt,
+      ),
+    );
   }
 
   Future<void> retry() async {

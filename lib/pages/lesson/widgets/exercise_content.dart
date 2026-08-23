@@ -17,6 +17,7 @@ class ExerciseContent extends StatefulWidget {
     required this.primaryColor,
     this.notice,
     this.narrationController,
+    this.narrationEnabled = true,
     super.key,
   });
 
@@ -25,6 +26,7 @@ class ExerciseContent extends StatefulWidget {
   final Color primaryColor;
   final String? notice;
   final LessonNarrationController? narrationController;
+  final bool narrationEnabled;
 
   @override
   State<ExerciseContent> createState() => _ExerciseContentState();
@@ -64,45 +66,52 @@ class _ExerciseContentState extends State<ExerciseContent> {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      AnimatedBuilder(
-        animation: narrationController,
-        builder: (context, child) {
-          final playing =
-              narrationController.state == LessonNarrationState.playing;
-          final actionLabel = playing
-              ? AppStrings.pauseLessonAudio
-              : AppStrings.playLessonAudio;
-          return Row(
-            children: [
-              Expanded(
-                child: Text(
-                  widget.title,
-                  style: UiText.h5.copyWith(color: widget.primaryColor),
+      if (widget.narrationEnabled)
+        AnimatedBuilder(
+          animation: narrationController,
+          builder: (context, child) {
+            final playing =
+                narrationController.state == LessonNarrationState.playing;
+            final actionLabel = playing
+                ? AppStrings.pauseLessonAudio
+                : AppStrings.playLessonAudio;
+            return Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.title,
+                    style: UiText.h5.copyWith(color: widget.primaryColor),
+                  ),
                 ),
-              ),
-              const SizedBox(width: UiSpacing.sm),
-              IconButton(
-                key: const ValueKey('lesson-narration-toggle'),
-                tooltip: actionLabel,
-                constraints: const BoxConstraints.tightFor(
-                  width: UiSize.touchTarget,
-                  height: UiSize.touchTarget,
+                const SizedBox(width: UiSpacing.sm),
+                IconButton(
+                  key: const ValueKey('lesson-narration-toggle'),
+                  tooltip: actionLabel,
+                  constraints: const BoxConstraints.tightFor(
+                    width: UiSize.touchTarget,
+                    height: UiSize.touchTarget,
+                  ),
+                  onPressed: () =>
+                      narrationController.toggle(widget.description),
+                  icon: playing
+                      ? UiIcon.pause(
+                          size: UiSize.iconMd,
+                          color: widget.primaryColor,
+                        )
+                      : UiIcon.play(
+                          size: UiSize.iconMd,
+                          color: widget.primaryColor,
+                        ),
                 ),
-                onPressed: () => narrationController.toggle(widget.description),
-                icon: playing
-                    ? UiIcon.pause(
-                        size: UiSize.iconMd,
-                        color: widget.primaryColor,
-                      )
-                    : UiIcon.play(
-                        size: UiSize.iconMd,
-                        color: widget.primaryColor,
-                      ),
-              ),
-            ],
-          );
-        },
-      ),
+              ],
+            );
+          },
+        )
+      else
+        Text(
+          widget.title,
+          style: UiText.h5.copyWith(color: widget.primaryColor),
+        ),
       const SizedBox(height: UiSpacing.xs),
       Text(widget.description, style: UiText.p),
       if (widget.notice != null) ...[

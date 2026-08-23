@@ -5,6 +5,7 @@ import '../../ui/ui_color.dart';
 import '../../ui/ui_icon.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
+import '../../l10n/app_strings.dart';
 import 'widgets/widget_social_avatar.dart';
 
 class PageFriends extends StatefulWidget {
@@ -33,7 +34,7 @@ class _PageFriendsState extends State<PageFriends> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Amigos')),
+    appBar: AppBar(title: const Text(AppStrings.socialFriends)),
     body: SafeArea(
       child: Column(
         children: [
@@ -43,7 +44,7 @@ class _PageFriendsState extends State<PageFriends> {
               onChanged: _search,
               style: UiText.p,
               decoration: InputDecoration(
-                hintText: 'Buscar por nome público',
+                hintText: AppStrings.friendsSearchHint,
                 prefixIcon: UiIcon.search(color: UiColor.textSecondary),
               ),
             ),
@@ -62,11 +63,11 @@ class _PageFriendsState extends State<PageFriends> {
                   leading: SocialAvatar(user: user),
                   title: Text(user.displayName, style: UiText.h6),
                   subtitle: Text(
-                    '${user.schoolYear}º ano · ${user.xp} XP',
+                    AppStrings.friendSummary(user.schoolYear, user.xp),
                     style: UiText.label,
                   ),
                   trailing: IconButton(
-                    tooltip: 'Adicionar ${user.displayName}',
+                    tooltip: AppStrings.addFriend(user.displayName),
                     onPressed: () {},
                     icon: UiIcon.group(color: UiColor.accent),
                   ),

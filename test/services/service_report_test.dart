@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:eureka/data/local/hive_user_repository.dart';
 import 'package:eureka/interfaces/repository_report.dart';
 import 'package:eureka/models/model_report.dart';
 import 'package:eureka/services/service_report.dart';
@@ -16,7 +17,7 @@ void main() {
     tempDirectory = Directory.systemTemp.createTempSync('eureka_report_test_');
     Hive.init(tempDirectory.path);
     box = await Hive.openBox<dynamic>('user_report_test');
-    userService = UserService(box);
+    userService = UserService(HiveUserRepository(box));
   });
 
   tearDownAll(() async {

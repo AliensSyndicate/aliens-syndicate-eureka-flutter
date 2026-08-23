@@ -230,6 +230,7 @@ class _PageLessonState extends State<PageLesson> {
         description: _contentDescription(structured),
         primaryColor: subjectColor,
         narrationController: narrationController,
+        narrationEnabled: ServiceRegistry.preferences.load().narrationEnabled,
         notice: widget.mode != LearningMode.journey
             ? AppStrings.noXpOutsideJourney
             : null,
@@ -322,7 +323,8 @@ class _PageLessonState extends State<PageLesson> {
   Future<void> _finishLesson() async {
     if (finishing || !controller.canOpenSummary) return;
     setState(() => finishing = true);
-    await controller.complete();
+    final duration = DateTime.now().difference(startedAt);
+    await controller.complete(duration: duration);
     if (!mounted) return;
     context.pushReplacementNamed(
       AppRoute.activityResult,
@@ -332,7 +334,7 @@ class _PageLessonState extends State<PageLesson> {
           correctAnswers: controller.correctAnswers,
           totalQuestions: controller.totalQuestions,
           earnedXp: controller.earnedXp,
-          duration: DateTime.now().difference(startedAt),
+          duration: duration,
           reviewTopics: controller.reviewTopics,
         ),
       ),
@@ -374,7 +376,9 @@ class _PageLessonState extends State<PageLesson> {
   }
 
   void _goToPage(int page) {
-    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final reduceMotion =
+        MediaQuery.disableAnimationsOf(context) ||
+        ServiceRegistry.preferences.load().reducedMotion;
     if (reduceMotion) {
       pageController.jumpToPage(page);
     } else {

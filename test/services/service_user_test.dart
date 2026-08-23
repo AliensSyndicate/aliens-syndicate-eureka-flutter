@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:eureka/data/local/hive_user_repository.dart';
 import 'package:eureka/models/model_user.dart';
 import 'package:eureka/services/service_user.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,7 +24,7 @@ void main() {
 
   setUp(() async {
     await box.clear();
-    service = UserService(box);
+    service = UserService(HiveUserRepository(box));
   });
 
   test('usuário temporário não está autenticado', () {

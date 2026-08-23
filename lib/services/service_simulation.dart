@@ -31,39 +31,75 @@ class SimulationService {
     List<Lesson> lessons, {
     required int count,
   }) {
-    final pools = <List<SimulationQuestion>>[];
+    if (count <= 0) throw const SimulationCapacityException(0, 0);
+    final bySubject = <SubjectType, Map<String, List<SimulationQuestion>>>{};
+    final seenIds = <String>{};
     for (final lesson in lessons) {
-      final source = lesson.extraQuestions.isNotEmpty
-          ? lesson.extraQuestions
-          : lesson.questions;
+      final source = lesson.extraQuestions;
       final pool =
           source
-              .where((question) => compatibleTypes.contains(question.type))
+              .where(
+                (question) =>
+                    question.usage == QuestionUsage.simulatorExplore &&
+                    compatibleTypes.contains(question.type) &&
+                    seenIds.add(question.id),
+              )
               .map(
                 (question) => SimulationQuestion(
                   question: question,
                   subject: lesson.subject,
                   subjectTitle: _subjectTitle(lesson.subject),
                   contentTitle: lesson.title,
+                  contentId: lesson.id,
                 ),
               )
               .toList()
             ..shuffle(_random);
-      if (pool.isNotEmpty) pools.add(pool);
-    }
-    pools.shuffle(_random);
-    final selected = <SimulationQuestion>[];
-    var round = 0;
-    while (selected.length < count) {
-      var added = false;
-      for (final pool in pools) {
-        if (round < pool.length && selected.length < count) {
-          selected.add(pool[round]);
-          added = true;
-        }
+      if (pool.isNotEmpty) {
+        bySubject
+            .putIfAbsent(lesson.subject, () => {})
+            .putIfAbsent(lesson.id, () => [])
+            .addAll(pool);
       }
-      if (!added) break;
-      round++;
+    }
+    final capacity = bySubject.values
+        .expand((contents) => contents.values)
+        .fold<int>(0, (total, pool) => total + pool.length);
+    if (capacity < count) {
+      throw SimulationCapacityException(count, capacity);
+    }
+
+    final subjects = bySubject.keys.toList()..shuffle(_random);
+    final contentOrder = <SubjectType, List<List<SimulationQuestion>>>{};
+    final contentCursor = <SubjectType, int>{};
+    for (final contents in bySubject.values) {
+      for (final pool in contents.values) {
+        pool.shuffle(_random);
+      }
+    }
+    for (final subject in subjects) {
+      contentOrder[subject] = bySubject[subject]!.values.toList()
+        ..shuffle(_random);
+      contentCursor[subject] = 0;
+    }
+    final selected = <SimulationQuestion>[];
+    while (selected.length < count) {
+      for (final subject in subjects) {
+        if (selected.length == count) break;
+        final pools = contentOrder[subject]!;
+        if (pools.every((pool) => pool.isEmpty)) continue;
+        var cursor = contentCursor[subject]!;
+        while (pools[cursor].isEmpty) {
+          cursor = (cursor + 1) % pools.length;
+        }
+        selected.add(pools[cursor].removeLast());
+        contentCursor[subject] = (cursor + 1) % pools.length;
+      }
+      if (subjects.every(
+        (subject) => bySubject[subject]!.values.every((pool) => pool.isEmpty),
+      )) {
+        break;
+      }
     }
     selected.shuffle(_random);
     return selected;
@@ -101,13 +137,14 @@ class SimulationService {
     final elapsed = (finishedAt ?? DateTime.now()).difference(
       session.startedAt,
     );
+    final safeElapsed = elapsed.isNegative ? Duration.zero : elapsed;
     return SimulationResult(
       correctAnswers: session.questions.where(isCorrect).length,
       totalQuestions: session.questions.length,
       unansweredQuestions: session.questions
           .where((item) => !session.answers.containsKey(item.question.id))
           .length,
-      durationUsed: elapsed > maximum ? maximum : elapsed,
+      durationUsed: safeElapsed > maximum ? maximum : safeElapsed,
       bySubject: breakdown((item) => item.subjectTitle),
       byContent: byContent,
       reviewTopics: byContent
@@ -160,4 +197,11 @@ class SimulationService {
     (subject) => subject.name == id,
     orElse: () => SubjectType.mathematics,
   );
+}
+
+class SimulationCapacityException implements Exception {
+  const SimulationCapacityException(this.requested, this.available);
+
+  final int requested;
+  final int available;
 }

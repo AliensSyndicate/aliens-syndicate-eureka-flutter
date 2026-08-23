@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:eureka/data/local/hive_progress_repository.dart';
 import 'package:eureka/controllers/controller_lesson.dart';
 import 'package:eureka/data/seed/seed_content.dart';
 import 'package:eureka/enums/learning_mode.dart';
@@ -24,7 +25,7 @@ void main() {
     mode: LearningMode.journey,
     answerService: AnswerService(),
     scoringService: ScoringService(),
-    progressService: ProgressService(box),
+    progressService: ProgressService(HiveProgressRepository(box)),
     questionSelectionService: QuestionSelectionService(random: Random(42)),
   );
   setUpAll(() async {
@@ -90,7 +91,7 @@ void main() {
       mode: LearningMode.journey,
       answerService: AnswerService(),
       scoringService: ScoringService(),
-      progressService: ProgressService(box),
+      progressService: ProgressService(HiveProgressRepository(box)),
       questionSelectionService: QuestionSelectionService(random: Random(seed)),
     );
 
@@ -118,9 +119,9 @@ void main() {
     }
 
     await controller.complete();
-    final firstProgress = ProgressService(box).load();
+    final firstProgress = ProgressService(HiveProgressRepository(box)).load();
     await controller.complete();
-    final secondProgress = ProgressService(box).load();
+    final secondProgress = ProgressService(HiveProgressRepository(box)).load();
 
     expect(controller.isCompleted, isTrue);
     expect(secondProgress.xp, firstProgress.xp);
@@ -204,7 +205,7 @@ void main() {
       mode: mode,
       answerService: AnswerService(),
       scoringService: ScoringService(),
-      progressService: ProgressService(box),
+      progressService: ProgressService(HiveProgressRepository(box)),
       questionSelectionService: QuestionSelectionService(random: Random(1)),
     );
 
@@ -247,7 +248,7 @@ void main() {
       mode: LearningMode.journey,
       answerService: AnswerService(),
       scoringService: ScoringService(),
-      progressService: ProgressService(box),
+      progressService: ProgressService(HiveProgressRepository(box)),
       questionSelectionService: QuestionSelectionService(random: Random(1)),
     );
 

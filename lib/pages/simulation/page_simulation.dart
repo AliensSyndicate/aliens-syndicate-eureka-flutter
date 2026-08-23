@@ -10,7 +10,9 @@ import '../../enums/subject_type.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/content/model_content_manifest.dart';
 import '../../models/model_lesson.dart';
+import '../../models/model_simulation.dart';
 import '../../services/service_registry.dart';
+import '../../services/service_simulation.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_icon.dart';
 import '../../ui/ui_size.dart';
@@ -24,7 +26,7 @@ class PageSimulation extends StatefulWidget {
 }
 
 class _PageSimulationState extends State<PageSimulation> {
-  late final Future<List<SubjectContentManifest>> _subjects;
+  late Future<List<SubjectContentManifest>> _subjects;
   final _selectedSubjects = <SubjectType>{};
   final _selectedLessonIds = <String>{};
   int _questionCount = 10;
@@ -35,17 +37,22 @@ class _PageSimulationState extends State<PageSimulation> {
   @override
   void initState() {
     super.initState();
-    _subjects = ServiceRegistry.content.loadSubjectsForYear(
-      ServiceRegistry.user.loadCurrentUser().schoolYear,
-    );
+    _loadSubjects();
     final saved = ServiceRegistry.simulationRepository.loadActive();
     if (saved != null) {
       _savedController = SimulationController(
         repository: ServiceRegistry.simulationRepository,
         service: ServiceRegistry.simulation,
         session: saved,
+        analytics: ServiceRegistry.analytics,
       );
     }
+  }
+
+  void _loadSubjects() {
+    _subjects = ServiceRegistry.content.loadSubjectsForYear(
+      ServiceRegistry.user.loadCurrentUser().schoolYear,
+    );
   }
 
   bool get _isValid =>
@@ -62,7 +69,7 @@ class _PageSimulationState extends State<PageSimulation> {
           if (snapshot.hasError || snapshot.data == null) {
             return _SimulationMessage(
               message: AppStrings.contentUnavailable,
-              onPressed: () => setState(() {}),
+              onPressed: () => setState(_loadSubjects),
             );
           }
           final subjects = snapshot.data!;
@@ -335,6 +342,7 @@ class _PageSimulationState extends State<PageSimulation> {
       final controller = SimulationController(
         repository: ServiceRegistry.simulationRepository,
         service: ServiceRegistry.simulation,
+        analytics: ServiceRegistry.analytics,
       );
       await controller.start(questions, Duration(minutes: _durationMinutes));
       if (!mounted) return;
@@ -342,6 +350,15 @@ class _PageSimulationState extends State<PageSimulation> {
         AppRoute.simulationQuestion,
         extra: SimulationRouteArguments(controller),
       );
+    } on SimulationCapacityException catch (error) {
+      if (mounted) {
+        await _showUnavailable(
+          AppStrings.simulationInsufficientQuestions(
+            error.requested,
+            error.available,
+          ),
+        );
+      }
     } on Object {
       if (mounted) await _showUnavailable();
     } finally {
@@ -352,8 +369,7 @@ class _PageSimulationState extends State<PageSimulation> {
   Future<void> _resumeSaved() async {
     final controller = _savedController!;
     if (controller.session.remainingAt(DateTime.now()) == Duration.zero) {
-      final result = controller.result();
-      await controller.complete();
+      final result = await controller.complete(expired: true);
       if (!mounted) return;
       context.pushNamed(
         AppRoute.simulationResult,
@@ -369,12 +385,15 @@ class _PageSimulationState extends State<PageSimulation> {
       AppRoute.simulationQuestion,
       extra: SimulationRouteArguments(controller),
     );
+    if (mounted && controller.session.status != SimulationStatus.active) {
+      setState(() => _savedController = null);
+    }
   }
 
-  Future<void> _showUnavailable() => AppBottomSheet.show<void>(
+  Future<void> _showUnavailable([String? message]) => AppBottomSheet.show<void>(
     context,
     title: AppStrings.simulation,
-    content: const Text(AppStrings.contentUnavailable),
+    content: Text(message ?? AppStrings.contentUnavailable),
     actions: [
       AppButton(
         label: AppStrings.finish,

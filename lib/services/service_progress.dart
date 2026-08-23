@@ -1,53 +1,24 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import '../interfaces/repository_progress.dart';
 import '../models/model_progress.dart';
 import '../models/model_lesson.dart';
 import '../models/model_lesson_session.dart';
+import '../models/model_activity_result.dart';
 import 'service_subject_progress.dart';
 
 class ProgressService {
-  ProgressService(this._box);
-  final Box<dynamic> _box;
-  Future<void> _pendingLessonSave = Future<void>.value();
-  static const _lessonSessionsKey = 'lesson_sessions';
+  ProgressService(this._repository);
+  final ProgressRepository _repository;
 
   LessonSession loadLessonSession(String lessonId) {
-    final sessions = _box.get(_lessonSessionsKey);
-    if (sessions is! Map || sessions[lessonId] is! Map) {
-      return const LessonSession();
-    }
-    return LessonSession.fromMap(sessions[lessonId] as Map);
+    return _repository.loadLessonSession(lessonId);
   }
 
   Future<void> saveLessonSession(String lessonId, LessonSession session) {
-    final snapshot = session.toMap();
-    _pendingLessonSave = _pendingLessonSave.then((_) async {
-      final stored = _box.get(_lessonSessionsKey);
-      final sessions = stored is Map
-          ? Map<String, dynamic>.from(stored)
-          : <String, dynamic>{};
-      sessions[lessonId] = snapshot;
-      await _box.putAll({
-        _lessonSessionsKey: sessions,
-        'last_lesson_id': lessonId,
-      });
-    });
-    return _pendingLessonSave;
+    return _repository.saveLessonSession(lessonId, session);
   }
 
   UserProgress load() {
-    final rawXp = _box.get('xp', defaultValue: 0);
-    final rawCompleted = _box.get(
-      'completed_lessons',
-      defaultValue: <String>[],
-    );
-    final rawLastLesson = _box.get('last_lesson_id');
-    return UserProgress(
-      xp: rawXp is int ? rawXp : 0,
-      completedLessonIds: rawCompleted is List
-          ? rawCompleted.whereType<String>().toList()
-          : const [],
-      lastLessonId: rawLastLesson is String ? rawLastLesson : null,
-    );
+    return _repository.loadProgress();
   }
 
   int completionPercentage(List<Lesson> lessons) {
@@ -58,18 +29,13 @@ class ProgressService {
   }
 
   Map<String, int> loadDifficultyScores() {
-    final stored = _box.get('difficulty_subjects');
-    if (stored is! Map) return {};
-    return {
-      for (final entry in stored.entries)
-        if (entry.value is int) entry.key.toString(): entry.value as int,
-    };
+    return _repository.loadDifficultyScores();
   }
 
   Future<void> recordDifficulty(String subjectId) async {
     final scores = loadDifficultyScores();
     scores[subjectId] = (scores[subjectId] ?? 0) + 1;
-    await _box.put('difficulty_subjects', scores);
+    await _repository.saveDifficultyScores(scores);
   }
 
   Future<UserProgress> completeLesson(String lessonId, int earnedXp) async {
@@ -78,15 +44,18 @@ class ProgressService {
     final xp =
         current.xp +
         (current.completedLessonIds.contains(lessonId) ? 0 : earnedXp);
-    await _box.putAll({
-      'xp': xp,
-      'completed_lessons': ids,
-      'last_lesson_id': lessonId,
-    });
-    return UserProgress(
+    final updated = UserProgress(
       xp: xp,
       completedLessonIds: ids,
       lastLessonId: lessonId,
     );
+    await _repository.saveProgress(updated);
+    return updated;
   }
+
+  Future<void> saveActivityResult(ActivityResultSnapshot result) =>
+      _repository.saveActivityResult(result);
+
+  ActivityResultSnapshot? loadLatestActivityResult(String lessonId) =>
+      _repository.loadLatestActivityResult(lessonId);
 }

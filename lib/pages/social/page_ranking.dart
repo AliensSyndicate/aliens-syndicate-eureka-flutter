@@ -4,6 +4,7 @@ import '../../repositories/repository_mock_social.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
+import '../../l10n/app_strings.dart';
 import 'widgets/widget_social_avatar.dart';
 
 class PageRanking extends StatefulWidget {
@@ -24,7 +25,7 @@ class _PageRankingState extends State<PageRanking> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Ranking 2026')),
+    appBar: AppBar(title: const Text(AppStrings.rankingTitle)),
     body: SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -39,9 +40,9 @@ class _PageRankingState extends State<PageRanking> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('5º ano · 1ª divisão', style: UiText.h5),
+                Text(AppStrings.rankingDivision, style: UiText.h5),
                 const SizedBox(height: UiSpacing.xs),
-                Text('20 alunos nesta divisão', style: UiText.label),
+                Text(AppStrings.rankingStudentCount, style: UiText.label),
               ],
             ),
           ),
@@ -83,7 +84,7 @@ class _PageRankingState extends State<PageRanking> {
             color: UiColor.surface,
             padding: const EdgeInsets.all(UiSpacing.md),
             child: Text(
-              'Faltam 120 XP para subir de divisão.',
+              AppStrings.rankingNextDivision,
               style: UiText.p,
               textAlign: TextAlign.center,
             ),

@@ -1,7 +1,7 @@
 import '../enums/subject_type.dart';
 import 'model_question.dart';
 
-enum SimulationStatus { active, completed, abandoned }
+enum SimulationStatus { active, completed, expired, abandoned }
 
 class SimulationConfiguration {
   const SimulationConfiguration({
@@ -22,11 +22,13 @@ class SimulationQuestion {
     required this.subject,
     required this.subjectTitle,
     required this.contentTitle,
+    this.contentId = '',
   });
   final Question question;
   final SubjectType subject;
   final String subjectTitle;
   final String contentTitle;
+  final String contentId;
 }
 
 class SimulationSession {
@@ -105,4 +107,16 @@ class SimulationResult {
   int get incorrectAnswers =>
       totalQuestions - correctAnswers - unansweredQuestions;
   double get score => totalQuestions == 0 ? 0 : correctAnswers / totalQuestions;
+}
+
+class CompletedSimulation {
+  const CompletedSimulation({
+    required this.session,
+    required this.result,
+    required this.completedAt,
+  });
+
+  final SimulationSession session;
+  final SimulationResult result;
+  final DateTime completedAt;
 }

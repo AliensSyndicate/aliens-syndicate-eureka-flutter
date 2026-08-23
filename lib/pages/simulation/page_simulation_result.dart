@@ -6,6 +6,8 @@ import '../../app/navigation/navigation_router.dart';
 import '../../controllers/controller_simulation.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/model_simulation.dart';
+import '../../enums/learning_mode.dart';
+import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
@@ -33,7 +35,7 @@ class PageSimulationResult extends StatelessWidget {
             const Text(AppStrings.simulationTimeEnded, style: UiText.label),
             const SizedBox(height: UiSpacing.sm),
           ],
-          Text('$percent%', style: UiText.h1),
+          Text('$percent%', style: UiText.h2),
           const SizedBox(height: UiSpacing.xs),
           Text(_resultMessage(percent), style: UiText.h5),
           const SizedBox(height: UiSpacing.xl),
@@ -77,6 +79,11 @@ class PageSimulationResult extends StatelessWidget {
               AppStrings.simulationImprove(result.reviewTopics.first),
               style: UiText.p.copyWith(color: UiColor.warning),
             ),
+            const SizedBox(height: UiSpacing.sm),
+            TextButton(
+              onPressed: () => _reviewWeakContent(context),
+              child: const Text(AppStrings.simulationReviewContent),
+            ),
           ],
           const SizedBox(height: UiSpacing.xxl),
           AppButton(
@@ -103,6 +110,27 @@ class PageSimulationResult extends StatelessWidget {
       : AppStrings.simulationAlmostThere;
 
   static String _minutes(Duration duration) => '${duration.inMinutes} min';
+
+  Future<void> _reviewWeakContent(BuildContext context) async {
+    final weakTitle = result.reviewTopics.first;
+    final item = controller.session.questions.firstWhere(
+      (question) => question.contentTitle == weakTitle,
+    );
+    if (item.contentId.isEmpty) return;
+    final year = ServiceRegistry.user.loadCurrentUser().schoolYear;
+    final lesson = await ServiceRegistry.content.findLessonForYear(
+      item.contentId,
+      year,
+    );
+    if (lesson == null || !context.mounted) return;
+    await context.pushNamed(
+      AppRoute.lessonLoading,
+      extra: LessonLoadingRouteArguments(
+        lesson: lesson,
+        mode: LearningMode.review,
+      ),
+    );
+  }
 }
 
 class _Metric extends StatelessWidget {
@@ -110,8 +138,8 @@ class _Metric extends StatelessWidget {
   final String value;
   final String label;
   @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 126,
+  Widget build(BuildContext context) => ConstrainedBox(
+    constraints: const BoxConstraints(minWidth: 112, maxWidth: 180),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

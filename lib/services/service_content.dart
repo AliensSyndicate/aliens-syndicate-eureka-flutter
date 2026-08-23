@@ -56,6 +56,16 @@ class ContentService {
     return getSubjectsForYear(year);
   }
 
+  Future<Lesson?> findLessonForYear(String lessonId, int year) async {
+    final subjects = await loadSubjectsForYear(year);
+    for (final subject in subjects) {
+      for (final lesson in subject.availableLessonsForYear(year)) {
+        if (lesson.id == lessonId) return lesson;
+      }
+    }
+    return null;
+  }
+
   Future<List<SubjectContentManifest>> loadSubjects() async {
     await syncManifest();
     return getSubjects();

@@ -102,7 +102,9 @@ class _PageSimulationQuestionState extends State<PageSimulationQuestion>
           ),
           actions: [
             Semantics(
-              label: AppStrings.remainingTime(_formatDuration(remaining)),
+              container: true,
+              excludeSemantics: true,
+              label: AppStrings.remainingTimeSemantics(remaining),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: UiSpacing.md),
                 child: Center(
@@ -259,8 +261,7 @@ class _PageSimulationQuestionState extends State<PageSimulationQuestion>
     if (_finishing) return;
     _finishing = true;
     _timer?.cancel();
-    final result = controller.result();
-    await controller.complete();
+    final result = await controller.complete(expired: expired);
     if (!mounted) return;
     context.pushReplacementNamed(
       AppRoute.simulationResult,

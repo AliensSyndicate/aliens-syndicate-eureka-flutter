@@ -9,7 +9,11 @@ import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
 import '../../services/service_registry.dart';
+import '../../config/config_product.dart';
 import '../../l10n/app_strings.dart';
+import '../../enums/login_context.dart';
+import '../../models/auth/model_login_request.dart';
+import '../auth/login_bottom_sheet.dart';
 import 'widgets/widget_social_avatar.dart';
 import 'widgets/widget_social_post.dart';
 import 'widgets/widget_social_skeleton.dart';
@@ -23,22 +27,43 @@ class PageSocial extends StatefulWidget {
 
 class _PageSocialState extends State<PageSocial> {
   SocialController? controller;
-  late final bool socialAvailable;
+  late bool socialAvailable;
   late final ScrollController scrollController;
   @override
   void initState() {
     super.initState();
     socialAvailable =
-        widget.controller != null || ServiceRegistry.user.isAuthenticated;
+        widget.controller != null ||
+        (ProductConfig.socialEnabled && ServiceRegistry.user.isAuthenticated);
     if (socialAvailable) {
       controller =
           widget.controller ?? SocialController(MockSocialRepository());
+    }
+    if (!socialAvailable && ProductConfig.authenticationEnabled) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _requestLogin());
     }
     scrollController = ScrollController()..addListener(_onScroll);
     controller?.addListener(_refresh);
     if (controller?.status == SocialFeedStatus.initial) {
       controller?.loadInitial();
     }
+  }
+
+  Future<void> _requestLogin() async {
+    if (!mounted) return;
+    final authenticated = await showLoginBottomSheet(
+      context,
+      const LoginRequest(
+        context: LoginContext.social,
+        returnLocation: '/social',
+      ),
+    );
+    if (!authenticated || !ProductConfig.socialEnabled || !mounted) return;
+    controller = SocialController(MockSocialRepository())
+      ..addListener(_refresh);
+    socialAvailable = true;
+    await controller!.loadInitial();
+    if (mounted) setState(() {});
   }
 
   void _refresh() {
@@ -60,7 +85,14 @@ class _PageSocialState extends State<PageSocial> {
   @override
   Widget build(BuildContext context) {
     if (!socialAvailable) {
-      return _SocialLocked(onTap: () => context.go('/home'));
+      return _SocialLocked(
+        onTap: ProductConfig.authenticationEnabled
+            ? _requestLogin
+            : () => context.go('/home'),
+        actionLabel: ProductConfig.authenticationEnabled
+            ? AppStrings.saveMyProgress
+            : AppStrings.backToHome,
+      );
     }
     return SafeArea(
       child: Column(
@@ -216,8 +248,9 @@ class _HeaderAction extends StatelessWidget {
 }
 
 class _SocialLocked extends StatelessWidget {
-  const _SocialLocked({required this.onTap});
+  const _SocialLocked({required this.onTap, required this.actionLabel});
   final VoidCallback onTap;
+  final String actionLabel;
 
   @override
   Widget build(BuildContext context) => SafeArea(
@@ -235,10 +268,7 @@ class _SocialLocked extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: UiSpacing.md),
-            TextButton(
-              onPressed: onTap,
-              child: const Text(AppStrings.backToHome),
-            ),
+            TextButton(onPressed: onTap, child: Text(actionLabel)),
           ],
         ),
       ),

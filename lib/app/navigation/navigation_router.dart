@@ -6,6 +6,9 @@ import '../../models/content/model_content_manifest.dart';
 import '../../models/model_lesson.dart';
 import '../../pages/explore/page_explore.dart';
 import '../../pages/home/page_home.dart';
+import '../../pages/auth/page_auth.dart';
+import '../../models/auth/model_login_request.dart';
+import '../../enums/login_context.dart';
 import '../../pages/lesson/page_lesson.dart';
 import '../../pages/lesson/page_lesson_loading.dart';
 import '../../pages/lesson/page_activity_result.dart';
@@ -23,6 +26,7 @@ import '../../pages/social/page_ranking.dart';
 import '../../pages/subject/page_subject_lessons.dart';
 import '../../ui/ui_motion.dart';
 import '../../services/service_registry.dart';
+import '../../config/config_product.dart';
 import 'navigation_app.dart';
 
 abstract final class AppRoute {
@@ -38,6 +42,7 @@ abstract final class AppRoute {
   static const lesson = 'lesson';
   static const lessonLoading = 'lessonLoading';
   static const activityResult = 'activityResult';
+  static const auth = 'auth';
   static const socialFriends = 'socialFriends';
   static const socialRanking = 'socialRanking';
 }
@@ -113,14 +118,20 @@ final GoRouter appRouter = GoRouter(
                   path: 'friends',
                   name: AppRoute.socialFriends,
                   redirect: (context, state) =>
-                      ServiceRegistry.user.isAuthenticated ? null : '/social',
+                      ProductConfig.socialEnabled &&
+                          ServiceRegistry.user.isAuthenticated
+                      ? null
+                      : '/social',
                   builder: (context, state) => const PageFriends(),
                 ),
                 GoRoute(
                   path: 'ranking',
                   name: AppRoute.socialRanking,
                   redirect: (context, state) =>
-                      ServiceRegistry.user.isAuthenticated ? null : '/social',
+                      ProductConfig.socialEnabled &&
+                          ServiceRegistry.user.isAuthenticated
+                      ? null
+                      : '/social',
                   builder: (context, state) => const PageRanking(),
                 ),
               ],
@@ -155,6 +166,18 @@ final GoRouter appRouter = GoRouter(
           ],
         ),
       ],
+    ),
+    GoRoute(
+      path: '/auth',
+      name: AppRoute.auth,
+      pageBuilder: (context, state) => _transitionPage(
+        state: state,
+        child: PageAuth(
+          request:
+              state.extra as LoginRequest? ??
+              const LoginRequest(context: LoginContext.profile),
+        ),
+      ),
     ),
     GoRoute(
       path: '/simulation/question',
