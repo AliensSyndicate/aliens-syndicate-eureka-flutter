@@ -22,7 +22,7 @@ import '../../ui/ui_spacing.dart';
 import '../auth/login_bottom_sheet.dart';
 import 'widgets/widget_continue_learning_card.dart';
 import 'widgets/widget_home_cards_skeleton.dart';
-import 'widgets/widget_login.dart';
+import 'widgets/widget_login_card.dart';
 import 'widgets/widget_planet_button.dart';
 import 'widgets/widget_recommendation_card.dart';
 
@@ -54,7 +54,7 @@ class _PageHomeState extends State<PageHome> {
     final progress = ServiceRegistry.progress.load();
     final isGuest = !ServiceRegistry.user.isAuthenticated;
     final topSafeArea = MediaQuery.of(context).padding.top;
-    final headerHeight = topSafeArea + UiSize.homeAppBarHeight + 92.0;
+    final headerHeight = topSafeArea + UiSize.homeAppBarHeight + 72.0;
 
     return Stack(
       children: [
@@ -83,10 +83,14 @@ class _PageHomeState extends State<PageHome> {
                 builder: (context, constraints) {
                   final w = constraints.maxWidth;
                   final availableHeight = constraints.maxHeight;
-                  final contentHeight =
-                      math.max(availableHeight - headerHeight, 560.0);
-                  final basePlanetSize =
-                      math.min(w * 0.36, contentHeight * 0.22);
+                  final contentHeight = math.max(
+                    availableHeight - headerHeight,
+                    560.0,
+                  );
+                  final basePlanetSize = math.min(
+                    w * 0.36,
+                    contentHeight * 0.22,
+                  );
 
                   final sizePortuguese = basePlanetSize * 1.05;
                   final sizeMathematics = basePlanetSize * 0.92;
@@ -114,8 +118,10 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: portuguese,
                                 size: sizePortuguese,
-                                progressText:
-                                    _progressFraction(portuguese, progress),
+                                progressText: _progressFraction(
+                                  portuguese,
+                                  progress,
+                                ),
                                 animationIndex: 0,
                                 onTap: () => _openSubject(portuguese),
                               ),
@@ -129,8 +135,10 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: mathematics,
                                 size: sizeMathematics,
-                                progressText:
-                                    _progressFraction(mathematics, progress),
+                                progressText: _progressFraction(
+                                  mathematics,
+                                  progress,
+                                ),
                                 animationIndex: 1,
                                 onTap: () => _openSubject(mathematics),
                               ),
@@ -144,8 +152,10 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: science,
                                 size: sizeScience,
-                                progressText:
-                                    _progressFraction(science, progress),
+                                progressText: _progressFraction(
+                                  science,
+                                  progress,
+                                ),
                                 animationIndex: 2,
                                 onTap: () => _openSubject(science),
                               ),
@@ -159,8 +169,10 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: geography,
                                 size: sizeGeography,
-                                progressText:
-                                    _progressFraction(geography, progress),
+                                progressText: _progressFraction(
+                                  geography,
+                                  progress,
+                                ),
                                 animationIndex: 3,
                                 onTap: () => _openSubject(geography),
                               ),
@@ -174,8 +186,10 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: history,
                                 size: sizeHistory,
-                                progressText:
-                                    _progressFraction(history, progress),
+                                progressText: _progressFraction(
+                                  history,
+                                  progress,
+                                ),
                                 animationIndex: 4,
                                 onTap: () => _openSubject(history),
                               ),
@@ -227,7 +241,7 @@ class _PageHomeState extends State<PageHome> {
                     if (!hasAnyCard) return const SizedBox.shrink();
 
                     return Container(
-                      height: 92.0,
+                      height: 72.0,
                       margin: EdgeInsets.zero,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
@@ -239,12 +253,13 @@ class _PageHomeState extends State<PageHome> {
                           if (isGuest) ...[
                             LoginCard(
                               onTap: () async {
-                                final authenticated = await showLoginBottomSheet(
-                                  context,
-                                  const LoginRequest(
-                                    context: LoginContext.saveProgress,
-                                  ),
-                                );
+                                final authenticated =
+                                    await showLoginBottomSheet(
+                                      context,
+                                      const LoginRequest(
+                                        context: LoginContext.saveProgress,
+                                      ),
+                                    );
                                 if (authenticated && mounted) {
                                   setState(() {});
                                 }

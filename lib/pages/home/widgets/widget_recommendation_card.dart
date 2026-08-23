@@ -16,7 +16,7 @@ class RecommendationCard extends StatelessWidget {
     required this.lesson,
     required this.onTap,
     this.width = 260.0,
-    this.height = 92.0,
+    this.height = 72.0,
     super.key,
   });
 
@@ -57,35 +57,33 @@ class RecommendationCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    AppStrings.recommendationTitle,
+                  Text.rich(
+                    TextSpan(
+                      style: UiText.h6.copyWith(
+                        fontSize: 15,
+                        color: UiColor.background,
+                        fontWeight: FontWeight.w800,
+                      ),
+                      children: [
+                        const TextSpan(text: AppStrings.recommendationTitle),
+                        TextSpan(
+                          text: ' • ${subject.title}',
+                        ),
+                      ],
+                    ),
                     maxLines: 1,
                     softWrap: false,
-                    style: UiText.label.copyWith(
-                      fontSize: 14,
-                      color: UiColor.background.withValues(alpha: .75),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subject.title,
-                    maxLines: 1,
-                    softWrap: false,
-                    style: UiText.h6.copyWith(
-                      fontSize: 17,
-                      color: UiColor.background,
-                      fontWeight: FontWeight.w800,
-                    ),
+                    overflow: TextOverflow.clip,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     lesson.title,
                     maxLines: 1,
                     softWrap: false,
+                    overflow: TextOverflow.clip,
                     style: UiText.label.copyWith(
-                      fontSize: 15,
-                      color: UiColor.background.withValues(alpha: .80),
+                      fontSize: 14,
+                      color: UiColor.background.withValues(alpha: .85),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
