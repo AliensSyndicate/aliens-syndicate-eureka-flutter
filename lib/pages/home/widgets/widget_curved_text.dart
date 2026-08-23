@@ -7,6 +7,7 @@ class CurvedText extends StatelessWidget {
     required this.textStyle,
     required this.radius,
     this.letterSpacing = 1.0,
+    this.isBottom = false,
     super.key,
   });
 
@@ -14,6 +15,7 @@ class CurvedText extends StatelessWidget {
   final TextStyle textStyle;
   final double radius;
   final double letterSpacing;
+  final bool isBottom;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,7 @@ class CurvedText extends StatelessWidget {
         textStyle: textStyle,
         radius: radius,
         letterSpacing: letterSpacing,
+        isBottom: isBottom,
       ),
     );
   }
@@ -35,12 +38,14 @@ class _CurvedTextPainter extends CustomPainter {
     required this.textStyle,
     required this.radius,
     required this.letterSpacing,
+    required this.isBottom,
   });
 
   final String text;
   final TextStyle textStyle;
   final double radius;
   final double letterSpacing;
+  final bool isBottom;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -64,7 +69,10 @@ class _CurvedTextPainter extends CustomPainter {
       totalAngle += angle;
     }
 
-    double currentAngle = -math.pi / 2 - (totalAngle / 2);
+    final startAngle = isBottom
+        ? (math.pi / 2) - (totalAngle / 2)
+        : (-math.pi / 2) - (totalAngle / 2);
+    double currentAngle = startAngle;
 
     for (var i = 0; i < characters.length; i++) {
       final painter = letterPainters[i];
@@ -76,7 +84,10 @@ class _CurvedTextPainter extends CustomPainter {
 
       canvas.save();
       canvas.translate(x, y);
-      canvas.rotate(midAngle + math.pi / 2);
+      final rotationAngle = isBottom
+          ? midAngle - (math.pi / 2)
+          : midAngle + (math.pi / 2);
+      canvas.rotate(rotationAngle);
       painter.paint(canvas, Offset(-painter.width / 2, -painter.height / 2));
       canvas.restore();
 
@@ -89,5 +100,6 @@ class _CurvedTextPainter extends CustomPainter {
       oldDelegate.text != text ||
       oldDelegate.textStyle != textStyle ||
       oldDelegate.radius != radius ||
-      oldDelegate.letterSpacing != letterSpacing;
+      oldDelegate.letterSpacing != letterSpacing ||
+      oldDelegate.isBottom != isBottom;
 }

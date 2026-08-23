@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:eureka/l10n/app_strings.dart';
 import 'package:eureka/pages/home/page_home.dart';
-import 'package:eureka/pages/home/widgets/widget_continue_learning_card.dart';
 import 'package:eureka/pages/home/widgets/widget_login.dart';
 import 'package:eureka/pages/home/widgets/widget_planet_button.dart';
-import 'package:eureka/pages/home/widgets/widget_recommendation_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -36,14 +34,14 @@ void main() {
         ),
       );
 
-      await tester.pumpAndSettle();
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
 
       // Não deve exibir título estático de matérias
       expect(find.text(AppStrings.subjectsTitle), findsNothing);
 
-      // Deve exibir os cards no carrossel horizontal
-      expect(find.byType(ContinueLearningCard), findsOneWidget);
-      expect(find.byType(RecommendationCard), findsOneWidget);
+      // Deve exibir login card
       expect(find.byType(LoginCard), findsOneWidget);
 
       // Deve ter os 5 botões de planetas

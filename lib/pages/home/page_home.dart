@@ -15,7 +15,9 @@ import '../../enums/subject_type.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/auth/model_login_request.dart';
 import '../../models/content/model_content_manifest.dart';
+import '../../models/model_progress.dart';
 import '../../services/service_registry.dart';
+import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
 import '../auth/login_bottom_sheet.dart';
 import 'widgets/widget_continue_learning_card.dart';
@@ -51,97 +53,13 @@ class _PageHomeState extends State<PageHome> {
   Widget build(BuildContext context) {
     final progress = ServiceRegistry.progress.load();
     final isGuest = !ServiceRegistry.user.isAuthenticated;
+    final topSafeArea = MediaQuery.of(context).padding.top;
+    final headerHeight = topSafeArea + UiSize.homeAppBarHeight + 92.0;
 
-    return Column(
+    return Stack(
       children: [
-        AppHomeBar(
-          xp: progress.xp,
-          schoolYear: schoolYear,
-          onXpTap: () =>
-              _showValue(AppStrings.xpLabel, AppStrings.xpValue(progress.xp)),
-          onSchoolYearTap: () => _showValue(
-            AppStrings.turmaLabel,
-            AppStrings.schoolYear(schoolYear),
-          ),
-        ),
-        FutureBuilder<List<dynamic>>(
-          future: Future.wait([continueLearning, recommendation]),
-          builder: (context, snapshot) {
-            final continueData = snapshot.hasData
-                ? snapshot.data![0] as ContinueLearningData?
-                : null;
-            final recData = snapshot.hasData
-                ? snapshot.data![1] as ContinueLearningData?
-                : null;
-
-            final hasAnyCard =
-                continueData != null || recData != null || isGuest;
-            if (!hasAnyCard) return const SizedBox.shrink();
-
-            return Container(
-              height: 92.0,
-              margin: EdgeInsets.zero,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: UiSpacing.pageHorizontal,
-                ),
-                children: [
-                  if (isGuest) ...[
-                    LoginCard(
-                      onTap: () async {
-                        final authenticated = await showLoginBottomSheet(
-                          context,
-                          const LoginRequest(
-                            context: LoginContext.saveProgress,
-                          ),
-                        );
-                        if (authenticated && mounted) {
-                          setState(() {});
-                        }
-                      },
-                    ),
-                    const SizedBox(width: UiSpacing.sm),
-                  ],
-                  if (recData != null) ...[
-                    RecommendationCard(
-                      subject: recData.subject,
-                      lesson: recData.lesson,
-                      onTap: () async {
-                        await context.pushNamed(
-                          AppRoute.lesson,
-                          extra: LessonRouteArguments(
-                            lesson: recData.lesson,
-                            mode: LearningMode.journey,
-                          ),
-                        );
-                        if (mounted) setState(() {});
-                      },
-                    ),
-                    const SizedBox(width: UiSpacing.sm),
-                  ],
-                  if (continueData != null)
-                    ContinueLearningCard(
-                      subject: continueData.subject,
-                      lesson: continueData.lesson,
-                      onTap: () async {
-                        await context.pushNamed(
-                          AppRoute.lesson,
-                          extra: LessonRouteArguments(
-                            lesson: continueData.lesson,
-                            mode: LearningMode.journey,
-                          ),
-                        );
-                        if (mounted) setState(() {});
-                      },
-                    ),
-                ],
-              ),
-            );
-          },
-        ),
-        Expanded(
+        // 1. Camada rolável dos planetas que preenche a tela inteira (passando por trás do header)
+        Positioned.fill(
           child: FutureBuilder<List<SubjectContentManifest>>(
             future: subjects,
             builder: (context, snapshot) {
@@ -164,7 +82,9 @@ class _PageHomeState extends State<PageHome> {
               return LayoutBuilder(
                 builder: (context, constraints) {
                   final w = constraints.maxWidth;
-                  final contentHeight = math.max(constraints.maxHeight, 560.0);
+                  final availableHeight = constraints.maxHeight;
+                  final contentHeight =
+                      math.max(availableHeight - headerHeight, 560.0);
                   final basePlanetSize =
                       math.min(w * 0.36, contentHeight * 0.22);
 
@@ -176,6 +96,10 @@ class _PageHomeState extends State<PageHome> {
 
                   return SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.only(
+                      top: headerHeight,
+                      bottom: UiSpacing.xxl,
+                    ),
                     child: SizedBox(
                       width: w,
                       height: contentHeight,
@@ -190,6 +114,8 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: portuguese,
                                 size: sizePortuguese,
+                                progressText:
+                                    _progressFraction(portuguese, progress),
                                 animationIndex: 0,
                                 onTap: () => _openSubject(portuguese),
                               ),
@@ -203,6 +129,8 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: mathematics,
                                 size: sizeMathematics,
+                                progressText:
+                                    _progressFraction(mathematics, progress),
                                 animationIndex: 1,
                                 onTap: () => _openSubject(mathematics),
                               ),
@@ -216,6 +144,8 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: science,
                                 size: sizeScience,
+                                progressText:
+                                    _progressFraction(science, progress),
                                 animationIndex: 2,
                                 onTap: () => _openSubject(science),
                               ),
@@ -229,6 +159,8 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: geography,
                                 size: sizeGeography,
+                                progressText:
+                                    _progressFraction(geography, progress),
                                 animationIndex: 3,
                                 onTap: () => _openSubject(geography),
                               ),
@@ -242,6 +174,8 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: history,
                                 size: sizeHistory,
+                                progressText:
+                                    _progressFraction(history, progress),
                                 animationIndex: 4,
                                 onTap: () => _openSubject(history),
                               ),
@@ -253,6 +187,110 @@ class _PageHomeState extends State<PageHome> {
                 },
               );
             },
+          ),
+        ),
+
+        // 2. Camada fixa e transparente no topo (AppBar + Carrossel de Cards)
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: SafeArea(
+            bottom: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppHomeBar(
+                  xp: progress.xp,
+                  schoolYear: schoolYear,
+                  onXpTap: () => _showValue(
+                    AppStrings.xpLabel,
+                    AppStrings.xpValue(progress.xp),
+                  ),
+                  onSchoolYearTap: () => _showValue(
+                    AppStrings.turmaLabel,
+                    AppStrings.schoolYear(schoolYear),
+                  ),
+                ),
+                FutureBuilder<List<dynamic>>(
+                  future: Future.wait([continueLearning, recommendation]),
+                  builder: (context, snapshot) {
+                    final continueData = snapshot.hasData
+                        ? snapshot.data![0] as ContinueLearningData?
+                        : null;
+                    final recData = snapshot.hasData
+                        ? snapshot.data![1] as ContinueLearningData?
+                        : null;
+
+                    final hasAnyCard =
+                        continueData != null || recData != null || isGuest;
+                    if (!hasAnyCard) return const SizedBox.shrink();
+
+                    return Container(
+                      height: 92.0,
+                      margin: EdgeInsets.zero,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: UiSpacing.pageHorizontal,
+                        ),
+                        children: [
+                          if (isGuest) ...[
+                            LoginCard(
+                              onTap: () async {
+                                final authenticated = await showLoginBottomSheet(
+                                  context,
+                                  const LoginRequest(
+                                    context: LoginContext.saveProgress,
+                                  ),
+                                );
+                                if (authenticated && mounted) {
+                                  setState(() {});
+                                }
+                              },
+                            ),
+                            const SizedBox(width: UiSpacing.sm),
+                          ],
+                          if (recData != null) ...[
+                            RecommendationCard(
+                              subject: recData.subject,
+                              lesson: recData.lesson,
+                              onTap: () async {
+                                await context.pushNamed(
+                                  AppRoute.lesson,
+                                  extra: LessonRouteArguments(
+                                    lesson: recData.lesson,
+                                    mode: LearningMode.journey,
+                                  ),
+                                );
+                                if (mounted) setState(() {});
+                              },
+                            ),
+                            const SizedBox(width: UiSpacing.sm),
+                          ],
+                          if (continueData != null)
+                            ContinueLearningCard(
+                              subject: continueData.subject,
+                              lesson: continueData.lesson,
+                              onTap: () async {
+                                await context.pushNamed(
+                                  AppRoute.lesson,
+                                  extra: LessonRouteArguments(
+                                    lesson: continueData.lesson,
+                                    mode: LearningMode.journey,
+                                  ),
+                                );
+                                if (mounted) setState(() {});
+                              },
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -277,6 +315,18 @@ class _PageHomeState extends State<PageHome> {
       extra: SubjectRouteArguments(subject: subject, schoolYear: schoolYear),
     );
     if (mounted) setState(() {});
+  }
+
+  String _progressFraction(
+    SubjectContentManifest subject,
+    UserProgress progress,
+  ) {
+    final lessons = subject.availableLessonsForYear(schoolYear);
+    if (lessons.isEmpty) return '0/0';
+    final completed = lessons
+        .where((l) => progress.completedLessonIds.contains(l.id))
+        .length;
+    return AppStrings.progressRatio(completed, lessons.length);
   }
 
   Future<void> _showValue(String title, String value) =>

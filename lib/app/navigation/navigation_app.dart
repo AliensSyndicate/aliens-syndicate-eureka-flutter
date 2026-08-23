@@ -34,9 +34,7 @@ class NavigationApp extends StatelessWidget {
             ),
           Scaffold(
             backgroundColor: isHome ? Colors.transparent : UiColor.background,
-            body: SafeArea(
-              child: navigationShell,
-            ),
+            body: isHome ? navigationShell : SafeArea(child: navigationShell),
             bottomNavigationBar: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

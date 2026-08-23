@@ -12,6 +12,7 @@ class PlanetButton extends StatefulWidget {
     required this.subject,
     required this.size,
     required this.onTap,
+    this.progressText,
     this.animationIndex = 0,
     super.key,
   });
@@ -19,6 +20,7 @@ class PlanetButton extends StatefulWidget {
   final SubjectContentManifest subject;
   final double size;
   final VoidCallback onTap;
+  final String? progressText;
   final int animationIndex;
 
   @override
@@ -32,7 +34,6 @@ class _PlanetButtonState extends State<PlanetButton>
   @override
   void initState() {
     super.initState();
-    // Ciclos ultra lentos de 14.0s a 20.0s para movimento celeste sereno
     final durationMs = 24000 + (widget.animationIndex * 1800) % 6000;
     _controller = AnimationController(
       vsync: this,
@@ -60,7 +61,6 @@ class _PlanetButtonState extends State<PlanetButton>
       animation: _controller,
       builder: (context, child) {
         final t = _controller.value * 2 * math.pi;
-        // Movimento harmônico sutil simulando deriva planetária no espaço
         final offsetX =
             directionX * amplitudeX * math.sin(t + phase) +
             (amplitudeX * 0.25 * math.sin(2 * t + phase));
@@ -106,6 +106,25 @@ class _PlanetButtonState extends State<PlanetButton>
                   ],
                 ),
               ),
+              if (widget.progressText != null)
+                CurvedText(
+                  text: widget.progressText!,
+                  radius: textRadius,
+                  letterSpacing: 2.0,
+                  isBottom: true,
+                  textStyle: UiText.h5.copyWith(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w800,
+                    color: subjectColor,
+                    shadows: const [
+                      Shadow(
+                        color: Colors.black87,
+                        offset: Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),
