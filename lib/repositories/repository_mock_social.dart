@@ -39,7 +39,7 @@ class MockSocialRepository implements SocialRepository {
     UserPreview(
       id: 'bianca',
       displayName: 'Bianca',
-      avatarColor: UiColor.english,
+      avatarColor: UiColor.science,
       xp: 3370,
     ),
     UserPreview(

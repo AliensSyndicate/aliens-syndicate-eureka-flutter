@@ -28,9 +28,7 @@ ContentManifest buildSeedContentManifest() => ContentManifest(
           id: '${definition.type.name}_${stageId}_${grade.year}',
           year: grade.year,
           educationStage: grade.stage,
-          curriculumSource:
-              grade.stage == EducationStage.highSchool ||
-                  definition.type == SubjectType.spanish
+          curriculumSource: grade.stage == EducationStage.highSchool
               ? CurriculumSource.editorial
               : CurriculumSource.bncc,
           title: grade.stage.yearLabel(grade.year),
@@ -70,8 +68,6 @@ class _SubjectDefinition {
 
 const _subjects = [
   _SubjectDefinition(SubjectType.portuguese, 'Português'),
-  _SubjectDefinition(SubjectType.english, 'Inglês'),
-  _SubjectDefinition(SubjectType.spanish, 'Espanhol'),
   _SubjectDefinition(SubjectType.mathematics, 'Matemática'),
   _SubjectDefinition(SubjectType.science, 'Ciências'),
   _SubjectDefinition(SubjectType.biology, 'Biologia'),

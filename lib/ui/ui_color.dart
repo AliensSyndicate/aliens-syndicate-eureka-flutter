@@ -54,8 +54,6 @@ abstract final class UiColor {
   // Matérias
   static const mathematics = Color(0xFF1CB0F6);
   static const portuguese = Color(0xFFFF6B9D);
-  static const english = Color(0xFF9B7BFF);
-  static const spanish = Color(0xFFFFB84D);
   static const science = Color(0xFF58CC02);
   static const biology = Color(0xFF20C997);
   static const physics = Color(0xFF5C7CFA);
@@ -68,8 +66,6 @@ abstract final class UiColor {
   static Color forSubject(SubjectType value) => switch (value) {
     SubjectType.mathematics => mathematics,
     SubjectType.portuguese => portuguese,
-    SubjectType.english => english,
-    SubjectType.spanish => spanish,
     SubjectType.science => science,
     SubjectType.biology => biology,
     SubjectType.physics => physics,

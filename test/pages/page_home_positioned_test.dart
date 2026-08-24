@@ -42,8 +42,12 @@ void main() {
       // Deve exibir login card
       expect(find.byType(LoginCard), findsOneWidget);
 
-      // Deve ter os 5 botões de planetas
+      // Deve mostrar somente as matérias habilitadas para o ano letivo.
       expect(find.byType(PlanetButton), findsNWidgets(5));
+      expect(
+        tester.getSize(find.byKey(const ValueKey('home-planets-orbit'))).height,
+        lessThan(1040),
+      );
     },
   );
 }

@@ -22,8 +22,6 @@ Matérias permitidas:
 * Geografia
 * História
 
-Ignore Inglês, Espanhol ou qualquer outra matéria nesta etapa.
-
 Não invente matérias adicionais.
 
 ---

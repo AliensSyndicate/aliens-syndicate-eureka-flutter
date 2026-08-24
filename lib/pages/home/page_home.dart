@@ -83,25 +83,65 @@ class _PageHomeState extends State<PageHome> {
               final science = _findSubject(items, SubjectType.science, 2);
               final geography = _findSubject(items, SubjectType.geography, 3);
               final history = _findSubject(items, SubjectType.history, 4);
+              final biology = _findSubject(items, SubjectType.biology, 5);
+              final physics = _findSubject(items, SubjectType.physics, 6);
+              final chemistry = _findSubject(items, SubjectType.chemistry, 7);
+              final philosophy = _findSubject(items, SubjectType.philosophy, 8);
+              final sociology = _findSubject(items, SubjectType.sociology, 9);
 
               return LayoutBuilder(
                 builder: (context, constraints) {
                   final w = constraints.maxWidth;
                   final availableHeight = constraints.maxHeight;
-                  final contentHeight = math.max(
-                    availableHeight - headerHeight,
-                    560.0,
-                  );
-                  final basePlanetSize = math.min(
-                    w * 0.36,
-                    contentHeight * 0.22,
-                  );
+                  final basePlanetSize = math.min(w * 0.30, 140.0);
 
                   final sizePortuguese = basePlanetSize * 1.05;
                   final sizeMathematics = basePlanetSize * 0.92;
                   final sizeScience = basePlanetSize * 1.15;
                   final sizeGeography = basePlanetSize * 0.96;
                   final sizeHistory = basePlanetSize * 1.08;
+                  final sizeBiology = basePlanetSize * 1.02;
+                  final sizePhysics = basePlanetSize * 0.94;
+                  final sizeChemistry = basePlanetSize * 1.10;
+                  final sizePhilosophy = basePlanetSize * 0.98;
+                  final sizeSociology = basePlanetSize * 1.06;
+
+                  double planetSize(SubjectType type) => switch (type) {
+                    SubjectType.portuguese => sizePortuguese,
+                    SubjectType.mathematics => sizeMathematics,
+                    SubjectType.science => sizeScience,
+                    SubjectType.geography => sizeGeography,
+                    SubjectType.history => sizeHistory,
+                    SubjectType.biology => sizeBiology,
+                    SubjectType.physics => sizePhysics,
+                    SubjectType.chemistry => sizeChemistry,
+                    SubjectType.philosophy => sizePhilosophy,
+                    SubjectType.sociology => sizeSociology,
+                  };
+
+                  double orbitTop(SubjectType type) => switch (type) {
+                    SubjectType.portuguese => 20.4,
+                    SubjectType.mathematics => 104.0,
+                    SubjectType.science => 228.8,
+                    SubjectType.geography => 353.6,
+                    SubjectType.history => 468.0,
+                    SubjectType.biology => 561.6,
+                    SubjectType.physics => 665.6,
+                    SubjectType.chemistry => 728.0,
+                    SubjectType.philosophy => 852.8,
+                    SubjectType.sociology => 915.2,
+                  };
+
+                  final planetsBottom = items.fold<double>(0, (bottom, item) {
+                    return math.max(
+                      bottom,
+                      orbitTop(item.type) + planetSize(item.type),
+                    );
+                  });
+                  final contentHeight = math.max(
+                    availableHeight - headerHeight,
+                    planetsBottom + UiSpacing.xl,
+                  );
 
                   return SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
@@ -110,6 +150,7 @@ class _PageHomeState extends State<PageHome> {
                       bottom: UiSpacing.xxl,
                     ),
                     child: SizedBox(
+                      key: const ValueKey('home-planets-orbit'),
                       width: w,
                       height: contentHeight,
                       child: Stack(
@@ -118,8 +159,8 @@ class _PageHomeState extends State<PageHome> {
                           // 1. Português (órbita superior esquerda)
                           if (portuguese != null)
                             Positioned(
-                              left: w * 0.05,
-                              top: (contentHeight * 0.01) + 20.0,
+                              left: w * 0.07,
+                              top: orbitTop(SubjectType.portuguese),
                               child: PlanetButton(
                                 subject: portuguese,
                                 size: sizePortuguese,
@@ -132,11 +173,11 @@ class _PageHomeState extends State<PageHome> {
                               ),
                             ),
 
-                          // 2. Matemática (órbita média direita)
+                          // 2. Matemática (órbita superior direita)
                           if (mathematics != null)
                             Positioned(
-                              left: w * 0.56,
-                              top: contentHeight * 0.14,
+                              left: w * 0.60,
+                              top: orbitTop(SubjectType.mathematics),
                               child: PlanetButton(
                                 subject: mathematics,
                                 size: sizeMathematics,
@@ -149,11 +190,11 @@ class _PageHomeState extends State<PageHome> {
                               ),
                             ),
 
-                          // 3. Ciências (órbita central esquerda)
+                          // 3. Ciências (órbita interna esquerda)
                           if (science != null)
                             Positioned(
-                              left: w * 0.16,
-                              top: contentHeight * 0.37,
+                              left: w * 0.18,
+                              top: orbitTop(SubjectType.science),
                               child: PlanetButton(
                                 subject: science,
                                 size: sizeScience,
@@ -166,11 +207,11 @@ class _PageHomeState extends State<PageHome> {
                               ),
                             ),
 
-                          // 4. Geografia (órbita média inferior direita)
+                          // 4. Geografia (órbita externa direita)
                           if (geography != null)
                             Positioned(
-                              left: w * 0.58,
-                              top: contentHeight * 0.55,
+                              left: w * 0.64,
+                              top: orbitTop(SubjectType.geography),
                               child: PlanetButton(
                                 subject: geography,
                                 size: sizeGeography,
@@ -183,11 +224,11 @@ class _PageHomeState extends State<PageHome> {
                               ),
                             ),
 
-                          // 5. História (órbita inferior central)
+                          // 5. História (órbita externa esquerda)
                           if (history != null)
                             Positioned(
-                              left: w * 0.28,
-                              top: contentHeight * 0.74,
+                              left: w * 0.06,
+                              top: orbitTop(SubjectType.history),
                               child: PlanetButton(
                                 subject: history,
                                 size: sizeHistory,
@@ -197,6 +238,91 @@ class _PageHomeState extends State<PageHome> {
                                 ),
                                 animationIndex: 4,
                                 onTap: () => _openSubject(history),
+                              ),
+                            ),
+
+                          // 6. Biologia (órbita interna direita)
+                          if (biology != null)
+                            Positioned(
+                              left: w * 0.55,
+                              top: orbitTop(SubjectType.biology),
+                              child: PlanetButton(
+                                subject: biology,
+                                size: sizeBiology,
+                                progressText: _progressFraction(
+                                  biology,
+                                  progress,
+                                ),
+                                animationIndex: 5,
+                                onTap: () => _openSubject(biology),
+                              ),
+                            ),
+
+                          // 7. Física (órbita central esquerda)
+                          if (physics != null)
+                            Positioned(
+                              left: w * 0.25,
+                              top: orbitTop(SubjectType.physics),
+                              child: PlanetButton(
+                                subject: physics,
+                                size: sizePhysics,
+                                progressText: _progressFraction(
+                                  physics,
+                                  progress,
+                                ),
+                                animationIndex: 6,
+                                onTap: () => _openSubject(physics),
+                              ),
+                            ),
+
+                          // 8. Química (órbita externa direita)
+                          if (chemistry != null)
+                            Positioned(
+                              left: w * 0.62,
+                              top: orbitTop(SubjectType.chemistry),
+                              child: PlanetButton(
+                                subject: chemistry,
+                                size: sizeChemistry,
+                                progressText: _progressFraction(
+                                  chemistry,
+                                  progress,
+                                ),
+                                animationIndex: 7,
+                                onTap: () => _openSubject(chemistry),
+                              ),
+                            ),
+
+                          // 9. Filosofia (órbita final esquerda)
+                          if (philosophy != null)
+                            Positioned(
+                              left: w * 0.06,
+                              top: orbitTop(SubjectType.philosophy),
+                              child: PlanetButton(
+                                subject: philosophy,
+                                size: sizePhilosophy,
+                                progressText: _progressFraction(
+                                  philosophy,
+                                  progress,
+                                ),
+                                animationIndex: 8,
+                                onTap: () => _openSubject(philosophy),
+                              ),
+                            ),
+
+                          // 10. Sociologia (órbita final interna)
+                          if (sociology != null)
+                            Positioned(
+                              left: w * 0.48,
+                              top: orbitTop(SubjectType.sociology),
+                              child: PlanetButton(
+                                subject: sociology,
+                                size: sizeSociology,
+                                progressText: _progressFraction(
+                                  sociology,
+                                  progress,
+                                ),
+                                animationIndex: 9,
+                                onTap: () => _openSubject(sociology),
                               ),
                             ),
                         ],

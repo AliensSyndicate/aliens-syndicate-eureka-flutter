@@ -124,11 +124,6 @@ abstract final class UiIcon {
       build(assetName: 'subject_physics', size: size);
   static Widget subjectHistory({double size = UiSize.iconNavigation}) =>
       build(assetName: 'subject_history', size: size);
-  static Widget subjectEnglish({double size = UiSize.iconNavigation}) =>
-      build(assetName: 'subject_english', size: size);
-  static Widget subjectSpanish({double size = UiSize.iconNavigation}) =>
-      build(assetName: 'subject_spanish', size: size);
-
   // ano letivo
   static Widget backpack1Ef1({double size = UiSize.iconNavigation}) =>
       build(assetName: 'backpack_1_ef1', size: size);

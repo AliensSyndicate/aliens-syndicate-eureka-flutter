@@ -212,32 +212,6 @@ abstract final class UiIcon {
     color: color,
   );
 
-  static Widget subjectEnglish({
-    double size = UiSize.iconNavigation,
-    bool onlyWidth = false,
-    bool onlyHeight = false,
-    Color? color,
-  }) => build(
-    assetName: 'subject_english',
-    size: size,
-    onlyWidth: onlyWidth,
-    onlyHeight: onlyHeight,
-    color: color,
-  );
-
-  static Widget subjectSpanish({
-    double size = UiSize.iconNavigation,
-    bool onlyWidth = false,
-    bool onlyHeight = false,
-    Color? color,
-  }) => build(
-    assetName: 'subject_spanish',
-    size: size,
-    onlyWidth: onlyWidth,
-    onlyHeight: onlyHeight,
-    color: color,
-  );
-
   static Widget backpack1Ef1({
     double size = UiSize.iconNavigation,
     bool onlyWidth = false,

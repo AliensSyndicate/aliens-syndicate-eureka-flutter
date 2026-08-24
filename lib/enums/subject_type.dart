@@ -1,7 +1,5 @@
 enum SubjectType {
   portuguese,
-  english,
-  spanish,
   mathematics,
   science,
   biology,

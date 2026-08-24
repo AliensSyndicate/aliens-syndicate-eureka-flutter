@@ -104,8 +104,6 @@ class SearchResultItem extends StatelessWidget {
       SubjectType.biology => UiIcon.subjectBiology(size: size),
       SubjectType.physics => UiIcon.subjectPhysics(size: size),
       SubjectType.history => UiIcon.subjectHistory(size: size),
-      SubjectType.english => UiIcon.subjectEnglish(size: size),
-      SubjectType.spanish => UiIcon.subjectSpanish(size: size),
       _ => UiIcon.subjectPortuguese(size: size),
     };
   }

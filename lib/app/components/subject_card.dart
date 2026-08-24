@@ -36,10 +36,6 @@ class SubjectCard extends StatelessWidget {
         return UiIcon.subjectPhysics(size: UiSize.icon);
       case SubjectType.history:
         return UiIcon.subjectHistory(size: UiSize.icon);
-      case SubjectType.english:
-        return UiIcon.subjectEnglish(size: UiSize.icon);
-      case SubjectType.spanish:
-        return UiIcon.subjectSpanish(size: UiSize.icon);
       default:
         return UiIcon.subjectPortuguese(size: UiSize.icon);
     }

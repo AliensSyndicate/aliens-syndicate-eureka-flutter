@@ -57,9 +57,13 @@ class ContentManifest {
     contentVersion: map['contentVersion'] as int,
     locale: map['locale'] as String,
     updatedAt: DateTime.parse(map['updatedAt'] as String),
-    subjects: _maps(
-      map['subjects'],
-    ).map(SubjectContentManifest.fromMap).toList(),
+    subjects: _maps(map['subjects'])
+        .where(
+          (subject) =>
+              SubjectType.values.any((type) => type.name == subject['type']),
+        )
+        .map(SubjectContentManifest.fromMap)
+        .toList(),
   );
   Map<String, dynamic> toMap() => {
     'schemaVersion': schemaVersion,

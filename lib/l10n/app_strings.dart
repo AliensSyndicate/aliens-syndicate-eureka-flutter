@@ -187,8 +187,6 @@ abstract final class AppStrings {
       imageChoiceActivityName = 'Escolha uma imagem',
       wordCompletionActivityName = 'Complete a palavra',
       subjectPortuguese = 'Português',
-      subjectEnglish = 'Inglês',
-      subjectSpanish = 'Espanhol',
       subjectMathematics = 'Matemática',
       subjectScience = 'Ciências',
       subjectBiology = 'Biologia',
@@ -325,8 +323,6 @@ abstract final class AppStrings {
 
   static String subjectName(SubjectType subject) => switch (subject) {
     SubjectType.portuguese => subjectPortuguese,
-    SubjectType.english => subjectEnglish,
-    SubjectType.spanish => subjectSpanish,
     SubjectType.mathematics => subjectMathematics,
     SubjectType.science => subjectScience,
     SubjectType.biology => subjectBiology,
