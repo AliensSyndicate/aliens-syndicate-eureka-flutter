@@ -5,6 +5,7 @@ import '../enums/login_context.dart';
 abstract final class AppStrings {
   static const appName = 'Eureka',
       accountTitle = 'Conta',
+      enterWithYourAccount = 'Entre com sua conta.',
       recommendationTitle = 'Recomendado',
       continueTitle = 'Continuar',
       subjectsTitle = 'Matérias',

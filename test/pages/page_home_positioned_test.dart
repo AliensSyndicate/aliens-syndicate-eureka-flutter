@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:eureka/l10n/app_strings.dart';
 import 'package:eureka/pages/home/page_home.dart';
+import 'package:eureka/pages/home/widgets/widget_action_planet_button.dart';
 import 'package:eureka/pages/home/widgets/widget_login_card.dart';
 import 'package:eureka/pages/home/widgets/widget_planet_button.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,13 @@ void main() {
 
       // Deve exibir login card
       expect(find.byType(LoginCard), findsOneWidget);
+      expect(find.byType(ActionPlanetButton), findsAtLeastNWidgets(1));
+      expect(
+        tester
+            .widgetList<ActionPlanetButton>(find.byType(ActionPlanetButton))
+            .map((button) => button.size),
+        everyElement(lessThan(100)),
+      );
 
       // Deve mostrar somente as matérias habilitadas para o ano letivo.
       expect(find.byType(PlanetButton), findsNWidgets(5));
@@ -49,11 +57,30 @@ void main() {
       );
       expect(
         planets.map((planet) => planet.progressText),
-        everyElement(matches(RegExp(r'^\d{2}/\d{2}$'))),
+        everyElement(matches(RegExp(r'^\d+ de \d{2}$'))),
       );
       expect(
         tester.getSize(find.byKey(const ValueKey('home-planets-orbit'))).height,
         lessThan(1040),
+      );
+
+      final actionTopBefore = tester.getTopLeft(find.byType(LoginCard)).dy;
+      final planetTopBefore = tester
+          .getTopLeft(find.byType(PlanetButton).first)
+          .dy;
+      await tester.drag(
+        find.byType(SingleChildScrollView),
+        const Offset(0, -120),
+      );
+      await tester.pump();
+
+      expect(
+        tester.getTopLeft(find.byType(LoginCard)).dy,
+        lessThan(actionTopBefore),
+      );
+      expect(
+        tester.getTopLeft(find.byType(PlanetButton).first).dy,
+        lessThan(planetTopBefore),
       );
     },
   );

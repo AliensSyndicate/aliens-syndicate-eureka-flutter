@@ -34,6 +34,8 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
+  static const _quickActionsOrbitHeight = 196.0;
+
   late int schoolYear;
   late Future<List<SubjectContentManifest>> subjects;
   late Future<ContinueLearningData?> continueLearning;
@@ -58,11 +60,10 @@ class _PageHomeState extends State<PageHome> {
     final progress = ServiceRegistry.progress.load();
     final isGuest = !ServiceRegistry.user.isAuthenticated;
     final topSafeArea = MediaQuery.of(context).padding.top;
-    final headerHeight = topSafeArea + UiSize.homeAppBarHeight + 72.0;
+    final headerHeight = topSafeArea + UiSize.homeAppBarHeight;
 
     return Stack(
       children: [
-        // 1. Camada rolável dos planetas que preenche a tela inteira (passando por trás do header)
         Positioned.fill(
           child: FutureBuilder<List<SubjectContentManifest>>(
             future: subjects,
@@ -118,18 +119,20 @@ class _PageHomeState extends State<PageHome> {
                     SubjectType.sociology => sizeSociology,
                   };
 
-                  double orbitTop(SubjectType type) => switch (type) {
-                    SubjectType.portuguese => 20.4,
-                    SubjectType.mathematics => 104.0,
-                    SubjectType.science => 228.8,
-                    SubjectType.geography => 353.6,
-                    SubjectType.history => 468.0,
-                    SubjectType.biology => 561.6,
-                    SubjectType.physics => 665.6,
-                    SubjectType.chemistry => 728.0,
-                    SubjectType.philosophy => 852.8,
-                    SubjectType.sociology => 915.2,
-                  };
+                  double orbitTop(SubjectType type) =>
+                      _quickActionsOrbitHeight +
+                      switch (type) {
+                        SubjectType.portuguese => 20.4,
+                        SubjectType.mathematics => 104.0,
+                        SubjectType.science => 228.8,
+                        SubjectType.geography => 353.6,
+                        SubjectType.history => 468.0,
+                        SubjectType.biology => 561.6,
+                        SubjectType.physics => 665.6,
+                        SubjectType.chemistry => 728.0,
+                        SubjectType.philosophy => 852.8,
+                        SubjectType.sociology => 915.2,
+                      };
 
                   final planetsBottom = items.fold<double>(0, (bottom, item) {
                     return math.max(
@@ -155,6 +158,13 @@ class _PageHomeState extends State<PageHome> {
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: _quickActionsOrbitHeight,
+                            child: _buildQuickActions(isGuest),
+                          ),
                           // 1. Português (órbita superior esquerda)
                           if (portuguese != null)
                             Positioned(
@@ -310,103 +320,94 @@ class _PageHomeState extends State<PageHome> {
           right: 0,
           child: SafeArea(
             bottom: false,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AppHomeBar(
-                  xp: progress.xp,
-                  schoolYear: schoolYear,
-                  onXpTap: () => _showValue(
-                    AppStrings.xpLabel,
-                    AppStrings.xpValue(progress.xp),
-                  ),
-                  onSchoolYearTap: _onSchoolYearTap,
-                  hasNewSchoolYears:
-                      ProductConfig.availableSchoolYears.length > 1,
-                ),
-                FutureBuilder<List<dynamic>>(
-                  future: Future.wait([continueLearning, recommendation]),
-                  builder: (context, snapshot) {
-                    final continueData = snapshot.hasData
-                        ? snapshot.data![0] as ContinueLearningData?
-                        : null;
-                    final recData = snapshot.hasData
-                        ? snapshot.data![1] as ContinueLearningData?
-                        : null;
-
-                    final hasAnyCard =
-                        continueData != null || recData != null || isGuest;
-                    if (!hasAnyCard) return const SizedBox.shrink();
-
-                    return Container(
-                      height: 72.0,
-                      margin: EdgeInsets.zero,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: UiSpacing.pageHorizontal,
-                        ),
-                        children: [
-                          if (isGuest) ...[
-                            LoginCard(
-                              onTap: () async {
-                                final authenticated =
-                                    await showLoginBottomSheet(
-                                      context,
-                                      const LoginRequest(
-                                        context: LoginContext.saveProgress,
-                                      ),
-                                    );
-                                if (authenticated && mounted) {
-                                  setState(() {});
-                                }
-                              },
-                            ),
-                            const SizedBox(width: UiSpacing.sm),
-                          ],
-                          if (recData != null) ...[
-                            RecommendationCard(
-                              subject: recData.subject,
-                              lesson: recData.lesson,
-                              onTap: () async {
-                                await context.pushNamed(
-                                  AppRoute.lesson,
-                                  extra: LessonRouteArguments(
-                                    lesson: recData.lesson,
-                                    mode: LearningMode.journey,
-                                  ),
-                                );
-                                if (mounted) setState(() {});
-                              },
-                            ),
-                            const SizedBox(width: UiSpacing.sm),
-                          ],
-                          if (continueData != null)
-                            ContinueLearningCard(
-                              subject: continueData.subject,
-                              lesson: continueData.lesson,
-                              onTap: () async {
-                                await context.pushNamed(
-                                  AppRoute.lesson,
-                                  extra: LessonRouteArguments(
-                                    lesson: continueData.lesson,
-                                    mode: LearningMode.journey,
-                                  ),
-                                );
-                                if (mounted) setState(() {});
-                              },
-                            ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ],
+            child: AppHomeBar(
+              xp: progress.xp,
+              schoolYear: schoolYear,
+              onXpTap: () => _showValue(
+                AppStrings.xpLabel,
+                AppStrings.xpValue(progress.xp),
+              ),
+              onSchoolYearTap: _onSchoolYearTap,
+              hasNewSchoolYears: ProductConfig.availableSchoolYears.length > 1,
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildQuickActions(bool isGuest) {
+    return FutureBuilder<List<dynamic>>(
+      future: Future.wait([continueLearning, recommendation]),
+      builder: (context, snapshot) {
+        final continueData = snapshot.hasData
+            ? snapshot.data![0] as ContinueLearningData?
+            : null;
+        final recData = snapshot.hasData
+            ? snapshot.data![1] as ContinueLearningData?
+            : null;
+
+        final hasAnyAction = continueData != null || recData != null || isGuest;
+        if (!hasAnyAction) return const SizedBox.shrink();
+
+        return LayoutBuilder(
+          builder: (context, constraints) => Stack(
+            clipBehavior: Clip.none,
+            children: [
+              if (isGuest)
+                Positioned(
+                  left: constraints.maxWidth * 0.08,
+                  top: 8,
+                  child: LoginCard(
+                    onTap: () async {
+                      final authenticated = await showLoginBottomSheet(
+                        context,
+                        const LoginRequest(context: LoginContext.saveProgress),
+                      );
+                      if (authenticated && mounted) setState(() {});
+                    },
+                  ),
+                ),
+              if (recData != null)
+                Positioned(
+                  right: constraints.maxWidth * 0.08,
+                  top: 48,
+                  child: RecommendationCard(
+                    lesson: recData.lesson,
+                    onTap: () async {
+                      await context.pushNamed(
+                        AppRoute.lesson,
+                        extra: LessonRouteArguments(
+                          lesson: recData.lesson,
+                          mode: LearningMode.journey,
+                        ),
+                      );
+                      if (mounted) setState(() {});
+                    },
+                  ),
+                ),
+              if (continueData != null)
+                Positioned(
+                  left: constraints.maxWidth * 0.34,
+                  top: 108,
+                  child: ContinueLearningCard(
+                    lesson: continueData.lesson,
+                    onTap: () async {
+                      await context.pushNamed(
+                        AppRoute.lesson,
+                        extra: LessonRouteArguments(
+                          lesson: continueData.lesson,
+                          mode: LearningMode.journey,
+                        ),
+                      );
+                      if (mounted) setState(() {});
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 
