@@ -5,6 +5,7 @@ abstract interface class AuthRepository {
   bool get isAuthenticated;
   String? get providerLabel;
   Future<bool> isAppleSignInAvailable();
+  Future<void> reconcileSession();
   Future<AuthResult> signIn(AuthProvider provider);
   Future<void> signOut();
 }

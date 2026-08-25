@@ -5,6 +5,7 @@ import '../../ui/ui_bottom_sheet.dart';
 import '../../ui/ui_card.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_icon.dart';
+import '../../ui/ui_navigation.dart';
 import '../../ui/ui_radius.dart';
 import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
@@ -31,74 +32,92 @@ Future<int?> showSchoolYearSheet(
     isScrollControlled: true,
     isDismissible: true,
     enableDrag: true,
+    backgroundColor: UiColor.background,
+    barrierColor: UiBottomSheet.overlayColor,
+    sheetAnimationStyle: const AnimationStyle(
+      duration: UiBottomSheet.openDuration,
+      reverseDuration: UiBottomSheet.closeDuration,
+    ),
     constraints: BoxConstraints(maxHeight: maxSheetHeight),
-    builder: (context) => SafeArea(
-      top: false,
-      child: Column(
-        // mainAxisSize.min → o sheet só ocupa o espaço do conteúdo.
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Cabeçalho fixo
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              UiBottomSheet.horizontalPadding,
-              UiBottomSheet.topPadding,
-              UiBottomSheet.horizontalPadding,
-              UiSpacing.md,
-            ),
-            child: Semantics(
-              header: true,
-              child: Text(
-                AppStrings.turmaTitle,
-                style: UiText.h4.copyWith(color: UiColor.accent),
+    builder: (context) => DecoratedBox(
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: UiColor.outline,
+            width: UiNavigation.topBorderWidth,
+          ),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          // mainAxisSize.min → o sheet só ocupa o espaço do conteúdo.
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Cabeçalho fixo
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                UiBottomSheet.horizontalPadding,
+                UiBottomSheet.topPadding,
+                UiBottomSheet.horizontalPadding,
+                UiSpacing.md,
+              ),
+              child: Semantics(
+                header: true,
+                child: Text(
+                  AppStrings.turmaTitle,
+                  style: UiText.h4.copyWith(color: UiColor.accent),
+                ),
               ),
             ),
-          ),
 
-          // Lista rolável de anos — filtra por availableYears.
-          Flexible(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(
-                UiBottomSheet.horizontalPadding,
-                0,
-                UiBottomSheet.horizontalPadding,
-                UiBottomSheet.bottomPadding +
-                    MediaQuery.viewInsetsOf(context).bottom,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Grupo EF (1–9) — exibido apenas se houver anos disponíveis
-                  ...() {
-                    final efYears = List.generate(9, (i) => i + 1)
-                        .where(availableYears.contains)
-                        .toList();
-                    if (efYears.isEmpty) return const <Widget>[];
-                    return [
-                      _SectionLabel(AppStrings.stageElementarySchoolFull),
-                      const SizedBox(height: UiSpacing.xs),
-                      _YearGroup(years: efYears, currentYear: currentYear),
-                      const SizedBox(height: UiSpacing.md),
-                    ];
-                  }(),
-                  // Grupo EM (10–12) — exibido apenas se houver anos disponíveis
-                  ...() {
-                    final emYears = List.generate(3, (i) => i + 10)
-                        .where(availableYears.contains)
-                        .toList();
-                    if (emYears.isEmpty) return const <Widget>[];
-                    return [
-                      _SectionLabel(AppStrings.stageHighSchoolFull),
-                      const SizedBox(height: UiSpacing.xs),
-                      _YearGroup(years: emYears, currentYear: currentYear),
-                    ];
-                  }(),
-                ],
+            // Lista rolável de anos — filtra por availableYears.
+            Flexible(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                  UiBottomSheet.horizontalPadding,
+                  0,
+                  UiBottomSheet.horizontalPadding,
+                  UiBottomSheet.bottomPadding +
+                      MediaQuery.viewInsetsOf(context).bottom,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Grupo EF (1–9) — exibido apenas se houver anos disponíveis
+                    ...() {
+                      final efYears = List.generate(
+                        9,
+                        (i) => i + 1,
+                      ).where(availableYears.contains).toList();
+                      if (efYears.isEmpty) return const <Widget>[];
+                      return [
+                        _SectionLabel(AppStrings.stageElementarySchoolFull),
+                        const SizedBox(height: UiSpacing.xs),
+                        _YearGroup(years: efYears, currentYear: currentYear),
+                        const SizedBox(height: UiSpacing.md),
+                      ];
+                    }(),
+                    // Grupo EM (10–12) — exibido apenas se houver anos disponíveis
+                    ...() {
+                      final emYears = List.generate(
+                        3,
+                        (i) => i + 10,
+                      ).where(availableYears.contains).toList();
+                      if (emYears.isEmpty) return const <Widget>[];
+                      return [
+                        _SectionLabel(AppStrings.stageHighSchoolFull),
+                        const SizedBox(height: UiSpacing.xs),
+                        _YearGroup(years: emYears, currentYear: currentYear),
+                      ];
+                    }(),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   );
@@ -148,9 +167,15 @@ class _YearGroup extends StatelessWidget {
         // Raio de cada canto: arredondado apenas nas extremidades do grupo.
         final radius = BorderRadius.only(
           topLeft: isFirst ? const Radius.circular(UiRadius.card) : Radius.zero,
-          topRight: isFirst ? const Radius.circular(UiRadius.card) : Radius.zero,
-          bottomLeft: isLast ? const Radius.circular(UiRadius.card) : Radius.zero,
-          bottomRight: isLast ? const Radius.circular(UiRadius.card) : Radius.zero,
+          topRight: isFirst
+              ? const Radius.circular(UiRadius.card)
+              : Radius.zero,
+          bottomLeft: isLast
+              ? const Radius.circular(UiRadius.card)
+              : Radius.zero,
+          bottomRight: isLast
+              ? const Radius.circular(UiRadius.card)
+              : Radius.zero,
         );
         return [
           _YearTile(
@@ -213,8 +238,7 @@ class _YearTile extends StatelessWidget {
                   _label,
                   style: UiText.p.copyWith(
                     color: isSelected ? UiColor.accent : UiColor.text,
-                    fontWeight:
-                        isSelected ? FontWeight.w700 : FontWeight.w400,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
                   ),
                 ),
               ),

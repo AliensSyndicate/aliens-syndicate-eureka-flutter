@@ -17,6 +17,7 @@ class AuthController extends ChangeNotifier {
   Future<bool> isAppleSignInAvailable() => _repository.isAppleSignInAvailable();
 
   Future<bool> signIn(AuthProvider provider) async {
+    if (isBusy) return false;
     status = AuthStatus.loading;
     loadingProvider = provider;
     message = null;

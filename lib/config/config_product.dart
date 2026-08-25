@@ -4,8 +4,14 @@ abstract final class ProductConfig {
   static const socialEnabled = false;
   static const authenticationEnabled = bool.fromEnvironment(
     'EUREKA_AUTH_ENABLED',
-    defaultValue: false,
+    defaultValue: true,
   );
-  static const termsUrl = String.fromEnvironment('EUREKA_TERMS_URL');
-  static const privacyUrl = String.fromEnvironment('EUREKA_PRIVACY_URL');
+  static const termsUrl = String.fromEnvironment(
+    'EUREKA_TERMS_URL',
+    defaultValue: 'https://aliens-syndicate-docs.web.app/apps/eureka/terms',
+  );
+  static const privacyUrl = String.fromEnvironment(
+    'EUREKA_PRIVACY_URL',
+    defaultValue: 'https://aliens-syndicate-docs.web.app/apps/eureka/policy',
+  );
 }

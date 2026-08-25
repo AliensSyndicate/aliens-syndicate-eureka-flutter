@@ -81,8 +81,8 @@ abstract final class UiTheme {
     dividerColor: UiColor.divider,
     disabledColor: UiColor.textDisabled,
     bottomSheetTheme: const BottomSheetThemeData(
-      backgroundColor: UiColor.surfaceElevated,
-      modalBackgroundColor: UiColor.surfaceElevated,
+      backgroundColor: UiColor.background,
+      modalBackgroundColor: UiColor.background,
       showDragHandle: false,
       shape: RoundedRectangleBorder(),
     ),

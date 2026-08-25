@@ -11,31 +11,47 @@ import '../services/service_auth.dart';
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository(this._service, this._users);
 
-  final AuthService _service;
+  final AuthGateway _service;
   final UserRepository _users;
 
   @override
-  Stream<bool> get authenticationChanges =>
-      _service.userChanges.map((user) => user != null).distinct();
+  Stream<bool> get authenticationChanges => _service.authenticationChanges;
 
   @override
-  bool get isAuthenticated => _service.currentUser != null;
+  bool get isAuthenticated => _service.currentIdentity != null;
 
   @override
   String? get providerLabel {
-    final providers = _service.currentUser?.providerData;
-    if (providers == null) return null;
-    if (providers.any((provider) => provider.providerId == 'apple.com')) {
-      return 'Apple';
-    }
-    if (providers.any((provider) => provider.providerId == 'google.com')) {
-      return 'Google';
-    }
-    return null;
+    return switch (_service.currentIdentity?.provider) {
+      AuthProvider.apple => 'Apple',
+      AuthProvider.google => 'Google',
+      null => null,
+    };
   }
 
   @override
   Future<bool> isAppleSignInAvailable() => _service.isAppleSignInAvailable();
+
+  @override
+  Future<void> reconcileSession() async {
+    final identity = _service.currentIdentity;
+    final local = _users.loadCurrentUser();
+    if (identity == null) {
+      if (local != null && !local.isTemporary) {
+        await _saveTemporaryUser(local);
+      }
+      return;
+    }
+    if (local?.id == identity.uid && local?.isTemporary == false) return;
+    await _users.saveCurrentUser(
+      AppUser(
+        id: identity.uid,
+        displayName: local?.displayName ?? 'Explorador',
+        schoolYear: local?.schoolYear ?? 5,
+        isTemporary: false,
+      ),
+    );
+  }
 
   @override
   Future<AuthResult> signIn(AuthProvider provider) async {
@@ -46,14 +62,19 @@ class FirebaseAuthRepository implements AuthRepository {
       };
       if (identity == null) return const AuthResult.cancelled();
       final local = _users.loadCurrentUser();
-      await _users.saveCurrentUser(
-        AppUser(
-          id: identity.uid,
-          displayName: local?.displayName ?? 'Explorador',
-          schoolYear: local?.schoolYear ?? 5,
-          isTemporary: false,
-        ),
-      );
+      try {
+        await _users.saveCurrentUser(
+          AppUser(
+            id: identity.uid,
+            displayName: local?.displayName ?? 'Explorador',
+            schoolYear: local?.schoolYear ?? 5,
+            isTemporary: false,
+          ),
+        );
+      } on Object {
+        await _service.signOut();
+        rethrow;
+      }
       return const AuthResult.authenticated();
     } on SignInWithAppleAuthorizationException catch (error) {
       if (error.code == AuthorizationErrorCode.canceled) {
@@ -73,15 +94,17 @@ class FirebaseAuthRepository implements AuthRepository {
   Future<void> signOut() async {
     final local = _users.loadCurrentUser();
     await _service.signOut();
-    await _users.saveCurrentUser(
-      AppUser(
-        id: 'local_test_user',
-        displayName: local?.displayName ?? 'Explorador',
-        schoolYear: local?.schoolYear ?? 5,
-        isTemporary: true,
-      ),
-    );
+    await _saveTemporaryUser(local);
   }
+
+  Future<void> _saveTemporaryUser(AppUser? local) => _users.saveCurrentUser(
+    AppUser(
+      id: 'local_test_user',
+      displayName: local?.displayName ?? 'Explorador',
+      schoolYear: local?.schoolYear ?? 5,
+      isTemporary: true,
+    ),
+  );
 
   String _messageFor(Object error) {
     if (error is FirebaseAuthException) {

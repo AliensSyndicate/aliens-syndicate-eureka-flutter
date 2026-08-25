@@ -92,6 +92,12 @@ class _LoginContentState extends State<LoginContent> {
         style: UiText.p,
         textAlign: TextAlign.center,
       ),
+      const SizedBox(height: UiSpacing.xs),
+      Text(
+        AppStrings.authCreateOrSignIn,
+        style: UiText.label,
+        textAlign: TextAlign.center,
+      ),
       const SizedBox(height: UiSpacing.xl),
       _ProviderButton(
         key: const Key('login_google'),

@@ -5,6 +5,7 @@ import '../repositories/repository_firestore_content.dart';
 import '../repositories/repository_firestore_report.dart';
 import '../repositories/repository_firestore_progress.dart';
 import '../repositories/repository_firebase_auth.dart';
+import '../repositories/repository_unavailable_auth.dart';
 import '../repositories/repository_local_search.dart';
 import '../data/local/hive_content_manifest_cache.dart';
 import '../data/local/hive_content_activity_cache.dart';
@@ -46,8 +47,9 @@ abstract final class ServiceRegistry {
   static PreferencesService get preferences =>
       PreferencesService(HivePreferencesRepository(_box));
   static AuthRepository? _auth;
-  static AuthRepository get auth =>
-      _auth ??= FirebaseAuthRepository(AuthService(), HiveUserRepository(_box));
+  static AuthRepository get auth => _auth ??= FirebaseService.isAvailable
+      ? FirebaseAuthRepository(AuthService(), HiveUserRepository(_box))
+      : const UnavailableAuthRepository();
   static AnswerService get answer => AnswerService();
   static ContentService? _content;
   static ContentService get content => _content ??= ContentService(

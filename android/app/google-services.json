@@ -9,10 +9,15 @@
       "client_info": {
         "mobilesdk_app_id": "1:1039738812261:android:6400f71b3d67acc729138c",
         "android_client_info": {
-          "package_name": "com.aliens.syndicate.eureka"
+          "package_name": "br.com.eureka.eureka"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1039738812261-urumfjqda3ovkdrmf775itttjh4vsciv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAJYqMf8Ay6BjXNo5YZlPkhPk4LOHyXCFI"
@@ -20,7 +25,63 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1039738812261-urumfjqda3ovkdrmf775itttjh4vsciv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1039738812261-36b8t5o0d0mi8033fpacpeuevl59istp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "br.com.eureka.eureka"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1039738812261:android:77e65f600c4a247329138c",
+        "android_client_info": {
+          "package_name": "com.aliens.syndicate.eureka"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1039738812261-5m6irerjc8jgphf2hukobli5u2nsubhb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aliens.syndicate.eureka",
+            "certificate_hash": "51346d5eaaabefcc99a33b99086d70793cc5bea9"
+          }
+        },
+        {
+          "client_id": "1039738812261-urumfjqda3ovkdrmf775itttjh4vsciv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJYqMf8Ay6BjXNo5YZlPkhPk4LOHyXCFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1039738812261-urumfjqda3ovkdrmf775itttjh4vsciv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1039738812261-36b8t5o0d0mi8033fpacpeuevl59istp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "br.com.eureka.eureka"
+              }
+            }
+          ]
         }
       }
     }

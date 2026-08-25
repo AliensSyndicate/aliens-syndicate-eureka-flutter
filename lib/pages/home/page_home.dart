@@ -358,20 +358,6 @@ class _PageHomeState extends State<PageHome> {
           builder: (context, constraints) => Stack(
             clipBehavior: Clip.none,
             children: [
-              if (isGuest)
-                Positioned(
-                  right: constraints.maxWidth * 0.08,
-                  top: 48,
-                  child: LoginCard(
-                    onTap: () async {
-                      final authenticated = await showLoginBottomSheet(
-                        context,
-                        const LoginRequest(context: LoginContext.saveProgress),
-                      );
-                      if (authenticated && mounted) setState(() {});
-                    },
-                  ),
-                ),
               if (recData != null)
                 Positioned(
                   left: constraints.maxWidth * 0.08,
@@ -387,8 +373,8 @@ class _PageHomeState extends State<PageHome> {
                 ),
               if (continueData != null)
                 Positioned(
-                  left: constraints.maxWidth * 0.34,
-                  top: 108,
+                  right: constraints.maxWidth * 0.08,
+                  top: 48,
                   child: ContinueLearningCard(
                     lesson: continueData.lesson,
                     onTap: () => _showLessonActionSheet(
@@ -396,6 +382,20 @@ class _PageHomeState extends State<PageHome> {
                       data: continueData,
                       confirmationLabel: AppStrings.continueLabel,
                     ),
+                  ),
+                ),
+              if (isGuest)
+                Positioned(
+                  left: constraints.maxWidth * 0.08,
+                  top: 108,
+                  child: LoginCard(
+                    onTap: () async {
+                      final authenticated = await showLoginBottomSheet(
+                        context,
+                        const LoginRequest(context: LoginContext.saveProgress),
+                      );
+                      if (authenticated && mounted) setState(() {});
+                    },
                   ),
                 ),
             ],

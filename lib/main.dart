@@ -15,6 +15,7 @@ Future<void> main() async {
   await Hive.openBox<dynamic>('eureka');
   await Hive.openBox<dynamic>('content_cache_v1');
   await FirebaseService.initialize();
+  await ServiceRegistry.auth.reconcileSession();
   await ServiceRegistry.content.syncManifest().timeout(
     const Duration(seconds: 4),
     onTimeout: () => false,

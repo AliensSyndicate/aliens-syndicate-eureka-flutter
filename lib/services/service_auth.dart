@@ -15,16 +15,30 @@ class AuthIdentity {
   final AuthProvider provider;
 }
 
-class AuthService {
+abstract interface class AuthGateway {
+  Stream<bool> get authenticationChanges;
+  AuthIdentity? get currentIdentity;
+  Future<bool> isAppleSignInAvailable();
+  Future<AuthIdentity?> signInWithGoogle();
+  Future<AuthIdentity?> signInWithApple();
+  Future<void> signOut();
+}
+
+class AuthService implements AuthGateway {
   AuthService({FirebaseAuth? firebaseAuth})
     : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   final FirebaseAuth _firebaseAuth;
   bool _googleInitialized = false;
 
-  Stream<User?> get userChanges => _firebaseAuth.authStateChanges();
-  User? get currentUser => _firebaseAuth.currentUser;
+  @override
+  Stream<bool> get authenticationChanges =>
+      _firebaseAuth.authStateChanges().map((user) => user != null).distinct();
 
+  @override
+  AuthIdentity? get currentIdentity => _identityFor(_firebaseAuth.currentUser);
+
+  @override
   Future<bool> isAppleSignInAvailable() async {
     try {
       return await SignInWithApple.isAvailable();
@@ -33,6 +47,7 @@ class AuthService {
     }
   }
 
+  @override
   Future<AuthIdentity?> signInWithGoogle() async {
     try {
       if (!_googleInitialized) {
@@ -57,6 +72,7 @@ class AuthService {
     }
   }
 
+  @override
   Future<AuthIdentity?> signInWithApple() async {
     final rawNonce = _nonce();
     final credential = await SignInWithApple.getAppleIDCredential(
@@ -77,9 +93,22 @@ class AuthService {
         : AuthIdentity(uid: user.uid, provider: AuthProvider.apple);
   }
 
+  @override
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
     if (_googleInitialized) await GoogleSignIn.instance.signOut();
+  }
+
+  AuthIdentity? _identityFor(User? user) {
+    if (user == null) return null;
+    final provider =
+        user.providerData.any((data) => data.providerId == 'apple.com')
+        ? AuthProvider.apple
+        : user.providerData.any((data) => data.providerId == 'google.com')
+        ? AuthProvider.google
+        : null;
+    if (provider == null) return null;
+    return AuthIdentity(uid: user.uid, provider: provider);
   }
 
   String _nonce() {

@@ -59,6 +59,7 @@ abstract final class AppStrings {
       continueWithApple = 'Continuar com Apple',
       continueWithoutAccount = 'Agora não',
       authUnavailable = 'A entrada com conta ainda não está disponível.',
+      authCreateOrSignIn = 'Use Google ou Apple para criar sua conta ou entrar em uma conta existente.',
       authTermsPrefix = 'Ao continuar, você concorda com os ',
       termsOfUse = 'Termos de Uso',
       privacyPolicy = 'Política de Privacidade',

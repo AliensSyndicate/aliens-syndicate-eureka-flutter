@@ -28,6 +28,7 @@ void main() {
     await tester.pump();
 
     expect(find.text(AppStrings.continueWithGoogle), findsOneWidget);
+    expect(find.text(AppStrings.authCreateOrSignIn), findsOneWidget);
     expect(find.text(AppStrings.continueWithApple), findsNothing);
     expect(find.text(AppStrings.continueWithoutAccount), findsOneWidget);
     await tester.tap(find.text(AppStrings.continueWithoutAccount));
@@ -74,6 +75,9 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<bool> isAppleSignInAvailable() async => apple;
+
+  @override
+  Future<void> reconcileSession() async {}
 
   @override
   Future<AuthResult> signIn(AuthProvider provider) async =>

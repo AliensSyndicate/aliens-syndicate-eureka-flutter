@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAJYqMf8Ay6BjXNo5YZlPkhPk4LOHyXCFI',
-    appId: '1:1039738812261:android:6400f71b3d67acc729138c',
+    appId: '1:1039738812261:android:77e65f600c4a247329138c',
     messagingSenderId: '1039738812261',
     projectId: 'eureka-9675a',
     storageBucket: 'eureka-9675a.firebasestorage.app',
@@ -59,7 +59,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyB0wP_cegresF84SYVxZKv5B2pcPrBvVzU',
-    appId: '1:1039738812261:ios:44abffb981e06a1a29138c',
+    appId: '1:1039738812261:ios:f4eb1ca640ac6b1029138c',
     messagingSenderId: '1039738812261',
     projectId: 'eureka-9675a',
     storageBucket: 'eureka-9675a.firebasestorage.app',

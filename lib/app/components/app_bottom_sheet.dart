@@ -3,6 +3,7 @@ import 'package:eureka/ui/ui_text.dart';
 import 'package:flutter/material.dart';
 
 import '../../ui/ui_bottom_sheet.dart';
+import '../../ui/ui_navigation.dart';
 import '../../ui/ui_spacing.dart';
 
 class AppBottomSheet {
@@ -26,6 +27,12 @@ class AppBottomSheet {
       isScrollControlled: true,
       isDismissible: isDismissible,
       enableDrag: enableDrag,
+      backgroundColor: UiColor.background,
+      barrierColor: UiBottomSheet.overlayColor,
+      sheetAnimationStyle: const AnimationStyle(
+        duration: UiBottomSheet.openDuration,
+        reverseDuration: UiBottomSheet.closeDuration,
+      ),
       constraints: BoxConstraints(maxHeight: maxSheetHeight),
       builder: (context) {
         final sheet = SafeArea(
@@ -91,7 +98,17 @@ class AppBottomSheet {
                   ),
           ),
         );
-        return sheet;
+        return DecoratedBox(
+          decoration: const BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: UiColor.outline,
+                width: UiNavigation.topBorderWidth,
+              ),
+            ),
+          ),
+          child: sheet,
+        );
       },
     );
   }
