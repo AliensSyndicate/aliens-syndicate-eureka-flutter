@@ -37,7 +37,8 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
-  static const _quickActionsOrbitHeight = 196.0;
+  static const _quickActionsOrbitHeight = 188.0;
+  static const _subjectOrbitCompression = 0.94;
 
   late int schoolYear;
   late Future<List<SubjectContentManifest>> subjects;
@@ -124,18 +125,19 @@ class _PageHomeState extends State<PageHome> {
 
                   double orbitTop(SubjectType type) =>
                       _quickActionsOrbitHeight +
-                      switch (type) {
-                        SubjectType.portuguese => 20.4,
-                        SubjectType.mathematics => 104.0,
-                        SubjectType.science => 228.8,
-                        SubjectType.geography => 353.6,
-                        SubjectType.history => 468.0,
-                        SubjectType.biology => 561.6,
-                        SubjectType.physics => 665.6,
-                        SubjectType.chemistry => 728.0,
-                        SubjectType.philosophy => 852.8,
-                        SubjectType.sociology => 915.2,
-                      };
+                      _subjectOrbitCompression *
+                          switch (type) {
+                            SubjectType.portuguese => 20.4,
+                            SubjectType.mathematics => 104.0,
+                            SubjectType.science => 228.8,
+                            SubjectType.geography => 353.6,
+                            SubjectType.history => 468.0,
+                            SubjectType.biology => 561.6,
+                            SubjectType.physics => 665.6,
+                            SubjectType.chemistry => 728.0,
+                            SubjectType.philosophy => 852.8,
+                            SubjectType.sociology => 915.2,
+                          };
 
                   final planetsBottom = items.fold<double>(0, (bottom, item) {
                     return math.max(

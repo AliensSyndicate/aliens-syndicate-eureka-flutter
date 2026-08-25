@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_strings.dart';
 import '../../../models/model_lesson.dart';
+import '../../../ui/ui_color.dart';
 import 'widget_action_planet_button.dart';
 
 class RecommendationCard extends StatelessWidget {
@@ -23,7 +25,9 @@ class RecommendationCard extends StatelessWidget {
       width: width,
       height: height,
       child: ActionPlanetButton(
-        semanticLabel: lesson.title,
+        semanticLabel: '${AppStrings.recommendedLesson}, ${lesson.title}',
+        label: AppStrings.recommendedLesson,
+        labelColor: UiColor.recommendationBorder,
         imageAsset: 'assets/images/recommendation.png',
         animationIndex: 1,
         onTap: onTap,

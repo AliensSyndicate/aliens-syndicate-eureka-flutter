@@ -1,5 +1,4 @@
 import 'package:eureka/app/components/app_home_bar.dart';
-import 'package:eureka/l10n/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -25,8 +24,8 @@ void main() {
 
       final screenWidth = tester.getSize(find.byType(Scaffold)).width;
 
-      final xpFinder = find.text('150');
-      final yearFinder = find.text(AppStrings.schoolYear(5));
+      final xpFinder = find.text('150 xp');
+      final yearFinder = find.text('5° ano');
 
       expect(xpFinder, findsOneWidget);
       expect(yearFinder, findsOneWidget);

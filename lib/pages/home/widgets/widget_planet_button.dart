@@ -49,7 +49,7 @@ class _PlanetButtonState extends State<PlanetButton>
 
   @override
   Widget build(BuildContext context) {
-    final textRadius = (widget.size / 2) + 6.0;
+    final textRadius = (widget.size / 2) + 10.0;
     final subjectColor = UiColor.forSubject(widget.subject.type);
     final idx = widget.animationIndex;
     final phase = idx * (2 * math.pi / 5.0);

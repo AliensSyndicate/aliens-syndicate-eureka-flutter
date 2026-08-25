@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_strings.dart';
 import '../../../models/model_lesson.dart';
+import '../../../ui/ui_color.dart';
 import 'widget_action_planet_button.dart';
 
 class ContinueLearningCard extends StatelessWidget {
@@ -23,7 +25,9 @@ class ContinueLearningCard extends StatelessWidget {
       width: width,
       height: height,
       child: ActionPlanetButton(
-        semanticLabel: lesson.title,
+        semanticLabel: '${AppStrings.continueWhereStopped}, ${lesson.title}',
+        label: AppStrings.continueWhereStopped,
+        labelColor: UiColor.continueBorder,
         imageAsset: 'assets/images/continue.png',
         animationIndex: 2,
         onTap: onTap,

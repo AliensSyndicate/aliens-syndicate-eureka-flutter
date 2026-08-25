@@ -54,7 +54,7 @@ class SubjectSheetHeader extends StatelessWidget {
         ),
         Positioned(
           right: -40,
-          top: 0,
+          top: 50,
           child: IgnorePointer(
             child: Image.asset(
               'assets/images/${subject.name}.png',

@@ -1,11 +1,13 @@
+import '../enums/login_context.dart';
 import '../enums/question_type.dart';
 import '../enums/subject_type.dart';
-import '../enums/login_context.dart';
 
 abstract final class AppStrings {
   static const appName = 'Eureka',
       accountTitle = 'Conta',
       enterWithYourAccount = 'Entre com sua conta.',
+      signInWithYourAccount = 'Entrar com sua conta',
+      recommendedLesson = 'Aula recomendada',
       recommendationTitle = 'Recomendado',
       continueTitle = 'Continuar',
       subjectsTitle = 'Matérias',
@@ -266,9 +268,11 @@ abstract final class AppStrings {
       'Você mandou melhor em $content.';
   static String simulationImprove(String content) => 'Vale revisar $content.';
   static String xpValue(int value) => '$value XP';
+  static String homeXpValue(int value) => '$value xp';
   static String levelValue(int value) => 'Você está no nível $value.';
   static String schoolYear(int year) =>
       year <= 9 ? '$yearº EF' : '${year > 9 ? year - 9 : year}º EM';
+  static String homeSchoolYear(int year) => '$year° ano';
   static String schoolYearFull(int year) => year <= 9
       ? '$yearº ano do Ensino Fundamental'
       : '${year - 9}ª série do Ensino Médio';
@@ -301,7 +305,7 @@ abstract final class AppStrings {
   static String progressRatio(int current, int total) =>
       '${current.toString().padLeft(2, '0')}/${total.toString().padLeft(2, '0')}';
   static String planetProgressRatio(int current, int total) =>
-      '$current de ${total.toString().padLeft(2, '0')}';
+      '$current de ${total.toString().padLeft(2, '0')} aulas';
   static String lessonSemantics(String title, bool isCompleted) =>
       '$title, ${isCompleted ? lessonCompletedSemantics : lessonZeroPercentSemantics}';
   static String pageIndicatorSemantics(int current, int total, String state) =>

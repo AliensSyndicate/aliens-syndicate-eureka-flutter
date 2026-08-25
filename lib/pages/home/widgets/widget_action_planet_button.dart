@@ -2,9 +2,14 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../../ui/ui_text.dart';
+import 'widget_curved_text.dart';
+
 class ActionPlanetButton extends StatefulWidget {
   const ActionPlanetButton({
     required this.semanticLabel,
+    required this.label,
+    required this.labelColor,
     required this.imageAsset,
     required this.onTap,
     this.animationIndex = 0,
@@ -13,6 +18,8 @@ class ActionPlanetButton extends StatefulWidget {
   });
 
   final String semanticLabel;
+  final String label;
+  final Color labelColor;
   final String imageAsset;
   final VoidCallback onTap;
   final int animationIndex;
@@ -43,6 +50,7 @@ class _ActionPlanetButtonState extends State<ActionPlanetButton>
 
   @override
   Widget build(BuildContext context) {
+    final textRadius = (widget.size / 2) + 10.0;
     return Semantics(
       button: true,
       label: widget.semanticLabel,
@@ -65,11 +73,34 @@ class _ActionPlanetButtonState extends State<ActionPlanetButton>
           child: SizedBox(
             width: widget.size,
             height: widget.size,
-            child: Image.asset(
-              widget.imageAsset,
-              width: widget.size,
-              height: widget.size,
-              fit: BoxFit.contain,
+            child: Stack(
+              alignment: Alignment.center,
+              clipBehavior: Clip.none,
+              children: [
+                Image.asset(
+                  widget.imageAsset,
+                  width: widget.size,
+                  height: widget.size,
+                  fit: BoxFit.contain,
+                ),
+                CurvedText(
+                  text: widget.label,
+                  radius: textRadius,
+                  letterSpacing: 1.0,
+                  textStyle: UiText.label.copyWith(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w800,
+                    color: widget.labelColor,
+                    shadows: const [
+                      Shadow(
+                        color: Colors.black87,
+                        offset: Offset(0, 1),
+                        blurRadius: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),

@@ -55,10 +55,10 @@ void main() {
       );
       expect(
         find.descendant(
-          of: find.byType(ActionPlanetButton),
+          of: find.byType(LoginCard),
           matching: find.byType(CurvedText),
         ),
-        findsNothing,
+        findsOneWidget,
       );
 
       // Deve mostrar somente as matérias habilitadas para o ano letivo.
@@ -68,7 +68,7 @@ void main() {
       );
       expect(
         planets.map((planet) => planet.progressText),
-        everyElement(matches(RegExp(r'^\d+ de \d{2}$'))),
+        everyElement(matches(RegExp(r'^\d+ de \d{2} aulas\.$'))),
       );
       expect(
         tester.getSize(find.byKey(const ValueKey('home-planets-orbit'))).height,

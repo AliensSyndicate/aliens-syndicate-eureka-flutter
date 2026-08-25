@@ -40,7 +40,7 @@ class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _BadgeButton(
-                text: '$xp',
+                text: AppStrings.homeXpValue(xp),
                 textColor: UiColor.text,
                 icon: UiIcon.diamontXp(size: UiSize.iconMd),
                 semanticLabel: AppStrings.xpLabel,
@@ -50,7 +50,7 @@ class AppHomeBar extends StatelessWidget implements PreferredSizeWidget {
                 _NewYearsBadge(
                   visible: hasNewSchoolYears,
                   child: _BadgeButton(
-                    text: AppStrings.schoolYear(schoolYear!),
+                    text: AppStrings.homeSchoolYear(schoolYear!),
                     textColor: UiColor.text,
                     icon: UiIcon.backpackForYear(
                       schoolYear!,
