@@ -93,7 +93,7 @@ class HomeUniverseHeader extends StatelessWidget {
               key: const ValueKey('home-universe-logo'),
               label: AppStrings.appName,
               image: true,
-              child: UiIcon.logo(size: 36),
+              child: UiIcon.logo(size: 32),
             ),
           ),
         ),
