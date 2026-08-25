@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 
 import '../../../models/model_matching_pair.dart';
 import '../../../models/model_question.dart';
@@ -265,8 +264,6 @@ class _MatchingChip extends StatelessWidget {
       _MatchingState.correct => UiColor.success,
       _MatchingState.incorrect => UiColor.error,
     };
-    final showResult =
-        state == _MatchingState.correct || state == _MatchingState.incorrect;
     return Semantics(
       button: true,
       selected: state != _MatchingState.normal,
@@ -304,16 +301,6 @@ class _MatchingChip extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (showResult) ...[
-                    const SizedBox(width: UiSpacing.xs),
-                    HugeIcon(
-                      icon: state == _MatchingState.correct
-                          ? HugeIcons.strokeRoundedCheckmarkCircle02
-                          : HugeIcons.strokeRoundedCancelCircle,
-                      color: color,
-                      size: 18,
-                    ),
-                  ],
                 ],
               ),
             ),

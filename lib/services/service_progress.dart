@@ -1,4 +1,5 @@
 import '../interfaces/repository_progress.dart';
+import '../interfaces/repository_cloud_progress.dart';
 import '../models/model_progress.dart';
 import '../models/model_lesson.dart';
 import '../models/model_lesson_session.dart';
@@ -6,19 +7,30 @@ import '../models/model_activity_result.dart';
 import 'service_subject_progress.dart';
 
 class ProgressService {
-  ProgressService(this._repository);
+  ProgressService(this._repository, {CloudProgressRepository? cloudRepository})
+    : _cloudRepository = cloudRepository;
   final ProgressRepository _repository;
+  final CloudProgressRepository? _cloudRepository;
 
   LessonSession loadLessonSession(String lessonId) {
     return _repository.loadLessonSession(lessonId);
   }
 
-  Future<void> saveLessonSession(String lessonId, LessonSession session) {
-    return _repository.saveLessonSession(lessonId, session);
+  Future<void> saveLessonSession(String lessonId, LessonSession session) async {
+    await _repository.saveLessonSession(lessonId, session);
+    await _saveCloud(
+      () => _cloudRepository?.saveLessonRewardState(lessonId, session),
+    );
   }
 
   UserProgress load() {
     return _repository.loadProgress();
+  }
+
+  int projectedTotalXp(String lessonId, int earnedXp) {
+    final current = load();
+    return current.xp +
+        (current.completedLessonIds.contains(lessonId) ? 0 : earnedXp);
   }
 
   int completionPercentage(List<Lesson> lessons) {
@@ -70,11 +82,22 @@ class ProgressService {
       lastLessonId: lessonId,
     );
     await _repository.saveProgress(updated);
+    await _saveCloud(() => _cloudRepository?.saveProgress(updated));
     return updated;
   }
 
-  Future<void> saveActivityResult(ActivityResultSnapshot result) =>
-      _repository.saveActivityResult(result);
+  Future<void> saveActivityResult(ActivityResultSnapshot result) async {
+    await _repository.saveActivityResult(result);
+    await _saveCloud(() => _cloudRepository?.saveActivityResult(result));
+  }
+
+  Future<void> _saveCloud(Future<void>? Function() operation) async {
+    try {
+      await operation();
+    } on Object {
+      // O Hive já confirmou a gravação. A experiência permanece offline-first.
+    }
+  }
 
   ActivityResultSnapshot? loadLatestActivityResult(String lessonId) =>
       _repository.loadLatestActivityResult(lessonId);

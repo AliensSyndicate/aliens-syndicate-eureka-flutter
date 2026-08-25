@@ -19,6 +19,8 @@ Dark, moderna, playful, limpa e adequada de crianças a adolescentes. Inspiraç�
 - AppBars exibem apenas contexto e ações essenciais. Home: somente logo e XP.
 - Loading usa skeleton ou animação contextual; evitar spinner grande e texto técnico.
 - Erros são texto simples, sem ícone/borda/background desnecessários.
+- Controles de resposta das atividades não usam ícones decorativos internos; preserve letras, números e rótulos necessários para compreender ou operar a atividade.
+- O feedback de atividade entra no lugar de `Verificar`: ícone e título ficam fora dos controles de resposta; no acerto da jornada, ícone de XP e `+20 XP` aparecem à direita; em erro, resposta correta e justificativa aparecem abaixo.
 - Evitar cards, bordas, badges e textos redundantes quando espaçamento e hierarquia resolvem.
 
 ## Acessibilidade

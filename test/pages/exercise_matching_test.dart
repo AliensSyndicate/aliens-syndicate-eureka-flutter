@@ -3,7 +3,6 @@ import 'package:eureka/pages/lesson/widgets/exercise_matching.dart';
 import 'package:eureka/ui/ui_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hugeicons/hugeicons.dart';
 
 void main() {
   const testPairs = [
@@ -47,24 +46,11 @@ void main() {
     }
 
     expect(answer, isNotEmpty);
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is HugeIcon &&
-            identical(widget.icon, HugeIcons.strokeRoundedCancelCircle),
-      ),
-      findsNothing,
-    );
+    expect(find.byType(Icon), findsNothing);
 
     await tester.pumpWidget(exercise(answeredCorrect: false));
     await tester.pump();
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is HugeIcon &&
-            identical(widget.icon, HugeIcons.strokeRoundedCancelCircle),
-      ),
-      findsNWidgets(10),
-    );
+    expect(find.byType(Icon), findsNothing);
+    expect(tester.widget<Text>(find.text('1/2')).style?.color, UiColor.error);
   });
 }

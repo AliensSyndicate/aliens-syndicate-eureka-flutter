@@ -45,6 +45,16 @@ class LessonController {
       _answers.addAll(saved.answers);
       _results.addAll(saved.results);
     }
+    if (compatibleSaved) {
+      _rewardedQuestionIds.addAll(saved.rewardedQuestionIds);
+      if (saved.rewardedQuestionIds.isEmpty) {
+        _rewardedQuestionIds.addAll(
+          saved.results.entries
+              .where((entry) => entry.value)
+              .map((entry) => entry.key),
+        );
+      }
+    }
     _completed = compatibleSaved && saved.completed;
     currentPage = saved.currentPage.clamp(0, summaryPage);
   }
@@ -56,6 +66,7 @@ class LessonController {
   late final List<Question> _questions;
   final Map<String, String> _answers = {};
   final Map<String, bool> _results = {};
+  final Set<String> _rewardedQuestionIds = {};
   int currentPage = 0;
   bool _completed = false;
   bool get isCompleted => _completed;
@@ -84,8 +95,12 @@ class LessonController {
       .toSet()
       .toList();
   int get earnedXp => mode == LearningMode.journey
-      ? _scoringService.calculateJourneyXp(correctAnswers: correctAnswers)
+      ? _scoringService.calculateJourneyXp(
+          correctAnswers: _rewardedQuestionIds.length,
+        )
       : 0;
+  bool hasEarnedXpFor(Question question) =>
+      _rewardedQuestionIds.contains(question.id);
   Future<void> selectPage(int page) async {
     currentPage = page.clamp(0, summaryPage);
     await _persist();
@@ -107,6 +122,9 @@ class LessonController {
     _answers[currentQuestion.id] = answer;
     final correct = _answerService.isCorrect(currentQuestion, answer);
     _results[currentQuestion.id] = correct;
+    if (correct && mode == LearningMode.journey) {
+      _rewardedQuestionIds.add(currentQuestion.id);
+    }
     if (!correct) {
       await _progressService.recordDifficulty(currentQuestion.subjectId);
       await _progressService.recordDifficulty(currentQuestion.topicId);
@@ -127,6 +145,7 @@ class LessonController {
       answers: Map.unmodifiable(_answers),
       results: Map.unmodifiable(_results),
       questionIds: _questions.map((question) => question.id).toList(),
+      rewardedQuestionIds: _rewardedQuestionIds.toList(),
       activityVersion: lesson.activityVersion,
       completed: _completed,
     ),

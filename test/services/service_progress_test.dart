@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:eureka/data/local/hive_progress_repository.dart';
 import 'package:eureka/data/seed/seed_content.dart';
+import 'package:eureka/interfaces/repository_cloud_progress.dart';
 import 'package:eureka/l10n/app_strings.dart';
 import 'package:eureka/models/model_activity_result.dart';
 import 'package:eureka/models/model_lesson_session.dart';
+import 'package:eureka/models/model_progress.dart';
 import 'package:eureka/services/service_progress.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -112,9 +114,67 @@ void main() {
     expect(service.completionPercentage(lessons), 50);
   });
 
+  test('salva progresso local e agregado remoto autenticado', () async {
+    final cloud = _RecordingCloudProgressRepository();
+    final service = ProgressService(
+      HiveProgressRepository(box),
+      cloudRepository: cloud,
+    );
+
+    await service.saveLessonSession(
+      'lesson_1',
+      const LessonSession(rewardedQuestionIds: ['q1']),
+    );
+    await service.completeLesson('lesson_1', 40);
+    final result = ActivityResultSnapshot(
+      attemptId: 'attempt-sync',
+      lessonId: 'lesson_1',
+      lessonTitle: 'Frações',
+      subjectId: 'mathematics',
+      activityVersion: 1,
+      questionIds: const ['q1', 'q2'],
+      correctAnswers: 2,
+      totalQuestions: 2,
+      earnedXp: 40,
+      duration: const Duration(minutes: 2),
+      reviewTopics: const [],
+      completedAt: DateTime(2026, 8, 25),
+    );
+    await service.saveActivityResult(result);
+
+    expect(service.load().xp, 40);
+    expect(cloud.progress?.xp, 40);
+    expect(cloud.result?.attemptId, 'attempt-sync');
+    expect(cloud.rewardSession?.rewardedQuestionIds, ['q1']);
+  });
+
   test('formata progresso com ao menos dois dígitos', () {
     expect(AppStrings.progressRatio(0, 0), '00/00');
     expect(AppStrings.progressRatio(3, 10), '03/10');
     expect(AppStrings.progressRatio(25, 25), '25/25');
   });
+}
+
+class _RecordingCloudProgressRepository implements CloudProgressRepository {
+  UserProgress? progress;
+  ActivityResultSnapshot? result;
+  LessonSession? rewardSession;
+
+  @override
+  Future<void> saveProgress(UserProgress progress) async {
+    this.progress = progress;
+  }
+
+  @override
+  Future<void> saveActivityResult(ActivityResultSnapshot result) async {
+    this.result = result;
+  }
+
+  @override
+  Future<void> saveLessonRewardState(
+    String lessonId,
+    LessonSession session,
+  ) async {
+    rewardSession = session;
+  }
 }

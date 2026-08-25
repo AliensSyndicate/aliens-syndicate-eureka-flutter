@@ -14,7 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 void main() {
-  testWidgets('resumo mostra atividade pendente como nao feito em warning', (
+  testWidgets('resumo só mostra extrato depois de uma atividade feita', (
     tester,
   ) async {
     final question = modelMultipleChoiceLesson.questions.first;
@@ -25,15 +25,23 @@ void main() {
             questions: [question],
             resultFor: (_) => null,
             primaryColor: UiColor.science,
+            earnedXp: 0,
+            totalXp: 0,
+            showXp: true,
+            xpPerCorrectAnswer: 20,
+            xpEarnedInCurrentAttemptFor: (_) => false,
             onRetry: () {},
           ),
         ),
       ),
     );
 
-    final status = find.text('Atividade 1 · ${AppStrings.activityNotDone}');
-    expect(status, findsOneWidget);
-    expect(tester.widget<Text>(status).style?.color, UiColor.warning);
+    expect(
+      find.text('Atividade 1 · ${AppStrings.activityNotDone}'),
+      findsNothing,
+    );
+    expect(find.text(AppStrings.summaryRequiresActivity), findsOneWidget);
+    expect(find.byKey(const ValueKey('lesson-summary-retry')), findsNothing);
   });
 
   testWidgets('descricao reutilizavel mostra titulo resumo e destaque', (

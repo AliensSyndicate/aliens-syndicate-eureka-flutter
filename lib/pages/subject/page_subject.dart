@@ -183,17 +183,9 @@ class _LessonSection extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       if (!featured) ...[
-        Row(
-          children: [
-            Text(title, style: UiText.h5.copyWith(color: UiColor.textPrimary)),
-            if (count != null) ...[
-              const SizedBox(width: UiSpacing.xs),
-              Text(
-                '$count',
-                style: UiText.h6.copyWith(color: UiColor.textSecondary),
-              ),
-            ],
-          ],
+        Text(
+          count != null ? AppStrings.lessonsCountHeader(count!) : title,
+          style: UiText.h5.copyWith(color: UiColor.textPrimary),
         ),
         const SizedBox(height: UiSpacing.sm),
       ],

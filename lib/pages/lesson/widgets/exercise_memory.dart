@@ -202,9 +202,11 @@ class _FlipCard extends StatelessWidget {
             : _CardFace(
                 accent: UiColor.outline,
                 onTap: onTap,
-                child: UiIcon.sparkles(
-                  color: accentColor.withValues(alpha: .8),
-                  size: UiSize.iconMd,
+                child: Text(
+                  '?',
+                  style: UiText.h5.copyWith(
+                    color: accentColor.withValues(alpha: .8),
+                  ),
                 ),
               ),
       );

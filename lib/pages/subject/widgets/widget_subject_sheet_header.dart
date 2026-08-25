@@ -4,7 +4,6 @@ import '../../../enums/subject_type.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../ui/ui_color.dart';
 import '../../../ui/ui_icon.dart';
-import '../../../ui/ui_radius.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
 import '../../../ui/ui_text.dart';
@@ -51,12 +50,15 @@ class SubjectSheetHeader extends StatelessWidget {
         right: -20,
         top: 64,
         child: IgnorePointer(
-          child: Image.asset(
-            'assets/images/${subject.name}.png',
-            key: const ValueKey('subject-header-planet'),
-            width: _planetSize,
-            height: _planetSize,
-            fit: BoxFit.contain,
+          child: Opacity(
+            opacity: .80,
+            child: Image.asset(
+              'assets/images/${subject.name}.png',
+              key: const ValueKey('subject-header-planet'),
+              width: _planetSize,
+              height: _planetSize,
+              fit: BoxFit.contain,
+            ),
           ),
         ),
       ),
@@ -116,29 +118,12 @@ class SubjectSheetHeader extends StatelessWidget {
                       const SizedBox(height: UiSpacing.sm),
                       Container(
                         key: const ValueKey('subject-xp-card'),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: UiSpacing.md,
-                          vertical: UiSpacing.xs,
-                        ),
-                        decoration: BoxDecoration(
-                          color: UiColor.surface.withValues(alpha: .76),
-                          borderRadius: BorderRadius.circular(UiRadius.card),
-                          border: Border.all(
-                            color: color.withValues(alpha: .42),
-                          ),
-                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             UiIcon.diamontXp(size: 18),
                             const SizedBox(width: UiSpacing.xxs),
-                            Text(
-                              AppStrings.xpValue(xp),
-                              style: UiText.p.copyWith(
-                                color: UiColor.xp,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
+                            Text(AppStrings.xpValue(xp), style: UiText.p),
                           ],
                         ),
                       ),

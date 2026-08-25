@@ -12,6 +12,9 @@ abstract final class AppStrings {
       continueTitle = 'Continuar',
       subjectsTitle = 'Matérias',
       lessonsTitle = 'Aulas',
+      statement = 'Extrato',
+      lessonGains = 'Ganhos da aula',
+      totalXpBalance = 'Saldo total de XP',
       continueWhereStopped = 'Continuar de onde parou',
       recommendedForYou = 'Vale revisar',
       home = 'Home',
@@ -77,9 +80,12 @@ abstract final class AppStrings {
       almostFeedback = 'Quase.',
       continueLabel = 'Continuar',
       correctTitle = 'Correto!',
-      incorrectTitle = 'Incorreto!',
+      incorrectTitle = 'Errado!',
       correctAnswer = 'Resposta correta',
       answerExplanation = 'Entenda por quê',
+      xpAlreadyEarned = 'XP já recebido',
+      xpOncePerActivity = 'Cada atividade concede XP apenas uma vez.',
+      summaryRequiresActivity = 'Faça uma atividade para ver o resumo.',
       noXpOutsideJourney = 'Este modo é para estudar e não concede XP.',
       selectAtLeastOne = 'Selecione pelo menos um conteúdo.',
       startSimulation = 'Começar simulado',
@@ -295,6 +301,8 @@ abstract final class AppStrings {
   static String activityDuration(int minutes) =>
       'Você terminou em $minutes min.';
   static String activityEarnedXp(int value) => 'Você ganhou $value XP.';
+  static String lessonXpTotal(int value) => 'XP da aula: +$value XP';
+  static String accumulatedXpTotal(int value) => 'XP total: $value XP';
   static String earnUpToXp(int value) => 'Ganhe até $value XP';
   static String earnedXpGain(int value) => '+$value XP';
   static String essayCounter(int length, int maxLength) => '$length/$maxLength';
@@ -309,6 +317,7 @@ abstract final class AppStrings {
       '$current/${total.toString().padLeft(2, '0')} aulas';
   static String completedLessonsRatio(int completed, int total) =>
       '$completed de $total aulas concluídas';
+  static String lessonsCountHeader(int count) => '$count aulas';
   static String lessonNumberTitle(int number, String title) =>
       '${number.toString().padLeft(2, '0')}. $title';
   static String lessonSemantics(String title, bool isCompleted) =>

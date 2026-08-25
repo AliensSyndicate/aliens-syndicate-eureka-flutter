@@ -166,6 +166,7 @@ void main() {
       final question = controller.currentQuestion;
       await controller.saveDraft(question, question.correctAnswer);
       await controller.submit(question.correctAnswer);
+      final earnedBeforeRetry = controller.earnedXp;
 
       await controller.retry();
 
@@ -174,6 +175,11 @@ void main() {
       expect(controller.answerFor(question), isNull);
       expect(controller.resultFor(question), isNull);
       expect(controller.canOpenSummary, isFalse);
+      expect(controller.earnedXp, earnedBeforeRetry);
+
+      await controller.saveDraft(question, question.correctAnswer);
+      await controller.submit(question.correctAnswer);
+      expect(controller.earnedXp, earnedBeforeRetry);
     },
   );
 

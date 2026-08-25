@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
 import '../../app/components/app_report_bottom_sheet.dart';
 import '../../app/navigation/navigation_router.dart';
@@ -26,6 +25,7 @@ import '../../ui/ui_spacing.dart';
 import 'widgets/exercise_content.dart';
 import 'widgets/widget_lesson_activity.dart';
 import 'widgets/widget_lesson_app_bar.dart';
+import 'widgets/widget_lesson_feedback_card.dart';
 import 'widgets/widget_lesson_header.dart';
 import 'widgets/widget_lesson_page_indicators.dart';
 import 'widgets/widget_lesson_summary.dart';
@@ -43,6 +43,7 @@ class _PageLessonState extends State<PageLesson> {
   late final PageController pageController;
   late final LessonNarrationService narrationController;
   final Map<String, TextEditingController> textControllers = {};
+  final Set<String> newlyRewardedQuestionIds = {};
   final GlobalKey fixedHeaderKey = GlobalKey();
   double fixedHeaderHeight = 0;
   bool submitting = false;
@@ -205,6 +206,17 @@ class _PageLessonState extends State<PageLesson> {
     questions: controller.visibleQuestions,
     resultFor: controller.resultFor,
     primaryColor: subjectColor,
+    earnedXp: controller.earnedXp,
+    totalXp: ServiceRegistry.progress.projectedTotalXp(
+      widget.lesson.id,
+      controller.earnedXp,
+    ),
+    showXp: widget.mode == LearningMode.journey,
+    xpPerCorrectAnswer: ServiceRegistry.scoring.calculateJourneyXp(
+      correctAnswers: 1,
+    ),
+    xpEarnedInCurrentAttemptFor: (question) =>
+        newlyRewardedQuestionIds.contains(question.id),
     onRetry: _retryActivities,
     onFinish: controller.canOpenSummary && !finishing ? _finishLesson : null,
   );
@@ -215,6 +227,7 @@ class _PageLessonState extends State<PageLesson> {
     for (final textController in textControllers.values) {
       textController.clear();
     }
+    newlyRewardedQuestionIds.clear();
     pageController.jumpToPage(controller.currentPage);
     setState(() {});
   }
@@ -269,21 +282,53 @@ class _PageLessonState extends State<PageLesson> {
           onOptionSelected: (value) => _saveAnswer(question, value),
           onTextChanged: (value) => _saveAnswer(question, value),
         ),
-        if (result == null)
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: UiSpacing.pageHorizontal,
-            ),
-            child: AppButton(
-              key: ValueKey('verify-${question.id}'),
-              label: AppStrings.checkAnswer,
-              color: subjectColor,
-              isLoading: submitting,
-              onPressed: answer.trim().isNotEmpty && !submitting
-                  ? () => _verify(question)
-                  : null,
-            ),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: UiSpacing.pageHorizontal,
           ),
+          child: AnimatedSwitcher(
+            duration: UiMotion.screenTransitionDuration,
+            switchInCurve: UiMotion.screenTransitionCurve,
+            child: result == null
+                ? AppButton(
+                    key: ValueKey('verify-${question.id}'),
+                    label: AppStrings.checkAnswer,
+                    color: subjectColor,
+                    isLoading: submitting,
+                    onPressed: answer.trim().isNotEmpty && !submitting
+                        ? () => _verify(question)
+                        : null,
+                  )
+                : LessonFeedbackCard(
+                    key: ValueKey('feedback-${question.id}'),
+                    status: result
+                        ? LessonFeedbackStatus.success
+                        : LessonFeedbackStatus.error,
+                    title: result
+                        ? AppStrings.correctTitle
+                        : AppStrings.incorrectTitle,
+                    message: result
+                        ? null
+                        : AppStrings.correctAnswerValue(
+                            question.correctAnswerForFeedback,
+                          ),
+                    explanation: result ? null : question.incorrectFeedback,
+                    earnedXp:
+                        result &&
+                            widget.mode == LearningMode.journey &&
+                            newlyRewardedQuestionIds.contains(question.id)
+                        ? ServiceRegistry.scoring.calculateJourneyXp(
+                            correctAnswers: 1,
+                          )
+                        : null,
+                    xpAlreadyEarned:
+                        result &&
+                        widget.mode == LearningMode.journey &&
+                        controller.hasEarnedXpFor(question) &&
+                        !newlyRewardedQuestionIds.contains(question.id),
+                  ),
+          ),
+        ),
       ],
     );
   }
@@ -296,28 +341,14 @@ class _PageLessonState extends State<PageLesson> {
   Future<void> _verify(Question question) async {
     if (submitting || controller.resultFor(question) != null) return;
     setState(() => submitting = true);
-    final correct = await controller.submit(
-      controller.answerFor(question) ?? '',
-    );
+    final hadEarnedXp = controller.hasEarnedXpFor(question);
+    final submission = controller.submit(controller.answerFor(question) ?? '');
+    final correct = controller.resultFor(question) == true;
+    if (correct && !hadEarnedXp) newlyRewardedQuestionIds.add(question.id);
+    setState(() {});
+    await submission;
     if (!mounted) return;
     setState(() => submitting = false);
-    await AppBottomSheet.show<void>(
-      context,
-      title: correct ? AppStrings.correctFeedback : AppStrings.almostFeedback,
-      titleColor: correct ? UiColor.success : UiColor.warning,
-      content: Text(
-        correct
-            ? question.explanation
-            : '${AppStrings.correctAnswerValue(question.correctAnswerForFeedback)}\n\n${question.incorrectFeedback}',
-      ),
-      actions: [
-        AppButton(
-          label: AppStrings.continueLabel,
-          color: correct ? UiColor.success : UiColor.warning,
-          onPressed: () => Navigator.pop(context),
-        ),
-      ],
-    );
   }
 
   Future<void> _finishLesson() async {

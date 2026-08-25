@@ -1,7 +1,9 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../repositories/repository_firestore_content.dart';
 import '../repositories/repository_firestore_report.dart';
+import '../repositories/repository_firestore_progress.dart';
 import '../repositories/repository_firebase_auth.dart';
 import '../repositories/repository_local_search.dart';
 import '../data/local/hive_content_manifest_cache.dart';
@@ -32,8 +34,15 @@ abstract final class ServiceRegistry {
   static Box<dynamic> get _box => Hive.box<dynamic>('eureka');
   static Box<dynamic> get _contentBox => Hive.box<dynamic>('content_cache_v1');
   static UserService get user => UserService(HiveUserRepository(_box));
-  static ProgressService get progress =>
-      ProgressService(HiveProgressRepository(_box));
+  static ProgressService get progress => ProgressService(
+    HiveProgressRepository(_box),
+    cloudRepository: FirebaseService.isAvailable
+        ? FirestoreProgressRepository(
+            FirebaseFirestore.instance,
+            FirebaseAuth.instance,
+          )
+        : null,
+  );
   static PreferencesService get preferences =>
       PreferencesService(HivePreferencesRepository(_box));
   static AuthRepository? _auth;

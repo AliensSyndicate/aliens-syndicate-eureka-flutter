@@ -8,6 +8,7 @@ Esta regra materializa as exigências do Documento Mestre para segurança, LGPD 
 - Autenticação real deve usar Google e Apple quando aplicável. Não criar fluxo fictício de e-mail e senha.
 - Pages e widgets não acessam Firebase ou Hive. Toda autorização, validação e persistência passa por services e repositories.
 - Firestore Rules e validações de backend são obrigatórias; validação apenas no cliente não é proteção suficiente.
+- Progresso remoto fica em `users/{uid}` e só pode ser lido ou alterado quando `request.auth.uid` corresponde ao dono. Persistir apenas agregados necessários, nunca respostas individuais.
 - App Check, ambientes separados e testes das regras são gates de lançamento remoto, não elementos decorativos.
 - Exclusão, retenção, consentimento, termos e política de privacidade exigem decisão explícita e revisão jurídica antes de liberar conta real.
 - Analytics não pode registrar enunciados, respostas livres, nomes, e-mails ou outros conteúdos pessoais desnecessários.

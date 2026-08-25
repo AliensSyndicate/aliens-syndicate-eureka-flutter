@@ -16,6 +16,8 @@ class LessonFeedbackCard extends StatelessWidget {
     this.explanation,
     this.message,
     this.onReport,
+    this.earnedXp,
+    this.xpAlreadyEarned = false,
     super.key,
   });
 
@@ -24,6 +26,8 @@ class LessonFeedbackCard extends StatelessWidget {
   final String? message;
   final String? explanation;
   final VoidCallback? onReport;
+  final int? earnedXp;
+  final bool xpAlreadyEarned;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +37,10 @@ class LessonFeedbackCard extends StatelessWidget {
     return Semantics(
       liveRegion: true,
       container: true,
-      label: '$title ${message ?? ''} ${explanation ?? ''}',
+      label:
+          '$title ${earnedXp == null ? '' : AppStrings.earnedXpGain(earnedXp!)} '
+          '${xpAlreadyEarned ? AppStrings.xpAlreadyEarned : ''} '
+          '${message ?? ''} ${explanation ?? ''}',
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: UiSpacing.md),
@@ -58,6 +65,22 @@ class LessonFeedbackCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (success && (earnedXp != null || xpAlreadyEarned)) ...[
+                  const SizedBox(width: UiSpacing.sm),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      UiIcon.diamontXp(size: UiSize.iconMd),
+                      const SizedBox(width: UiSpacing.xxs),
+                      Text(
+                        xpAlreadyEarned
+                            ? AppStrings.xpAlreadyEarned
+                            : AppStrings.earnedXpGain(earnedXp!),
+                        style: UiText.h6.copyWith(color: UiColor.xp),
+                      ),
+                    ],
+                  ),
+                ],
                 if (onReport != null) ...[
                   const SizedBox(width: UiSpacing.xs),
                   IconButton(

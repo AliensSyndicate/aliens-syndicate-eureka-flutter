@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../ui/ui_card.dart';
 import '../../../ui/ui_color.dart';
+import '../../../ui/ui_radius.dart';
 import '../../../ui/ui_spacing.dart';
 import '../../../ui/ui_text.dart';
 
@@ -39,10 +40,10 @@ class SubjectProgressCard extends StatelessWidget {
                 key: const ValueKey('subject-progress-bar'),
                 height: UiCard.progressTagHeight / 2,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(UiCard.radius),
+                  borderRadius: BorderRadius.circular(UiRadius.pill),
                   child: LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: UiColor.textPrimary.withValues(alpha: .14),
+                    backgroundColor: color.withValues(alpha: 0.18),
                     color: color,
                   ),
                 ),
@@ -51,7 +52,7 @@ class SubjectProgressCard extends StatelessWidget {
             const SizedBox(width: UiSpacing.sm),
             Text(
               AppStrings.percent((progress * 100).round()),
-              style: UiText.h6.copyWith(color: color),
+              style: UiText.small.copyWith(color: color),
             ),
           ],
         ),

@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../models/model_question.dart';
 import '../../../ui/ui_color.dart';
-import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_option.dart';
-import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
 import 'exercise_question_prompt.dart';
 
@@ -103,12 +101,6 @@ class _ExerciseSequencingState extends State<ExerciseSequencing> {
               label: _order[index],
               accent: accent,
               answered: widget.answeredCorrect != null,
-              handle: widget.enabled
-                  ? UiIcon.drag(
-                      color: UiColor.textSecondary,
-                      size: UiSize.iconMd,
-                    )
-                  : null,
             );
             return Padding(
               key: ValueKey('sequence-${_order[index]}'),
@@ -130,14 +122,12 @@ class _SequenceTile extends StatelessWidget {
     required this.label,
     required this.accent,
     required this.answered,
-    required this.handle,
   });
 
   final int position;
   final String label;
   final Color accent;
   final bool answered;
-  final Widget? handle;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -182,7 +172,6 @@ class _SequenceTile extends StatelessWidget {
             ),
           ),
         ),
-        if (handle != null) ...[const SizedBox(width: UiSpacing.xs), handle!],
       ],
     ),
   );

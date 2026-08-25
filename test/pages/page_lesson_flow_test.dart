@@ -10,6 +10,7 @@ import 'package:eureka/models/content/model_content_page.dart';
 import 'package:eureka/models/model_lesson.dart';
 import 'package:eureka/models/model_question.dart';
 import 'package:eureka/pages/lesson/page_lesson.dart';
+import 'package:eureka/pages/lesson/widgets/widget_lesson_feedback_card.dart';
 import 'package:eureka/pages/lesson/widgets/widget_question_option.dart';
 import 'package:eureka/ui/ui_theme.dart';
 import 'package:flutter/material.dart';
@@ -211,6 +212,72 @@ void main() {
       findsOneWidget,
     );
   });
+
+  for (final answer in ['A', 'B']) {
+    final correct = answer == 'A';
+    testWidgets(
+      'troca Verificar por feedback inline ${correct ? 'correto' : 'errado'}',
+      (tester) async {
+        final question = Question(
+          id: 'feedback_${answer.toLowerCase()}',
+          prompt: 'Quanto é 2 + 2?',
+          type: QuestionType.multipleChoice,
+          options: const ['A', 'B', 'C', 'D'],
+          correctAnswer: 'A',
+          subjectId: 'mathematics',
+          topicId: 'addition',
+          explanation: 'Dois mais dois formam quatro unidades.',
+        );
+        final lesson = Lesson(
+          id: 'feedback_lesson_${answer.toLowerCase()}',
+          title: 'Adição',
+          summary: 'Some as parcelas.',
+          subject: SubjectType.mathematics,
+          questions: [question],
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: UiTheme.dark,
+            home: PageLesson(lesson: lesson, mode: LearningMode.journey),
+          ),
+        );
+        tester
+            .widget<InkWell>(
+              find.byKey(const ValueKey('lesson-page-indicator-1')),
+            )
+            .onTap!();
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.byKey(ValueKey('lesson-option-${question.id}-$answer')),
+        );
+        await tester.pump();
+        await tester.tap(find.byKey(ValueKey('verify-${question.id}')));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(LessonFeedbackCard), findsOneWidget);
+        expect(find.byKey(ValueKey('verify-${question.id}')), findsNothing);
+        expect(
+          find.text(
+            correct ? AppStrings.correctTitle : AppStrings.incorrectTitle,
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.text(AppStrings.correctAnswer),
+          correct ? findsNothing : findsOneWidget,
+        );
+        expect(
+          find.text('Dois mais dois formam quatro unidades.'),
+          correct ? findsNothing : findsOneWidget,
+        );
+        expect(
+          find.text(AppStrings.earnedXpGain(20)),
+          correct ? findsOneWidget : findsNothing,
+        );
+      },
+    );
+  }
 
   for (final mode in [LearningMode.explore, LearningMode.simulation]) {
     testWidgets('$mode mostra somente as tres questoes extras', (tester) async {

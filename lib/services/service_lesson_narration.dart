@@ -23,6 +23,7 @@ class LessonNarrationService extends ChangeNotifier
   final FlutterTts _textToSpeech;
   LessonNarrationState _state = LessonNarrationState.stopped;
   bool _configured = false;
+  bool _isDisposed = false;
 
   @override
   LessonNarrationState get state => _state;
@@ -41,7 +42,7 @@ class LessonNarrationService extends ChangeNotifier
   }
 
   Future<void> _configure() async {
-    if (_configured) return;
+    if (_configured || _isDisposed) return;
     await _textToSpeech.setLanguage('pt-BR');
     await _textToSpeech.setSpeechRate(.46);
     await _textToSpeech.setPitch(1);
@@ -52,10 +53,12 @@ class LessonNarrationService extends ChangeNotifier
 
   @override
   Future<void> toggle(String content) async {
+    if (_isDisposed) return;
     final text = content.trim();
     if (text.isEmpty) return;
     try {
       await _configure();
+      if (_isDisposed) return;
       if (_state == LessonNarrationState.playing) {
         await _textToSpeech.pause();
         return;
@@ -78,18 +81,23 @@ class LessonNarrationService extends ChangeNotifier
   }
 
   void _setState(LessonNarrationState value) {
+    if (_isDisposed) return;
     _state = value;
     notifyListeners();
   }
 
   void _finish() {
+    if (_isDisposed) return;
     _state = LessonNarrationState.stopped;
     notifyListeners();
   }
 
   @override
   void dispose() {
-    unawaited(stop());
+    _isDisposed = true;
+    if (_configured) {
+      unawaited(_textToSpeech.stop());
+    }
     super.dispose();
   }
 }

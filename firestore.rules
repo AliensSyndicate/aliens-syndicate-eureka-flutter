@@ -15,8 +15,34 @@ service cloud.firestore {
       allow create: if request.resource.data.userId is string;
       allow read, update, delete: if false;
     }
-    // A V1 não envia progresso local ao Firebase. Liberar somente após autenticação e revisão LGPD.
-    match /users/{userId}/{document=**} { allow read, write: if false; }
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+    match /users/{userId}/progress/{progressId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId)
+        && request.resource.data.xp is int
+        && request.resource.data.xp >= 0
+        && request.resource.data.completedLessonIds is list;
+      allow delete: if false;
+    }
+    match /users/{userId}/activity_results/{lessonId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId)
+        && request.resource.data.lessonId == lessonId
+        && request.resource.data.correctAnswers is int
+        && request.resource.data.totalQuestions is int
+        && request.resource.data.earnedXp is int;
+      allow delete: if false;
+    }
+    match /users/{userId}/lesson_rewards/{lessonId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId)
+        && request.resource.data.lessonId == lessonId
+        && request.resource.data.activityVersion is int
+        && request.resource.data.rewardedQuestionIds is list;
+      allow delete: if false;
+    }
     match /{document=**} { allow read, write: if false; }
   }
 }
