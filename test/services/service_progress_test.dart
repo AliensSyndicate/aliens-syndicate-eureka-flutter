@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:eureka/data/local/hive_progress_repository.dart';
+import 'package:eureka/data/seed/seed_content.dart';
+import 'package:eureka/l10n/app_strings.dart';
 import 'package:eureka/models/model_activity_result.dart';
+import 'package:eureka/models/model_lesson_session.dart';
 import 'package:eureka/services/service_progress.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -62,5 +65,41 @@ void main() {
     expect(restored?.activityVersion, 2);
     expect(restored?.duration, const Duration(minutes: 4));
     expect(restored?.completedAt, completedAt);
+  });
+
+  test('calcula atividades concluídas sobre o total da matéria', () async {
+    final service = ProgressService(HiveProgressRepository(box));
+    final lessons = seedLessons.take(2).toList();
+    final firstQuestionIds = lessons.first.practiceQuestions
+        .map((question) => question.id)
+        .toList();
+    await service.saveLessonSession(
+      lessons.first.id,
+      LessonSession(
+        questionIds: firstQuestionIds,
+        results: {
+          firstQuestionIds[0]: true,
+          firstQuestionIds[1]: false,
+          firstQuestionIds[2]: true,
+        },
+      ),
+    );
+
+    final partialProgress = service.activityProgress(lessons);
+
+    expect(partialProgress.completed, 0);
+    expect(partialProgress.total, 2);
+
+    await service.completeLesson(lessons.first.id, 0);
+    final completedProgress = service.activityProgress(lessons);
+
+    expect(completedProgress.completed, 1);
+    expect(completedProgress.total, 2);
+  });
+
+  test('formata progresso com ao menos dois dígitos', () {
+    expect(AppStrings.progressRatio(0, 0), '00/00');
+    expect(AppStrings.progressRatio(3, 10), '03/10');
+    expect(AppStrings.progressRatio(25, 25), '25/25');
   });
 }

@@ -5,7 +5,6 @@ import '../../../models/content/model_content_manifest.dart';
 import '../../../models/model_lesson.dart';
 import '../../../ui/ui_card.dart';
 import '../../../ui/ui_color.dart';
-import '../../../ui/ui_gradient.dart';
 import '../../../ui/ui_radius.dart';
 import '../../../ui/ui_spacing.dart';
 import '../../../ui/ui_text.dart';
@@ -32,7 +31,7 @@ class RecommendationCard extends StatelessWidget {
       width: width,
       height: height,
       child: Material(
-        color: UiColor.recommendationBase,
+        color: Colors.transparent,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiRadius.card),
@@ -43,52 +42,49 @@ class RecommendationCard extends StatelessWidget {
         ),
         child: InkWell(
           onTap: onTap,
-          child: Ink(
-            decoration: const BoxDecoration(
-              gradient: UiGradient.recommendation,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: UiSpacing.cardPadding,
+              vertical: UiSpacing.xs,
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: UiSpacing.cardPadding,
-                vertical: UiSpacing.xs,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text.rich(
-                    TextSpan(
-                      style: UiText.h6.copyWith(
-                        fontSize: 15,
-                        color: UiColor.background,
-                        fontWeight: FontWeight.w800,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text.rich(
+                  TextSpan(
+                    style: UiText.h6.copyWith(
+                      fontSize: 15,
+                      color: UiColor.recommendationBorder,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    children: [
+                      const TextSpan(
+                        text: AppStrings.recommendationTitle,
                       ),
-                      children: [
-                        const TextSpan(text: AppStrings.recommendationTitle),
-                        TextSpan(
-                          text: ' • ${subject.title}',
-                        ),
-                      ],
-                    ),
-                    maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.clip,
+                      TextSpan(
+                        text: ' • ${subject.title}',
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    lesson.title,
-                    maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.clip,
-                    style: UiText.label.copyWith(
-                      fontSize: 14,
-                      color: UiColor.background.withValues(alpha: .85),
-                      fontWeight: FontWeight.w500,
-                    ),
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.clip,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  lesson.title,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.clip,
+                  style: UiText.label.copyWith(
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

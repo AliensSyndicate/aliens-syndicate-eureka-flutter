@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../ui/ui_card.dart';
 import '../../../ui/ui_color.dart';
-import '../../../ui/ui_gradient.dart';
 import '../../../ui/ui_radius.dart';
 import '../../../ui/ui_spacing.dart';
 import '../../../ui/ui_text.dart';
@@ -26,7 +25,7 @@ class LoginCard extends StatelessWidget {
       width: width,
       height: height,
       child: Material(
-        color: UiColor.loginBase,
+        color: Colors.transparent,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UiRadius.card),
@@ -37,52 +36,40 @@ class LoginCard extends StatelessWidget {
         ),
         child: InkWell(
           onTap: onTap,
-          child: Ink(
-            decoration: const BoxDecoration(
-              gradient: UiGradient.login,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: UiSpacing.cardPadding,
+              vertical: UiSpacing.xs,
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: UiSpacing.cardPadding,
-                vertical: UiSpacing.xs,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text.rich(
-                    TextSpan(
-                      style: UiText.h6.copyWith(
-                        fontSize: 15,
-                        color: UiColor.background,
-                        fontWeight: FontWeight.w800,
-                      ),
-                      children: [
-                        const TextSpan(text: AppStrings.accountTitle),
-                        const TextSpan(
-                          text: ' • ${AppStrings.createEurekaAccount}',
-                        ),
-                      ],
-                    ),
-                    maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.clip,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  AppStrings.createEurekaAccount,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.clip,
+                  style: UiText.h6.copyWith(
+                    fontSize: 15,
+                    color: UiColor.loginBorder,
+                    fontWeight: FontWeight.w800,
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    AppStrings.saveMyProgress,
-                    maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.clip,
-                    style: UiText.label.copyWith(
-                      fontSize: 14,
-                      color: UiColor.background.withValues(alpha: .85),
-                      fontWeight: FontWeight.w500,
-                    ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  AppStrings.saveMyProgress,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.clip,
+                  style: UiText.label.copyWith(
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

@@ -297,7 +297,10 @@ abstract final class AppStrings {
   static String highSchoolSeries(int year) => '$year EM';
   static String stageElementarySchoolYear(int year) => '$yearº ano EF';
   static String stageHighSchoolYear(int year) => '$yearª série EM';
-  static String progressRatio(int current, int total) => '$current/$total';
+  static String progressRatio(int current, int total) =>
+      '${current.toString().padLeft(2, '0')}/${total.toString().padLeft(2, '0')}';
+  static String planetProgressRatio(int current, int total) =>
+      '$current de ${total.toString().padLeft(2, '0')}';
   static String lessonSemantics(String title, bool isCompleted) =>
       '$title, ${isCompleted ? lessonCompletedSemantics : lessonZeroPercentSemantics}';
   static String pageIndicatorSemantics(int current, int total, String state) =>

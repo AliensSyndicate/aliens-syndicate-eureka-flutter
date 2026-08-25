@@ -28,6 +28,14 @@ class ProgressService {
     );
   }
 
+  ({int completed, int total}) activityProgress(List<Lesson> lessons) {
+    final completedLessonIds = load().completedLessonIds.toSet();
+    final completed = lessons
+        .where((lesson) => completedLessonIds.contains(lesson.id))
+        .length;
+    return (completed: completed, total: lessons.length);
+  }
+
   Map<String, int> loadDifficultyScores() {
     return _repository.loadDifficultyScores();
   }

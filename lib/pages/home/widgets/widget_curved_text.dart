@@ -53,6 +53,7 @@ class _CurvedTextPainter extends CustomPainter {
 
     final center = Offset(size.width / 2, size.height / 2);
     final characters = text.characters.toList();
+    if (isBottom) characters.setAll(0, characters.reversed.toList());
     final letterPainters = <TextPainter>[];
     final letterAngles = <double>[];
     double totalAngle = 0;

@@ -44,6 +44,13 @@ void main() {
 
       // Deve mostrar somente as matérias habilitadas para o ano letivo.
       expect(find.byType(PlanetButton), findsNWidgets(5));
+      final planets = tester.widgetList<PlanetButton>(
+        find.byType(PlanetButton),
+      );
+      expect(
+        planets.map((planet) => planet.progressText),
+        everyElement(matches(RegExp(r'^\d{2}/\d{2}$'))),
+      );
       expect(
         tester.getSize(find.byKey(const ValueKey('home-planets-orbit'))).height,
         lessThan(1040),

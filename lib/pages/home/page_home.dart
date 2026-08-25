@@ -16,7 +16,6 @@ import '../../enums/subject_type.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/auth/model_login_request.dart';
 import '../../models/content/model_content_manifest.dart';
-import '../../models/model_progress.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
@@ -164,10 +163,7 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: portuguese,
                                 size: sizePortuguese,
-                                progressText: _progressFraction(
-                                  portuguese,
-                                  progress,
-                                ),
+                                progressText: _progressFraction(portuguese),
                                 animationIndex: 0,
                                 onTap: () => _openSubject(portuguese),
                               ),
@@ -181,10 +177,7 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: mathematics,
                                 size: sizeMathematics,
-                                progressText: _progressFraction(
-                                  mathematics,
-                                  progress,
-                                ),
+                                progressText: _progressFraction(mathematics),
                                 animationIndex: 1,
                                 onTap: () => _openSubject(mathematics),
                               ),
@@ -198,10 +191,7 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: science,
                                 size: sizeScience,
-                                progressText: _progressFraction(
-                                  science,
-                                  progress,
-                                ),
+                                progressText: _progressFraction(science),
                                 animationIndex: 2,
                                 onTap: () => _openSubject(science),
                               ),
@@ -215,10 +205,7 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: geography,
                                 size: sizeGeography,
-                                progressText: _progressFraction(
-                                  geography,
-                                  progress,
-                                ),
+                                progressText: _progressFraction(geography),
                                 animationIndex: 3,
                                 onTap: () => _openSubject(geography),
                               ),
@@ -232,10 +219,7 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: history,
                                 size: sizeHistory,
-                                progressText: _progressFraction(
-                                  history,
-                                  progress,
-                                ),
+                                progressText: _progressFraction(history),
                                 animationIndex: 4,
                                 onTap: () => _openSubject(history),
                               ),
@@ -249,10 +233,7 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: biology,
                                 size: sizeBiology,
-                                progressText: _progressFraction(
-                                  biology,
-                                  progress,
-                                ),
+                                progressText: _progressFraction(biology),
                                 animationIndex: 5,
                                 onTap: () => _openSubject(biology),
                               ),
@@ -266,10 +247,7 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: physics,
                                 size: sizePhysics,
-                                progressText: _progressFraction(
-                                  physics,
-                                  progress,
-                                ),
+                                progressText: _progressFraction(physics),
                                 animationIndex: 6,
                                 onTap: () => _openSubject(physics),
                               ),
@@ -283,10 +261,7 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: chemistry,
                                 size: sizeChemistry,
-                                progressText: _progressFraction(
-                                  chemistry,
-                                  progress,
-                                ),
+                                progressText: _progressFraction(chemistry),
                                 animationIndex: 7,
                                 onTap: () => _openSubject(chemistry),
                               ),
@@ -300,10 +275,7 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: philosophy,
                                 size: sizePhilosophy,
-                                progressText: _progressFraction(
-                                  philosophy,
-                                  progress,
-                                ),
+                                progressText: _progressFraction(philosophy),
                                 animationIndex: 8,
                                 onTap: () => _openSubject(philosophy),
                               ),
@@ -317,10 +289,7 @@ class _PageHomeState extends State<PageHome> {
                               child: PlanetButton(
                                 subject: sociology,
                                 size: sizeSociology,
-                                progressText: _progressFraction(
-                                  sociology,
-                                  progress,
-                                ),
+                                progressText: _progressFraction(sociology),
                                 animationIndex: 9,
                                 onTap: () => _openSubject(sociology),
                               ),
@@ -461,16 +430,14 @@ class _PageHomeState extends State<PageHome> {
     if (mounted) setState(() {});
   }
 
-  String _progressFraction(
-    SubjectContentManifest subject,
-    UserProgress progress,
-  ) {
+  String _progressFraction(SubjectContentManifest subject) {
     final lessons = subject.availableLessonsForYear(schoolYear);
-    if (lessons.isEmpty) return '0/0';
-    final completed = lessons
-        .where((l) => progress.completedLessonIds.contains(l.id))
-        .length;
-    return AppStrings.progressRatio(completed, lessons.length);
+    if (lessons.isEmpty) return AppStrings.planetProgressRatio(0, 0);
+    final activityProgress = ServiceRegistry.progress.activityProgress(lessons);
+    return AppStrings.planetProgressRatio(
+      activityProgress.completed,
+      activityProgress.total,
+    );
   }
 
   Future<void> _onSchoolYearTap() async {
