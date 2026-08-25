@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
-import '../../app/components/app_home_bar.dart';
 import '../../app/components/show_school_year_sheet.dart';
 import '../../app/navigation/navigation_router.dart';
 import '../../config/config_product.dart';
@@ -18,13 +17,13 @@ import '../../models/auth/model_login_request.dart';
 import '../../models/content/model_content_manifest.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
-import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
 import '../auth/login_bottom_sheet.dart';
 import '../subject/page_subject.dart';
 import 'widgets/widget_continue_learning_card.dart';
 import 'widgets/widget_home_cards_skeleton.dart';
+import 'widgets/widget_home_universe_header.dart';
 import 'widgets/widget_login_card.dart';
 import 'widgets/widget_planet_button.dart';
 import 'widgets/widget_recommendation_card.dart';
@@ -63,8 +62,8 @@ class _PageHomeState extends State<PageHome> {
   Widget build(BuildContext context) {
     final progress = ServiceRegistry.progress.load();
     final isGuest = !ServiceRegistry.user.isAuthenticated;
+    final reducedMotion = ServiceRegistry.preferences.load().reducedMotion;
     final topSafeArea = MediaQuery.of(context).padding.top;
-    final headerHeight = topSafeArea + UiSize.homeAppBarHeight;
 
     return Stack(
       children: [
@@ -124,6 +123,7 @@ class _PageHomeState extends State<PageHome> {
                   };
 
                   double orbitTop(SubjectType type) =>
+                      HomeUniverseHeader.height +
                       _quickActionsOrbitHeight +
                       _subjectOrbitCompression *
                           switch (type) {
@@ -146,14 +146,14 @@ class _PageHomeState extends State<PageHome> {
                     );
                   });
                   final contentHeight = math.max(
-                    availableHeight - headerHeight,
+                    availableHeight - topSafeArea,
                     planetsBottom + UiSpacing.xl,
                   );
 
                   return SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     padding: EdgeInsets.only(
-                      top: headerHeight,
+                      top: topSafeArea,
                       bottom: UiSpacing.xxl,
                     ),
                     child: SizedBox(
@@ -165,6 +165,24 @@ class _PageHomeState extends State<PageHome> {
                         children: [
                           Positioned(
                             top: 0,
+                            left: 0,
+                            right: 0,
+                            height: HomeUniverseHeader.height,
+                            child: HomeUniverseHeader(
+                              xp: progress.xp,
+                              schoolYear: schoolYear,
+                              onXpTap: () => _showValue(
+                                AppStrings.xpLabel,
+                                AppStrings.xpValue(progress.xp),
+                              ),
+                              onSchoolYearTap: _onSchoolYearTap,
+                              hasNewSchoolYears:
+                                  ProductConfig.availableSchoolYears.length > 1,
+                              reducedMotion: reducedMotion,
+                            ),
+                          ),
+                          Positioned(
+                            top: HomeUniverseHeader.height,
                             left: 0,
                             right: 0,
                             height: _quickActionsOrbitHeight,
@@ -318,25 +336,6 @@ class _PageHomeState extends State<PageHome> {
             },
           ),
         ),
-
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: SafeArea(
-            bottom: false,
-            child: AppHomeBar(
-              xp: progress.xp,
-              schoolYear: schoolYear,
-              onXpTap: () => _showValue(
-                AppStrings.xpLabel,
-                AppStrings.xpValue(progress.xp),
-              ),
-              onSchoolYearTap: _onSchoolYearTap,
-              hasNewSchoolYears: ProductConfig.availableSchoolYears.length > 1,
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -361,8 +360,8 @@ class _PageHomeState extends State<PageHome> {
             children: [
               if (isGuest)
                 Positioned(
-                  left: constraints.maxWidth * 0.08,
-                  top: 8,
+                  right: constraints.maxWidth * 0.08,
+                  top: 48,
                   child: LoginCard(
                     onTap: () async {
                       final authenticated = await showLoginBottomSheet(
@@ -375,8 +374,8 @@ class _PageHomeState extends State<PageHome> {
                 ),
               if (recData != null)
                 Positioned(
-                  right: constraints.maxWidth * 0.08,
-                  top: 48,
+                  left: constraints.maxWidth * 0.08,
+                  top: 8,
                   child: RecommendationCard(
                     lesson: recData.lesson,
                     onTap: () => _showLessonActionSheet(

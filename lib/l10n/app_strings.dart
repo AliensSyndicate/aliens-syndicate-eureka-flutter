@@ -305,7 +305,7 @@ abstract final class AppStrings {
   static String progressRatio(int current, int total) =>
       '${current.toString().padLeft(2, '0')}/${total.toString().padLeft(2, '0')}';
   static String planetProgressRatio(int current, int total) =>
-      '$current de ${total.toString().padLeft(2, '0')} aulas';
+      '$current/${total.toString().padLeft(2, '0')} aulas';
   static String lessonSemantics(String title, bool isCompleted) =>
       '$title, ${isCompleted ? lessonCompletedSemantics : lessonZeroPercentSemantics}';
   static String pageIndicatorSemantics(int current, int total, String state) =>

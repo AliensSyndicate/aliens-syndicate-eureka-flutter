@@ -26,6 +26,8 @@ class LoginCard extends StatelessWidget {
         label: AppStrings.signInWithYourAccount,
         labelColor: UiColor.loginBorder,
         imageAsset: 'assets/images/login.png',
+        imageSize: 60,
+        textRadiusOffset: 4,
         onTap: onTap,
       ),
     );

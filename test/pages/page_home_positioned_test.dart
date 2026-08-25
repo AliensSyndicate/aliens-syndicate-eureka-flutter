@@ -5,8 +5,10 @@ import 'package:eureka/pages/home/page_home.dart';
 import 'package:eureka/pages/home/widgets/widget_action_planet_button.dart';
 import 'package:eureka/pages/home/widgets/widget_continue_learning_card.dart';
 import 'package:eureka/pages/home/widgets/widget_curved_text.dart';
+import 'package:eureka/pages/home/widgets/widget_home_universe_header.dart';
 import 'package:eureka/pages/home/widgets/widget_login_card.dart';
 import 'package:eureka/pages/home/widgets/widget_planet_button.dart';
+import 'package:eureka/pages/home/widgets/widget_planet_orbit_motion.dart';
 import 'package:eureka/pages/subject/page_subject.dart';
 import 'package:eureka/pages/subject/widgets/widget_subject_sheet_header.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +45,9 @@ void main() {
 
       // Não deve exibir título estático de matérias
       expect(find.text(AppStrings.subjectsTitle), findsNothing);
+      expect(find.byType(HomeUniverseHeader), findsOneWidget);
+      expect(find.text('0 xp'), findsOneWidget);
+      expect(find.text('5° ano'), findsOneWidget);
 
       // Deve exibir login card
       expect(find.byType(LoginCard), findsOneWidget);
@@ -53,6 +58,13 @@ void main() {
             .map((button) => button.size),
         everyElement(lessThan(100)),
       );
+      final loginPlanet = tester.widget<ActionPlanetButton>(
+        find.descendant(
+          of: find.byType(LoginCard),
+          matching: find.byType(ActionPlanetButton),
+        ),
+      );
+      expect(loginPlanet.imageSize, lessThan(loginPlanet.size));
       expect(
         find.descendant(
           of: find.byType(LoginCard),
@@ -63,12 +75,18 @@ void main() {
 
       // Deve mostrar somente as matérias habilitadas para o ano letivo.
       expect(find.byType(PlanetButton), findsNWidgets(5));
+      expect(
+        find.byType(PlanetOrbitMotion),
+        findsNWidgets(
+          tester.widgetList(find.byType(ActionPlanetButton)).length + 8,
+        ),
+      );
       final planets = tester.widgetList<PlanetButton>(
         find.byType(PlanetButton),
       );
       expect(
         planets.map((planet) => planet.progressText),
-        everyElement(matches(RegExp(r'^\d+ de \d{2} aulas\.$'))),
+        everyElement(matches(RegExp(r'^\d+/\d{2} aulas$'))),
       );
       expect(
         tester.getSize(find.byKey(const ValueKey('home-planets-orbit'))).height,
@@ -76,6 +94,9 @@ void main() {
       );
 
       final actionTopBefore = tester.getTopLeft(find.byType(LoginCard)).dy;
+      final universeTopBefore = tester
+          .getTopLeft(find.byType(HomeUniverseHeader))
+          .dy;
       final planetTopBefore = tester
           .getTopLeft(find.byType(PlanetButton).first)
           .dy;
@@ -88,6 +109,10 @@ void main() {
       expect(
         tester.getTopLeft(find.byType(LoginCard)).dy,
         lessThan(actionTopBefore),
+      );
+      expect(
+        tester.getTopLeft(find.byType(HomeUniverseHeader)).dy,
+        lessThan(universeTopBefore),
       );
       expect(
         tester.getTopLeft(find.byType(PlanetButton).first).dy,
