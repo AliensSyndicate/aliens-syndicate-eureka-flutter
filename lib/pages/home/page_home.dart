@@ -22,6 +22,7 @@ import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
 import '../auth/login_bottom_sheet.dart';
+import '../subject/page_subject.dart';
 import 'widgets/widget_continue_learning_card.dart';
 import 'widgets/widget_home_cards_skeleton.dart';
 import 'widgets/widget_login_card.dart';
@@ -463,10 +464,7 @@ class _PageHomeState extends State<PageHome> {
   }
 
   Future<void> _openSubject(SubjectContentManifest subject) async {
-    await context.pushNamed(
-      AppRoute.subject,
-      extra: SubjectRouteArguments(subject: subject, schoolYear: schoolYear),
-    );
+    await showSubjectSheet(context, subject: subject, schoolYear: schoolYear);
     if (mounted) setState(() {});
   }
 

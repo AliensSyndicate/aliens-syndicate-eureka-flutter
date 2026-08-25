@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../enums/learning_mode.dart';
-import '../../models/content/model_content_manifest.dart';
 import '../../models/model_lesson.dart';
 import '../../pages/explore/page_explore.dart';
 import '../../pages/home/page_home.dart';
@@ -23,7 +22,6 @@ import '../../models/model_activity_result.dart';
 import '../../pages/social/page_social.dart';
 import '../../pages/social/page_friends.dart';
 import '../../pages/social/page_ranking.dart';
-import '../../pages/subject/page_subject_lessons.dart';
 import '../../ui/ui_motion.dart';
 import '../../services/service_registry.dart';
 import '../../config/config_product.dart';
@@ -38,23 +36,12 @@ abstract final class AppRoute {
   static const simulationResult = 'simulationResult';
   static const simulationReview = 'simulationReview';
   static const profile = 'profile';
-  static const subject = 'subject';
   static const lesson = 'lesson';
   static const lessonLoading = 'lessonLoading';
   static const activityResult = 'activityResult';
   static const auth = 'auth';
   static const socialFriends = 'socialFriends';
   static const socialRanking = 'socialRanking';
-}
-
-class SubjectRouteArguments {
-  const SubjectRouteArguments({
-    required this.subject,
-    required this.schoolYear,
-  });
-
-  final SubjectContentManifest subject;
-  final int schoolYear;
 }
 
 class LessonRouteArguments {
@@ -219,22 +206,6 @@ final GoRouter appRouter = GoRouter(
           controller: (state.extra as SimulationRouteArguments).controller,
         ),
       ),
-    ),
-    GoRoute(
-      path: '/subject',
-      name: AppRoute.subject,
-      redirect: (context, state) =>
-          state.extra is SubjectRouteArguments ? null : '/home',
-      pageBuilder: (context, state) {
-        final arguments = state.extra as SubjectRouteArguments;
-        return _transitionPage(
-          state: state,
-          child: PageSubjectLessons(
-            subject: arguments.subject,
-            schoolYear: arguments.schoolYear,
-          ),
-        );
-      },
     ),
     GoRoute(
       path: '/lesson/result',

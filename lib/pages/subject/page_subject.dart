@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_report_bottom_sheet.dart';
 import '../../app/navigation/navigation_router.dart';
 import '../../enums/learning_mode.dart';
@@ -15,11 +16,63 @@ import '../../ui/ui_radius.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
 import 'widgets/widget_lesson_progress_card.dart';
-import 'widgets/widget_subject_lessons_app_bar.dart';
 import 'widgets/widget_subject_progress_card.dart';
+import 'widgets/widget_subject_sheet_header.dart';
 
-class PageSubjectLessons extends StatelessWidget {
-  const PageSubjectLessons({
+Future<void> showSubjectSheet(
+  BuildContext context, {
+  required SubjectContentManifest subject,
+  required int schoolYear,
+}) async {
+  final progress = ServiceRegistry.progress.load();
+  final completed = progress.completedLessonIds.toSet();
+  final lastCompletedLesson = subject
+      .lessonsForYear(schoolYear)
+      .where((lesson) => completed.contains(lesson.id))
+      .lastOrNull;
+  final lesson = await AppBottomSheet.show<Lesson>(
+    context,
+    title: subject.title,
+    titleColor: UiColor.forSubject(subject.type),
+    isDismissible: false,
+    enableDrag: false,
+    header: Builder(
+      builder: (sheetContext) => SubjectSheetHeader(
+        title: subject.title,
+        color: UiColor.forSubject(subject.type),
+        subject: subject.type,
+        schoolYear: schoolYear,
+        xp: progress.xp,
+        lastCompletedLesson: lastCompletedLesson,
+        onClose: () => Navigator.of(sheetContext).pop(),
+        onReport: () => _showSubjectReport(sheetContext, subject),
+      ),
+    ),
+    content: SubjectSheet(subject: subject, schoolYear: schoolYear),
+  );
+  if (lesson == null || !context.mounted) return;
+
+  await context.pushNamed(
+    AppRoute.lessonLoading,
+    extra: LessonLoadingRouteArguments(
+      lesson: lesson,
+      mode: LearningMode.journey,
+    ),
+  );
+}
+
+Future<void> _showSubjectReport(
+  BuildContext context,
+  SubjectContentManifest subject,
+) => AppReportBottomSheet.show(
+  context,
+  subjectId: subject.type.name,
+  lessonTitle: subject.title,
+  reportContext: ReportContext.subject,
+);
+
+class SubjectSheet extends StatelessWidget {
+  const SubjectSheet({
     required this.subject,
     required this.schoolYear,
     super.key,
@@ -36,10 +89,6 @@ class PageSubjectLessons extends StatelessWidget {
     final completedCount = allLessons
         .where((l) => completed.contains(l.id))
         .length;
-    final lastCompletedLesson = allLessons
-        .where((lesson) => completed.contains(lesson.id))
-        .lastOrNull;
-
     Lesson? continueLesson;
     if (progress.lastLessonId != null) {
       final match = allLessons
@@ -68,83 +117,43 @@ class PageSubjectLessons extends StatelessWidget {
           .firstOrNull;
     }
 
-    return Scaffold(
-      appBar: SubjectLessonsAppBar(
-        title: subject.title,
-        color: color,
-        subject: subject.type,
-        schoolYear: schoolYear,
-        xp: progress.xp,
-        lastCompletedLesson: lastCompletedLesson,
-        onBack: context.pop,
-        onReport: () => _showReportError(context),
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-            UiSpacing.pageHorizontal,
-            UiSpacing.sectionSpacing,
-            UiSpacing.pageHorizontal,
-            UiSpacing.pageVertical,
-          ),
-          children: [
-            SubjectProgressCard(
-              completed: completedCount,
-              total: allLessons.length,
-              color: color,
-            ),
-            const SizedBox(height: UiSpacing.sectionSpacing),
-            if (continueLesson != null) ...[
-              _LessonSection(
-                title: AppStrings.continueTitle,
-                lessons: [continueLesson],
-                allLessons: allLessons,
-                completed: completed,
-                color: color,
-                onLessonTap: (lesson) => _openLesson(context, lesson),
-              ),
-              const SizedBox(height: UiSpacing.sectionSpacing),
-            ],
-            if (allLessons.isEmpty)
-              Padding(
-                padding: const EdgeInsets.all(UiSpacing.sectionSpacing),
-                child: Text(
-                  AppStrings.emptyResults,
-                  textAlign: TextAlign.center,
-                ),
-              )
-            else ...[
-              _LessonSection(
-                title: AppStrings.lessonsTitle,
-                count: allLessons.length,
-                lessons: allLessons,
-                allLessons: allLessons,
-                completed: completed,
-                color: color,
-                onLessonTap: (lesson) => _openLesson(context, lesson),
-              ),
-            ],
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SubjectProgressCard(
+          completed: completedCount,
+          total: allLessons.length,
+          color: color,
         ),
-      ),
-    );
-  }
-
-  Future<void> _showReportError(BuildContext context) =>
-      AppReportBottomSheet.show(
-        context,
-        subjectId: subject.type.name,
-        lessonTitle: subject.title,
-        reportContext: ReportContext.subject,
-      );
-
-  Future<void> _openLesson(BuildContext context, Lesson lesson) async {
-    await context.pushNamed(
-      AppRoute.lessonLoading,
-      extra: LessonLoadingRouteArguments(
-        lesson: lesson,
-        mode: LearningMode.journey,
-      ),
+        const SizedBox(height: UiSpacing.sectionSpacing),
+        if (continueLesson != null) ...[
+          _LessonSection(
+            title: AppStrings.continueTitle,
+            lessons: [continueLesson],
+            allLessons: allLessons,
+            completed: completed,
+            color: color,
+            onLessonTap: (lesson) => Navigator.of(context).pop(lesson),
+          ),
+          const SizedBox(height: UiSpacing.sectionSpacing),
+        ],
+        if (allLessons.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(UiSpacing.sectionSpacing),
+            child: Text(AppStrings.emptyResults, textAlign: TextAlign.center),
+          )
+        else ...[
+          _LessonSection(
+            title: AppStrings.lessonsTitle,
+            count: allLessons.length,
+            lessons: allLessons,
+            allLessons: allLessons,
+            completed: completed,
+            color: color,
+            onLessonTap: (lesson) => Navigator.of(context).pop(lesson),
+          ),
+        ],
+      ],
     );
   }
 }

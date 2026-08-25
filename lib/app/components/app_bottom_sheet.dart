@@ -10,6 +10,7 @@ class AppBottomSheet {
     BuildContext context, {
     required String title,
     required Widget content,
+    Widget? header,
     List<Widget> actions = const [],
     bool isDismissible = true,
     bool enableDrag = true,
@@ -26,37 +27,72 @@ class AppBottomSheet {
       isDismissible: isDismissible,
       enableDrag: enableDrag,
       constraints: BoxConstraints(maxHeight: maxSheetHeight),
-      builder: (context) => SafeArea(
-        top: false,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-            UiBottomSheet.horizontalPadding,
-            UiBottomSheet.topPadding,
-            UiBottomSheet.horizontalPadding,
-            MediaQuery.viewInsetsOf(context).bottom +
-                UiBottomSheet.bottomPadding,
+      builder: (context) {
+        final sheet = SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: header == null
+                ? EdgeInsets.fromLTRB(
+                    UiBottomSheet.horizontalPadding,
+                    UiBottomSheet.topPadding,
+                    UiBottomSheet.horizontalPadding,
+                    MediaQuery.viewInsetsOf(context).bottom +
+                        UiBottomSheet.bottomPadding,
+                  )
+                : EdgeInsets.only(
+                    bottom:
+                        MediaQuery.viewInsetsOf(context).bottom +
+                        UiBottomSheet.bottomPadding,
+                  ),
+            child: header == null
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          title,
+                          style: UiText.h4.copyWith(color: titleColor),
+                        ),
+                      ),
+                      const SizedBox(height: UiSpacing.md),
+                      content,
+                      if (actions.isNotEmpty) ...[
+                        const SizedBox(height: UiSpacing.lg),
+                        ...actions,
+                      ],
+                    ],
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      header,
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          UiBottomSheet.horizontalPadding,
+                          UiSpacing.md,
+                          UiBottomSheet.horizontalPadding,
+                          0,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            content,
+                            if (actions.isNotEmpty) ...[
+                              const SizedBox(height: UiSpacing.lg),
+                              ...actions,
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Semantics(
-                header: true,
-                child: Text(
-                  title,
-                  style: UiText.h4.copyWith(color: titleColor),
-                ),
-              ),
-              const SizedBox(height: UiSpacing.md),
-              content,
-              if (actions.isNotEmpty) ...[
-                const SizedBox(height: UiSpacing.lg),
-                ...actions,
-              ],
-            ],
-          ),
-        ),
-      ),
+        );
+        return sheet;
+      },
     );
   }
 }

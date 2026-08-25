@@ -147,7 +147,7 @@ void main() {
       UiCard.progressTagHeight,
     );
     expect(
-      tester.getCenter(find.text('2/5')),
+      tester.getCenter(find.text('02/05')),
       tester.getCenter(find.byKey(const ValueKey('subject-progress-bar'))),
     );
     expect(find.text(AppStrings.completeAllLessons), findsOneWidget);

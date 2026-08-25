@@ -16,6 +16,7 @@ import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
+import '../subject/page_subject.dart';
 import 'widgets/widget_continue_learning_section.dart';
 import 'widgets/widget_explore_empty.dart';
 import 'widgets/widget_explore_skeleton.dart';
@@ -170,17 +171,13 @@ class _PageExploreState extends State<PageExplore> {
     );
   }
 
-  void _openSubject(SubjectContentManifest subject) {
-    context.pushNamed(
-      AppRoute.subject,
-      extra: SubjectRouteArguments(
-        subject: subject,
-        schoolYear: subject.schoolYears.isNotEmpty
-            ? subject.schoolYears.first.year
-            : 5,
-      ),
-    );
-  }
+  Future<void> _openSubject(SubjectContentManifest subject) => showSubjectSheet(
+    context,
+    subject: subject,
+    schoolYear: subject.schoolYears.isNotEmpty
+        ? subject.schoolYears.first.year
+        : 5,
+  );
 
   // ── Filtros (AppBottomSheet) ───────────────────────────────────────────────
 
