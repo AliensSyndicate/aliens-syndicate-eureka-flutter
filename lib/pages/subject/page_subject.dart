@@ -12,11 +12,9 @@ import '../../models/model_lesson.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_card.dart';
 import '../../ui/ui_color.dart';
-import '../../ui/ui_radius.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
 import 'widgets/widget_lesson_progress_card.dart';
-import 'widgets/widget_subject_progress_card.dart';
 import 'widgets/widget_subject_sheet_header.dart';
 
 Future<void> showSubjectSheet(
@@ -25,11 +23,11 @@ Future<void> showSubjectSheet(
   required int schoolYear,
 }) async {
   final progress = ServiceRegistry.progress.load();
-  final completed = progress.completedLessonIds.toSet();
-  final lastCompletedLesson = subject
-      .lessonsForYear(schoolYear)
+  final lessons = subject.lessonsForYear(schoolYear);
+  final completed = ServiceRegistry.progress.completedLessonIdsFor(lessons);
+  final completedCount = lessons
       .where((lesson) => completed.contains(lesson.id))
-      .lastOrNull;
+      .length;
   final lesson = await AppBottomSheet.show<Lesson>(
     context,
     title: subject.title,
@@ -43,7 +41,8 @@ Future<void> showSubjectSheet(
         subject: subject.type,
         schoolYear: schoolYear,
         xp: progress.xp,
-        lastCompletedLesson: lastCompletedLesson,
+        completedLessons: completedCount,
+        totalLessons: lessons.length,
         onClose: () => Navigator.of(sheetContext).pop(),
         onReport: () => _showSubjectReport(sheetContext, subject),
       ),
@@ -83,9 +82,11 @@ class SubjectSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = ServiceRegistry.progress.load();
-    final completed = progress.completedLessonIds.toSet();
     final color = UiColor.forSubject(subject.type);
     final allLessons = subject.lessonsForYear(schoolYear);
+    final completed = ServiceRegistry.progress.completedLessonIdsFor(
+      allLessons,
+    );
     final completedCount = allLessons
         .where((l) => completed.contains(l.id))
         .length;
@@ -102,7 +103,10 @@ class SubjectSheet extends StatelessWidget {
       for (final lesson in allLessons) {
         if (!completed.contains(lesson.id)) {
           final session = ServiceRegistry.progress.loadLessonSession(lesson.id);
-          if (session.results.isNotEmpty || session.currentPage > 0) {
+          final isCurrentSession =
+              session.activityVersion == lesson.activityVersion;
+          if (isCurrentSession &&
+              (session.results.isNotEmpty || session.currentPage > 0)) {
             continueLesson = lesson;
             break;
           }
@@ -120,15 +124,10 @@ class SubjectSheet extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SubjectProgressCard(
-          completed: completedCount,
-          total: allLessons.length,
-          color: color,
-        ),
-        const SizedBox(height: UiSpacing.sectionSpacing),
         if (continueLesson != null) ...[
           _LessonSection(
             title: AppStrings.continueTitle,
+            featured: true,
             lessons: [continueLesson],
             allLessons: allLessons,
             completed: completed,
@@ -167,10 +166,12 @@ class _LessonSection extends StatelessWidget {
     required this.color,
     required this.onLessonTap,
     this.count,
+    this.featured = false,
   });
 
   final String title;
   final int? count;
+  final bool featured;
   final List<Lesson> lessons;
   final List<Lesson> allLessons;
   final Set<String> completed;
@@ -181,52 +182,47 @@ class _LessonSection extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Row(
-        children: [
-          Text(title, style: UiText.h6.copyWith(color: UiColor.textPrimary)),
-          if (count != null) ...[
-            const SizedBox(width: UiSpacing.xs),
-            Text(
-              '$count',
-              style: UiText.h6.copyWith(color: UiColor.textSecondary),
-            ),
-          ],
-        ],
-      ),
-      const SizedBox(height: UiSpacing.sm),
-      Container(
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(UiRadius.card),
-          border: Border.all(color: UiColor.outline, width: UiCard.borderWidth),
-        ),
-        child: Column(
-          children: lessons.indexed.expand((entry) {
-            final (sectionIndex, lesson) = entry;
-            final lessonIndex = allLessons.indexWhere(
-              (item) => item.id == lesson.id,
-            );
-            return [
-              LessonProgressCard(
-                key: ValueKey('$title-${lesson.id}'),
-                lesson: lesson,
-                color: color,
-                lessonIndex: lessonIndex < 0 ? sectionIndex : lessonIndex,
-                totalLessons: allLessons.length,
-                isCompleted: completed.contains(lesson.id),
-                onTap: () => onLessonTap(lesson),
+      if (!featured) ...[
+        Row(
+          children: [
+            Text(title, style: UiText.h5.copyWith(color: UiColor.textPrimary)),
+            if (count != null) ...[
+              const SizedBox(width: UiSpacing.xs),
+              Text(
+                '$count',
+                style: UiText.h6.copyWith(color: UiColor.textSecondary),
               ),
-              if (sectionIndex < lessons.length - 1)
-                const Divider(
-                  height: UiCard.borderWidth,
-                  thickness: UiCard.borderWidth,
-                  indent: UiSpacing.lg,
-                  endIndent: UiSpacing.lg,
-                  color: UiColor.outline,
-                ),
-            ];
-          }).toList(),
+            ],
+          ],
         ),
+        const SizedBox(height: UiSpacing.sm),
+      ],
+      Column(
+        children: lessons.indexed.expand((entry) {
+          final (sectionIndex, lesson) = entry;
+          final lessonIndex = allLessons.indexWhere(
+            (item) => item.id == lesson.id,
+          );
+          return [
+            LessonProgressCard(
+              key: ValueKey('$title-${lesson.id}'),
+              lesson: lesson,
+              color: color,
+              lessonIndex: lessonIndex < 0 ? sectionIndex : lessonIndex,
+              totalLessons: allLessons.length,
+              isCompleted: completed.contains(lesson.id),
+              featured: featured,
+              eyebrow: featured ? title : null,
+              onTap: () => onLessonTap(lesson),
+            ),
+            if (!featured && sectionIndex < lessons.length - 1)
+              const Divider(
+                height: 56.0,
+                thickness: UiCard.borderWidth,
+                color: UiColor.outline,
+              ),
+          ];
+        }).toList(),
       ),
     ],
   );

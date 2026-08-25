@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../../enums/subject_type.dart';
 import '../../../l10n/app_strings.dart';
-import '../../../models/model_lesson.dart';
 import '../../../ui/ui_color.dart';
-import '../../../ui/ui_gradient.dart';
 import '../../../ui/ui_icon.dart';
 import '../../../ui/ui_radius.dart';
 import '../../../ui/ui_size.dart';
 import '../../../ui/ui_spacing.dart';
 import '../../../ui/ui_text.dart';
+import 'widget_subject_progress_card.dart';
 
 class SubjectSheetHeader extends StatelessWidget {
   const SubjectSheetHeader({
@@ -18,9 +17,10 @@ class SubjectSheetHeader extends StatelessWidget {
     required this.subject,
     required this.schoolYear,
     required this.xp,
+    required this.completedLessons,
+    required this.totalLessons,
     required this.onClose,
     required this.onReport,
-    this.lastCompletedLesson,
     super.key,
   });
 
@@ -29,144 +29,155 @@ class SubjectSheetHeader extends StatelessWidget {
   final SubjectType subject;
   final int schoolYear;
   final int xp;
-  final Lesson? lastCompletedLesson;
+  final int completedLessons;
+  final int totalLessons;
   final VoidCallback onClose;
   final VoidCallback onReport;
 
-  static const _planetSize = 200.0;
-  static const _lastLessonExtra = 24.0;
-
-  double get height =>
-      UiSize.subjectAppBarHeight +
-      (lastCompletedLesson == null ? 0 : _lastLessonExtra);
+  static const _planetSize = UiSize.subjectHeaderPlanet;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
+  Widget build(BuildContext context) => Stack(
     key: const ValueKey('subject-sheet-header'),
-    height: height,
-    child: Stack(
-      fit: StackFit.expand,
-      clipBehavior: Clip.hardEdge,
-      children: [
-        DecoratedBox(
+    children: [
+      Positioned.fill(
+        child: Image.asset(
+          'assets/images/home.png',
           key: const ValueKey('subject-sheet-header-background'),
-          decoration: BoxDecoration(gradient: UiGradient.forSubject(subject)),
+          fit: BoxFit.cover,
         ),
-        Positioned(
-          right: -40,
-          top: 50,
-          child: IgnorePointer(
-            child: Image.asset(
-              'assets/images/${subject.name}.png',
-              key: const ValueKey('subject-header-planet'),
-              width: _planetSize,
-              height: _planetSize,
-              fit: BoxFit.contain,
-            ),
+      ),
+      Positioned(
+        right: -20,
+        top: 64,
+        child: IgnorePointer(
+          child: Image.asset(
+            'assets/images/${subject.name}.png',
+            key: const ValueKey('subject-header-planet'),
+            width: _planetSize,
+            height: _planetSize,
+            fit: BoxFit.contain,
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: UiSpacing.xs),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    tooltip: AppStrings.back,
-                    onPressed: onClose,
-                    icon: UiIcon.close(color: UiColor.textPrimary),
-                  ),
-                  IconButton(
-                    tooltip: AppStrings.reportError,
-                    onPressed: onReport,
-                    icon: UiIcon.report(color: UiColor.textPrimary),
-                  ),
-                ],
-              ),
-              const SizedBox(height: UiSpacing.xs),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: UiSpacing.sm),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: UiText.h4.copyWith(color: UiColor.textPrimary),
-                    ),
-                    const SizedBox(height: UiSpacing.xs),
-                    Text(
-                      AppStrings.schoolYearFull(schoolYear),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: UiText.p,
-                    ),
-                    if (lastCompletedLesson != null) ...[
+      ),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: UiSpacing.sm,
+              vertical: UiSpacing.sm,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _HeaderAction(
+                  tooltip: AppStrings.back,
+                  onPressed: onClose,
+                  icon: UiIcon.close(color: UiColor.textPrimary),
+                ),
+                _HeaderAction(
+                  tooltip: AppStrings.reportError,
+                  onPressed: onReport,
+                  icon: UiIcon.report(color: UiColor.textPrimary),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              UiSpacing.pageHorizontal,
+              0,
+              UiSpacing.pageHorizontal,
+              UiSpacing.headerBottomGap,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: _planetSize * .45),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: UiText.h3.copyWith(color: UiColor.textPrimary),
+                      ),
                       const SizedBox(height: UiSpacing.xs),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: _planetSize * 0.45,
+                      Text(
+                        AppStrings.schoolYearFull(schoolYear),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: UiText.p,
+                      ),
+                      const SizedBox(height: UiSpacing.sm),
+                      Container(
+                        key: const ValueKey('subject-xp-card'),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: UiSpacing.md,
+                          vertical: UiSpacing.xs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: UiColor.surface.withValues(alpha: .76),
+                          borderRadius: BorderRadius.circular(UiRadius.card),
+                          border: Border.all(
+                            color: color.withValues(alpha: .42),
+                          ),
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.check_circle_rounded,
-                              color: color,
-                              size: UiSpacing.md,
-                            ),
+                            UiIcon.diamontXp(size: 18),
                             const SizedBox(width: UiSpacing.xxs),
-                            Flexible(
-                              child: Text(
-                                lastCompletedLesson!.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: UiText.small.copyWith(
-                                  color: UiColor.textPrimary.withValues(
-                                    alpha: .85,
-                                  ),
-                                ),
+                            Text(
+                              AppStrings.xpValue(xp),
+                              style: UiText.p.copyWith(
+                                color: UiColor.xp,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ],
-                    const SizedBox(height: UiSpacing.xs),
-                    Container(
-                      key: const ValueKey('subject-xp-card'),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: UiSpacing.md,
-                        vertical: UiSpacing.sm,
-                      ),
-                      decoration: BoxDecoration(
-                        color: UiColor.background.withValues(alpha: .94),
-                        borderRadius: BorderRadius.circular(UiRadius.card),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          UiIcon.diamontXp(size: 18),
-                          const SizedBox(width: UiSpacing.xxs),
-                          Text(
-                            AppStrings.xpValue(xp),
-                            style: UiText.p.copyWith(
-                              color: UiColor.xp,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: UiSpacing.sm),
+                SubjectProgressCard(
+                  completed: completedLessons,
+                  total: totalLessons,
+                  color: color,
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
+        ],
+      ),
+    ],
+  );
+}
+
+class _HeaderAction extends StatelessWidget {
+  const _HeaderAction({
+    required this.tooltip,
+    required this.onPressed,
+    required this.icon,
+  });
+
+  final String tooltip;
+  final VoidCallback onPressed;
+  final Widget icon;
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    tooltip: tooltip,
+    onPressed: onPressed,
+    icon: icon,
+    padding: EdgeInsets.zero,
+    constraints: const BoxConstraints(),
+    visualDensity: VisualDensity.compact,
   );
 }

@@ -24,16 +24,28 @@ class ProgressService {
   int completionPercentage(List<Lesson> lessons) {
     return SubjectProgressService().calculate(
       lessons,
-      load().completedLessonIds.toSet(),
+      completedLessonIdsFor(lessons),
     );
   }
 
   ({int completed, int total}) activityProgress(List<Lesson> lessons) {
-    final completedLessonIds = load().completedLessonIds.toSet();
+    final completedLessonIds = completedLessonIdsFor(lessons);
     final completed = lessons
         .where((lesson) => completedLessonIds.contains(lesson.id))
         .length;
     return (completed: completed, total: lessons.length);
+  }
+
+  Set<String> completedLessonIdsFor(List<Lesson> lessons) {
+    final completedLessonIds = load().completedLessonIds.toSet();
+    for (final lesson in lessons) {
+      final session = loadLessonSession(lesson.id);
+      if (session.completed &&
+          session.activityVersion == lesson.activityVersion) {
+        completedLessonIds.add(lesson.id);
+      }
+    }
+    return completedLessonIds;
   }
 
   Map<String, int> loadDifficultyScores() {

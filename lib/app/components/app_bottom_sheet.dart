@@ -72,7 +72,7 @@ class AppBottomSheet {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(
                           UiBottomSheet.horizontalPadding,
-                          UiSpacing.md,
+                          UiSpacing.headerBottomGap,
                           UiBottomSheet.horizontalPadding,
                           0,
                         ),

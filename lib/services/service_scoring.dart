@@ -8,6 +8,11 @@ class ScoringService {
   int calculateJourneyXp({required int correctAnswers}) =>
       correctAnswers * xpPerCorrectJourneyAnswer;
 
+  int maximumJourneyXpForQuestionCount(int availableQuestions) =>
+      calculateJourneyXp(
+        correctAnswers: availableQuestions.clamp(0, activitiesPerJourneyLesson),
+      );
+
   int calculateJourneyXpFromResults(Iterable<bool> results) =>
       calculateJourneyXp(
         correctAnswers: results.where((isCorrect) => isCorrect).length,

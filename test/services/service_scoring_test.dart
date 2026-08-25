@@ -8,9 +8,12 @@ void main() {
   });
 
   test('cada atividade correta vale 20 XP e a aula oferece até 100 XP', () {
+    final service = ScoringService();
     expect(ScoringService.xpPerCorrectJourneyAnswer, 20);
     expect(ScoringService.activitiesPerJourneyLesson, 5);
     expect(ScoringService.maximumJourneyLessonXp, 100);
+    expect(service.maximumJourneyXpForQuestionCount(3), 60);
+    expect(service.maximumJourneyXpForQuestionCount(8), 100);
     expect(
       ScoringService().calculateJourneyXpFromResults([
         true,

@@ -114,6 +114,7 @@ abstract final class AppStrings {
       simulationReviewAnswers = 'Revisar respostas',
       simulationReviewContent = 'Revisar conteúdo',
       simulationAnother = 'Fazer outro simulado',
+      subjectProgressTitle = 'Seu progresso',
       simulationExcellent = 'Excelente resultado.',
       simulationWellDone = 'Mandou bem.',
       simulationAlmostThere = 'Quase lá.',
@@ -306,6 +307,10 @@ abstract final class AppStrings {
       '${current.toString().padLeft(2, '0')}/${total.toString().padLeft(2, '0')}';
   static String planetProgressRatio(int current, int total) =>
       '$current/${total.toString().padLeft(2, '0')} aulas';
+  static String completedLessonsRatio(int completed, int total) =>
+      '$completed de $total aulas concluídas';
+  static String lessonNumberTitle(int number, String title) =>
+      '${number.toString().padLeft(2, '0')}. $title';
   static String lessonSemantics(String title, bool isCompleted) =>
       '$title, ${isCompleted ? lessonCompletedSemantics : lessonZeroPercentSemantics}';
   static String pageIndicatorSemantics(int current, int total, String state) =>

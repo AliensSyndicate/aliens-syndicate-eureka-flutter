@@ -144,20 +144,11 @@ void main() {
     expect(progress.color, UiColor.mathematics);
     expect(
       tester.getSize(find.byKey(const ValueKey('subject-progress-bar'))).height,
-      UiCard.progressTagHeight,
+      UiCard.progressTagHeight / 2,
     );
-    expect(
-      tester.getCenter(find.text('02/05')),
-      tester.getCenter(find.byKey(const ValueKey('subject-progress-bar'))),
-    );
-    expect(find.text(AppStrings.completeAllLessons), findsOneWidget);
-    final card = tester.widget<Container>(
-      find.byKey(const ValueKey('subject-progress-card')),
-    );
-    final decoration = card.decoration! as BoxDecoration;
-    expect(decoration.border, isNotNull);
-    expect(decoration.border!.top.color, UiColor.outline);
-    expect(decoration.border!.top.width, UiCard.borderWidth);
+    expect(find.text(AppStrings.subjectProgressTitle), findsOneWidget);
+    expect(find.text(AppStrings.completedLessonsRatio(2, 5)), findsOneWidget);
+    expect(find.text('40%'), findsOneWidget);
   });
 }
 

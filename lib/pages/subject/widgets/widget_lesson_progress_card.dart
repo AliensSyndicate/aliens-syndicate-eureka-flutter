@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 
 import '../../../l10n/app_strings.dart';
 import '../../../models/model_lesson.dart';
+import '../../../models/model_lesson_session.dart';
 import '../../../services/service_registry.dart';
 import '../../../services/service_scoring.dart';
 import '../../../ui/ui_card.dart';
 import '../../../ui/ui_color.dart';
+import '../../../ui/ui_gradient.dart';
 import '../../../ui/ui_radius.dart';
 import '../../../ui/ui_spacing.dart';
 import '../../../ui/ui_text.dart';
@@ -20,6 +22,8 @@ class LessonProgressCard extends StatelessWidget {
     required this.totalLessons,
     required this.isCompleted,
     required this.onTap,
+    this.featured = false,
+    this.eyebrow,
     super.key,
   });
 
@@ -29,9 +33,18 @@ class LessonProgressCard extends StatelessWidget {
   final int totalLessons;
   final bool isCompleted;
   final VoidCallback onTap;
+  final bool featured;
+  final String? eyebrow;
 
-  static const double _progressBarHeight = UiCard.progressTagHeight;
+  static const double _progressBarHeight = UiCard.progressTagHeight / 2;
   static const double _trackOpacity = 0.18;
+
+  LessonSession get _session {
+    final session = ServiceRegistry.progress.loadLessonSession(lesson.id);
+    return session.activityVersion == lesson.activityVersion
+        ? session
+        : const LessonSession();
+  }
 
   int get _difficultyLevel {
     if (lesson.questions.isEmpty) return 1;
@@ -42,7 +55,7 @@ class LessonProgressCard extends StatelessWidget {
   }
 
   String get _xpText {
-    final session = ServiceRegistry.progress.loadLessonSession(lesson.id);
+    final session = _session;
     final scoring = ScoringService();
     final hasStarted =
         session.currentPage > 0 ||
@@ -69,12 +82,14 @@ class LessonProgressCard extends StatelessWidget {
       return AppStrings.earnedXpGain(earned);
     }
 
-    return AppStrings.earnUpToXp(ScoringService.maximumJourneyLessonXp);
+    return AppStrings.earnUpToXp(
+      scoring.maximumJourneyXpForQuestionCount(lesson.practiceQuestions.length),
+    );
   }
 
   double get _progress {
     if (isCompleted) return 1.0;
-    final session = ServiceRegistry.progress.loadLessonSession(lesson.id);
+    final session = _session;
     if (session.completed) return 1.0;
     final total = session.questionIds.isNotEmpty
         ? session.questionIds.length
@@ -95,91 +110,117 @@ class LessonProgressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = _progress;
+    final content = Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: featured ? UiSpacing.md : 0,
+        vertical: featured ? UiSpacing.lg : 0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (featured && eyebrow != null) ...[
+            Text(
+              eyebrow!.toUpperCase(),
+              style: UiText.small.copyWith(
+                color: UiColor.textPrimary.withValues(alpha: .82),
+              ),
+            ),
+            const SizedBox(height: UiSpacing.xxs),
+          ],
+          Text(
+            AppStrings.lessonNumberTitle(lessonIndex + 1, lesson.title),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: UiText.p,
+            softWrap: true,
+          ),
+          const SizedBox(height: UiSpacing.xs),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: UiSpacing.xs,
+                  vertical: UiSpacing.xxs,
+                ),
+                decoration: BoxDecoration(
+                  color: featured
+                      ? UiColor.background.withValues(alpha: .28)
+                      : UiColor.forDifficulty(
+                          _difficultyLevel,
+                        ).withValues(alpha: .14),
+                  borderRadius: BorderRadius.circular(UiRadius.sm),
+                ),
+                child: Text(
+                  AppStrings.difficultyLevelName(_difficultyLevel),
+                  style: UiText.small.copyWith(
+                    color: featured
+                        ? UiColor.textPrimary
+                        : UiColor.forDifficulty(_difficultyLevel),
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Text(_xpText, style: UiText.small.copyWith(color: UiColor.xp)),
+            ],
+          ),
+          const SizedBox(height: UiSpacing.sm),
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: _progressBarHeight,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(UiRadius.pill),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: featured
+                          ? UiColor.background.withValues(alpha: .28)
+                          : color.withValues(alpha: _trackOpacity),
+                      color: featured ? UiColor.textPrimary : color,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: UiSpacing.sm),
+              Text(
+                AppStrings.percent((progress * 100).round()),
+                style: UiText.small.copyWith(
+                  color: featured ? UiColor.textPrimary : color,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+
+    final card = Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(UiRadius.card),
+        child: content,
+      ),
+    );
 
     return Semantics(
       button: true,
       label: AppStrings.lessonSemantics(lesson.title, isCompleted),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(UiSpacing.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(lesson.title, style: UiText.p, softWrap: true),
-                const SizedBox(height: UiSpacing.xxs),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      AppStrings.difficultyLevelName(_difficultyLevel),
-                      style: UiText.small.copyWith(
-                        color: UiColor.forDifficulty(_difficultyLevel),
-                      ),
-                    ),
-                    Text(
-                      _xpText,
-                      style: UiText.small.copyWith(color: UiColor.xp),
-                    ),
-                  ],
+      child: featured
+          ? DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: UiGradient.forSubject(lesson.subject),
+                borderRadius: BorderRadius.circular(UiRadius.card),
+                border: Border.all(
+                  color: UiColor.textPrimary.withValues(alpha: .18),
                 ),
-                const SizedBox(height: UiSpacing.xs),
-                SizedBox(
-                  height: _progressBarHeight,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(UiRadius.pill),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Positioned.fill(
-                          child: ColoredBox(
-                            color: color.withValues(alpha: _trackOpacity),
-                          ),
-                        ),
-                        if (progress > 0)
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: FractionallySizedBox(
-                              alignment: Alignment.centerLeft,
-                              widthFactor: progress,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: color,
-                                  borderRadius: BorderRadius.circular(
-                                    UiRadius.pill,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        Center(
-                          child: Text(
-                            AppStrings.percent((progress * 100).round()),
-                            textAlign: TextAlign.center,
-                            textHeightBehavior: const TextHeightBehavior(
-                              applyHeightToFirstAscent: false,
-                              applyHeightToLastDescent: false,
-                            ),
-                            style: UiText.p.copyWith(
-                              fontWeight: FontWeight.w800,
-                              height: 1,
-                              color: progress > 0.4 ? Colors.white : color,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(UiRadius.card),
+                child: card,
+              ),
+            )
+          : card,
     );
   }
 }

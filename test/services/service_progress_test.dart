@@ -97,6 +97,21 @@ void main() {
     expect(completedProgress.total, 2);
   });
 
+  test('considera sessão atual finalizada no progresso da matéria', () async {
+    final service = ProgressService(HiveProgressRepository(box));
+    final lessons = seedLessons.take(2).toList();
+    final lesson = lessons.first;
+    await service.saveLessonSession(
+      lesson.id,
+      LessonSession(activityVersion: lesson.activityVersion, completed: true),
+    );
+
+    final progress = service.activityProgress(lessons);
+
+    expect(progress.completed, 1);
+    expect(service.completionPercentage(lessons), 50);
+  });
+
   test('formata progresso com ao menos dois dígitos', () {
     expect(AppStrings.progressRatio(0, 0), '00/00');
     expect(AppStrings.progressRatio(3, 10), '03/10');

@@ -11,5 +11,5 @@ abstract final class UiSpacing {
   static const pageVertical = 16.0;
   static const cardPadding = 20.0;
   static const sectionSpacing = 32.0;
-  static const headerBottomGap = 48.0;
+  static const headerBottomGap = 32.0;
 }
