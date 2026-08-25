@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:eureka/l10n/app_strings.dart';
 import 'package:eureka/pages/home/page_home.dart';
 import 'package:eureka/pages/home/widgets/widget_action_planet_button.dart';
+import 'package:eureka/pages/home/widgets/widget_continue_learning_card.dart';
+import 'package:eureka/pages/home/widgets/widget_curved_text.dart';
 import 'package:eureka/pages/home/widgets/widget_login_card.dart';
 import 'package:eureka/pages/home/widgets/widget_planet_button.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +51,13 @@ void main() {
             .map((button) => button.size),
         everyElement(lessThan(100)),
       );
+      expect(
+        find.descendant(
+          of: find.byType(ActionPlanetButton),
+          matching: find.byType(CurvedText),
+        ),
+        findsNothing,
+      );
 
       // Deve mostrar somente as matérias habilitadas para o ano letivo.
       expect(find.byType(PlanetButton), findsNWidgets(5));
@@ -82,6 +91,11 @@ void main() {
         tester.getTopLeft(find.byType(PlanetButton).first).dy,
         lessThan(planetTopBefore),
       );
+
+      await tester.tap(find.byType(ContinueLearningCard));
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.byType(BottomSheet), findsOneWidget);
+      expect(find.text(AppStrings.continueTitle), findsOneWidget);
     },
   );
 }

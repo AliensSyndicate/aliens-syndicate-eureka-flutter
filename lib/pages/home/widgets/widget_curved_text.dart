@@ -8,6 +8,7 @@ class CurvedText extends StatelessWidget {
     required this.radius,
     this.letterSpacing = 1.0,
     this.isBottom = false,
+    this.closingGap,
     super.key,
   });
 
@@ -16,6 +17,7 @@ class CurvedText extends StatelessWidget {
   final double radius;
   final double letterSpacing;
   final bool isBottom;
+  final double? closingGap;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class CurvedText extends StatelessWidget {
         radius: radius,
         letterSpacing: letterSpacing,
         isBottom: isBottom,
+        closingGap: closingGap,
       ),
     );
   }
@@ -39,6 +42,7 @@ class _CurvedTextPainter extends CustomPainter {
     required this.radius,
     required this.letterSpacing,
     required this.isBottom,
+    required this.closingGap,
   });
 
   final String text;
@@ -46,13 +50,14 @@ class _CurvedTextPainter extends CustomPainter {
   final double radius;
   final double letterSpacing;
   final bool isBottom;
+  final double? closingGap;
 
   @override
   void paint(Canvas canvas, Size size) {
     if (text.isEmpty || radius <= 0) return;
 
     final center = Offset(size.width / 2, size.height / 2);
-    final characters = text.characters.toList();
+    final characters = _fittedCharacters();
     if (isBottom) characters.setAll(0, characters.reversed.toList());
     final letterPainters = <TextPainter>[];
     final letterAngles = <double>[];
@@ -96,11 +101,48 @@ class _CurvedTextPainter extends CustomPainter {
     }
   }
 
+  List<String> _fittedCharacters() {
+    final characters = text.characters.toList();
+    if (closingGap == null) return characters;
+
+    final maxTextWidth = (2 * math.pi * radius) - closingGap!;
+    final fullTextWidth = characters.fold<double>(
+      0,
+      (width, character) => width + _characterWidth(character),
+    );
+    if (fullTextWidth <= maxTextWidth) return characters;
+
+    const ellipsis = ['.', '.', '.'];
+    final ellipsisWidth = ellipsis.fold<double>(
+      0,
+      (width, character) => width + _characterWidth(character),
+    );
+    final availableWidth = math.max(0.0, maxTextWidth - ellipsisWidth);
+    final fitted = <String>[];
+    var fittedWidth = 0.0;
+    for (final character in characters) {
+      final characterWidth = _characterWidth(character);
+      if (fittedWidth + characterWidth > availableWidth) break;
+      fitted.add(character);
+      fittedWidth += characterWidth;
+    }
+    return [...fitted, ...ellipsis];
+  }
+
+  double _characterWidth(String character) {
+    final painter = TextPainter(
+      text: TextSpan(text: character, style: textStyle),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    return painter.width + letterSpacing;
+  }
+
   @override
   bool shouldRepaint(covariant _CurvedTextPainter oldDelegate) =>
       oldDelegate.text != text ||
       oldDelegate.textStyle != textStyle ||
       oldDelegate.radius != radius ||
       oldDelegate.letterSpacing != letterSpacing ||
-      oldDelegate.isBottom != isBottom;
+      oldDelegate.isBottom != isBottom ||
+      oldDelegate.closingGap != closingGap;
 }

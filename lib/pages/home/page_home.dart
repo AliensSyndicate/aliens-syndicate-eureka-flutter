@@ -17,8 +17,10 @@ import '../../l10n/app_strings.dart';
 import '../../models/auth/model_login_request.dart';
 import '../../models/content/model_content_manifest.dart';
 import '../../services/service_registry.dart';
+import '../../ui/ui_color.dart';
 import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
+import '../../ui/ui_text.dart';
 import '../auth/login_bottom_sheet.dart';
 import 'widgets/widget_continue_learning_card.dart';
 import 'widgets/widget_home_cards_skeleton.dart';
@@ -374,16 +376,11 @@ class _PageHomeState extends State<PageHome> {
                   top: 48,
                   child: RecommendationCard(
                     lesson: recData.lesson,
-                    onTap: () async {
-                      await context.pushNamed(
-                        AppRoute.lesson,
-                        extra: LessonRouteArguments(
-                          lesson: recData.lesson,
-                          mode: LearningMode.journey,
-                        ),
-                      );
-                      if (mounted) setState(() {});
-                    },
+                    onTap: () => _showLessonActionSheet(
+                      title: AppStrings.recommendationTitle,
+                      data: recData,
+                      confirmationLabel: AppStrings.startActivity,
+                    ),
                   ),
                 ),
               if (continueData != null)
@@ -392,16 +389,11 @@ class _PageHomeState extends State<PageHome> {
                   top: 108,
                   child: ContinueLearningCard(
                     lesson: continueData.lesson,
-                    onTap: () async {
-                      await context.pushNamed(
-                        AppRoute.lesson,
-                        extra: LessonRouteArguments(
-                          lesson: continueData.lesson,
-                          mode: LearningMode.journey,
-                        ),
-                      );
-                      if (mounted) setState(() {});
-                    },
+                    onTap: () => _showLessonActionSheet(
+                      title: AppStrings.continueTitle,
+                      data: continueData,
+                      confirmationLabel: AppStrings.continueLabel,
+                    ),
                   ),
                 ),
             ],
@@ -409,6 +401,53 @@ class _PageHomeState extends State<PageHome> {
         );
       },
     );
+  }
+
+  Future<void> _showLessonActionSheet({
+    required String title,
+    required ContinueLearningData data,
+    required String confirmationLabel,
+  }) async {
+    final subjectColor = UiColor.forSubject(data.subject.type);
+    final confirmed = await AppBottomSheet.show<bool>(
+      context,
+      title: title,
+      titleColor: subjectColor,
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            data.subject.title,
+            style: UiText.h6.copyWith(color: subjectColor),
+          ),
+          const SizedBox(height: UiSpacing.xs),
+          Text(data.lesson.title, style: UiText.p),
+          if (data.lesson.summary.trim().isNotEmpty) ...[
+            const SizedBox(height: UiSpacing.sm),
+            Text(data.lesson.summary, style: UiText.p),
+          ],
+        ],
+      ),
+      actions: [
+        Builder(
+          builder: (sheetContext) => AppButton(
+            label: confirmationLabel,
+            color: subjectColor,
+            onPressed: () => Navigator.of(sheetContext).pop(true),
+          ),
+        ),
+      ],
+    );
+    if (confirmed != true || !mounted) return;
+
+    await context.pushNamed(
+      AppRoute.lesson,
+      extra: LessonRouteArguments(
+        lesson: data.lesson,
+        mode: LearningMode.journey,
+      ),
+    );
+    if (mounted) setState(() {});
   }
 
   SubjectContentManifest? _findSubject(

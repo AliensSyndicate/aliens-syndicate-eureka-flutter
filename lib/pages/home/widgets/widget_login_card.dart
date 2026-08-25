@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../l10n/app_strings.dart';
-import '../../../ui/ui_color.dart';
 import 'widget_action_planet_button.dart';
 
 class LoginCard extends StatelessWidget {
@@ -22,10 +21,8 @@ class LoginCard extends StatelessWidget {
       width: width,
       height: height,
       child: ActionPlanetButton(
-        title: AppStrings.enterWithYourAccount,
-        subtitle: '',
+        semanticLabel: AppStrings.enterWithYourAccount,
         imageAsset: 'assets/images/login.png',
-        color: UiColor.loginBorder,
         onTap: onTap,
       ),
     );
