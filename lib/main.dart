@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'app/navigation/navigation_router.dart';
+import 'controllers/controller_auth_session.dart';
 import 'l10n/app_strings.dart';
 import 'services/service_firebase.dart';
 import 'services/service_registry.dart';
@@ -15,7 +16,7 @@ Future<void> main() async {
   await Hive.openBox<dynamic>('eureka');
   await Hive.openBox<dynamic>('content_cache_v1');
   await FirebaseService.initialize();
-  await ServiceRegistry.auth.reconcileSession();
+  await authSessionController.initialize(ServiceRegistry.auth);
   await ServiceRegistry.content.syncManifest().timeout(
     const Duration(seconds: 4),
     onTimeout: () => false,

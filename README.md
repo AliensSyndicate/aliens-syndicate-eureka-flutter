@@ -1,6 +1,6 @@
 # Eureka
 
-Aplicativo educacional gamificado para o ensino básico brasileiro. A V1 funciona sem login, com usuário temporário e progresso local em Hive.
+Aplicativo educacional gamificado para o ensino básico brasileiro. A V1 exige autenticação Google ou Apple, restaura a sessão no início e mantém o progresso local em Hive com sincronização privada para usuários autenticados.
 
 ## Execução
 

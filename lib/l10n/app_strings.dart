@@ -36,7 +36,7 @@ abstract final class AppStrings {
       rankingStudentCount = '20 alunos nesta divisão',
       rankingNextDivision = 'Faltam 120 XP para subir de divisão.',
       socialRequiresAccount =
-          'Social, Amigos e Ranking ficam disponíveis depois que você salvar seu progresso com uma conta.',
+          'Social, Amigos e Ranking ainda não estão disponíveis nesta versão.',
       exploreHint = 'Busque uma matéria ou conteúdo',
       exploreSearchHint = 'O que você quer aprender?',
       exploreRecentSearches = 'Buscas recentes',
@@ -59,7 +59,7 @@ abstract final class AppStrings {
       continueWithApple = 'Continuar com Apple',
       continueWithoutAccount = 'Agora não',
       authUnavailable = 'A entrada com conta ainda não está disponível.',
-      authCreateOrSignIn = 'Use Google ou Apple para criar sua conta ou entrar em uma conta existente.',
+      authCreateOrSignIn = 'Crie sua conta ou entre com Google ou Apple para continuar.',
       authTermsPrefix = 'Ao continuar, você concorda com os ',
       termsOfUse = 'Termos de Uso',
       privacyPolicy = 'Política de Privacidade',

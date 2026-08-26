@@ -15,7 +15,7 @@ Fonte normativa: `Eureka_Documento_Mestre_Produto_UX_Arquitetura_IA.docx`, vers�
 - O Eureka atende do 1º ano do Ensino Fundamental ao 3º ano do Ensino Médio. Ano organiza e recomenda, mas não bloqueia conteúdo publicado.
 - O catálogo não inclui matérias de línguas estrangeiras.
 - Ordem da navegação: Home, Social, Explorar, Simulado e Profile.
-- Estudo básico funciona sem login. Social, Amigos, Ranking e sincronização entre dispositivos exigem autenticação Google ou Apple; não simular autenticação.
+- O uso do app exige autenticação Google ou Apple. Sem sessão válida, `PageAuth` é o gate inicial em tela cheia e nenhuma rota do produto fica acessível; não simular autenticação. Social, Amigos e Ranking continuam sujeitos aos próprios gates de produto, privacidade e backend.
 - Explorar não concede XP por padrão. Simulado não revela correção durante a prova e não concede XP para farming.
 - Não implementar posts manuais, comentários livres, mensagens privadas, vidas, energia, moedas, loja, streak, missões ou mascote fixo sem decisão explícita.
 

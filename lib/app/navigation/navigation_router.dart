@@ -6,8 +6,6 @@ import '../../models/model_lesson.dart';
 import '../../pages/explore/page_explore.dart';
 import '../../pages/home/page_home.dart';
 import '../../pages/auth/page_auth.dart';
-import '../../models/auth/model_login_request.dart';
-import '../../enums/login_context.dart';
 import '../../pages/lesson/page_lesson.dart';
 import '../../pages/lesson/page_lesson_loading.dart';
 import '../../pages/lesson/page_activity_result.dart';
@@ -17,6 +15,7 @@ import '../../pages/simulation/page_simulation_question.dart';
 import '../../pages/simulation/page_simulation_result.dart';
 import '../../pages/simulation/page_simulation_review.dart';
 import '../../controllers/controller_simulation.dart';
+import '../../controllers/controller_auth_session.dart';
 import '../../models/model_simulation.dart';
 import '../../models/model_activity_result.dart';
 import '../../pages/social/page_social.dart';
@@ -79,7 +78,16 @@ class SimulationResultRouteArguments extends SimulationRouteArguments {
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/home',
+  initialLocation: '/auth',
+  refreshListenable: authSessionController,
+  redirect: (context, state) {
+    final isAuthRoute = state.matchedLocation == '/auth';
+    if (!authSessionController.initialized ||
+        !authSessionController.isAuthenticated) {
+      return isAuthRoute ? null : '/auth';
+    }
+    return isAuthRoute ? '/home' : null;
+  },
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
@@ -157,14 +165,8 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/auth',
       name: AppRoute.auth,
-      pageBuilder: (context, state) => _transitionPage(
-        state: state,
-        child: PageAuth(
-          request:
-              state.extra as LoginRequest? ??
-              const LoginRequest(context: LoginContext.profile),
-        ),
-      ),
+      pageBuilder: (context, state) =>
+          _transitionPage(state: state, child: const PageAuth()),
     ),
     GoRoute(
       path: '/simulation/question',

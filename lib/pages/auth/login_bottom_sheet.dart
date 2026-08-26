@@ -17,7 +17,6 @@ Future<bool> showLoginBottomSheet(
           request: request,
           showHeading: false,
           onAuthenticated: () => Navigator.of(sheetContext).pop(true),
-          onContinueWithoutAccount: () => Navigator.of(sheetContext).pop(false),
         ),
       ),
     ) ??

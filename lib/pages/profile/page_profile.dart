@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../app/components/app_bottom_sheet.dart';
 import '../../app/components/app_button.dart';
-import '../../config/config_product.dart';
-import '../../enums/login_context.dart';
 import '../../l10n/app_strings.dart';
-import '../../models/auth/model_login_request.dart';
-import '../auth/login_bottom_sheet.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_icon.dart';
@@ -24,7 +20,6 @@ class _PageProfileState extends State<PageProfile> {
   Widget build(BuildContext context) {
     final user = ServiceRegistry.user.loadCurrentUser();
     final progress = ServiceRegistry.progress.load();
-    final isAuthenticated = ServiceRegistry.user.isAuthenticated;
     return ListView(
       padding: const EdgeInsets.symmetric(
         horizontal: UiSpacing.pageHorizontal,
@@ -42,7 +37,7 @@ class _PageProfileState extends State<PageProfile> {
         Text(user.displayName, textAlign: TextAlign.center, style: UiText.h4),
         Text(
           '${AppStrings.schoolYear(user.schoolYear)} • '
-          '${isAuthenticated ? AppStrings.connectedAccount : AppStrings.temporaryAccount}',
+          '${AppStrings.connectedAccount}',
           textAlign: TextAlign.center,
           style: UiText.label,
         ),
@@ -60,20 +55,16 @@ class _PageProfileState extends State<PageProfile> {
           ),
         ),
         const SizedBox(height: UiSpacing.md),
-        if (!isAuthenticated)
-          AppButton(label: AppStrings.saveMyProgress, onPressed: _openLogin)
-        else ...[
-          Text(
-            ServiceRegistry.auth.providerLabel ?? AppStrings.connectedAccount,
-            style: UiText.label,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: UiSpacing.sm),
-          TextButton(
-            onPressed: _confirmSignOut,
-            child: const Text(AppStrings.signOut),
-          ),
-        ],
+        Text(
+          ServiceRegistry.auth.providerLabel ?? AppStrings.connectedAccount,
+          style: UiText.label,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: UiSpacing.sm),
+        TextButton(
+          onPressed: _confirmSignOut,
+          child: const Text(AppStrings.signOut),
+        ),
         const SizedBox(height: UiSpacing.md),
         TextButton(
           onPressed: _showPreferences,
@@ -81,25 +72,6 @@ class _PageProfileState extends State<PageProfile> {
         ),
       ],
     );
-  }
-
-  Future<void> _openLogin() async {
-    if (!ProductConfig.authenticationEnabled) {
-      await AppBottomSheet.show<void>(
-        context,
-        title: AppStrings.saveMyProgress,
-        content: const Text(AppStrings.authUnavailable, style: UiText.p),
-      );
-      return;
-    }
-    final authenticated = await showLoginBottomSheet(
-      context,
-      const LoginRequest(
-        context: LoginContext.profile,
-        returnLocation: '/profile',
-      ),
-    );
-    if (authenticated && mounted) setState(() {});
   }
 
   Future<void> _confirmSignOut() async {

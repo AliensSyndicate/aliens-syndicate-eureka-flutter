@@ -6,6 +6,8 @@ Esta regra materializa as exigências do Documento Mestre para segurança, LGPD 
 - Não publique progresso, respostas, identidade, e-mail ou outros dados pessoais em leitura pública.
 - Comentários livres, mensagens, uploads e conteúdo público produzido por menores ficam fora da V1.
 - Autenticação real deve usar Google e Apple quando aplicável. Não criar fluxo fictício de e-mail e senha.
+- A autenticação é obrigatória para acessar o app. A tela inicial deve informar a finalidade da conta, apresentar termos e privacidade antes do provedor e permanecer bloqueante em cancelamento, erro ou indisponibilidade.
+- Logout encerra a sessão e retorna ao gate de autenticação; voltar, deep link ou restauração de rota não podem contornar o gate.
 - Pages e widgets não acessam Firebase ou Hive. Toda autorização, validação e persistência passa por services e repositories.
 - Firestore Rules e validações de backend são obrigatórias; validação apenas no cliente não é proteção suficiente.
 - Progresso remoto fica em `users/{uid}` e só pode ser lido ou alterado quando `request.auth.uid` corresponde ao dono. Persistir apenas agregados necessários, nunca respostas individuais.

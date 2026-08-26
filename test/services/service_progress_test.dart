@@ -42,6 +42,21 @@ void main() {
     expect(service.loadDifficultyScores(), {'fractions': 2});
   });
 
+  test('isola o progresso local por uid', () async {
+    final accountA = ProgressService(
+      HiveProgressRepository(box, userId: 'uid-a'),
+    );
+    final accountB = ProgressService(
+      HiveProgressRepository(box, userId: 'uid-b'),
+    );
+
+    await accountA.completeLesson('lesson-a', 20);
+
+    expect(accountA.load().xp, 20);
+    expect(accountB.load().xp, 0);
+    expect(accountB.load().completedLessonIds, isEmpty);
+  });
+
   test('persiste snapshot mínimo do resultado da atividade', () async {
     final service = ProgressService(HiveProgressRepository(box));
     final completedAt = DateTime(2026, 8, 22, 15);

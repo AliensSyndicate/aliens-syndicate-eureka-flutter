@@ -2,12 +2,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../app/components/app_button.dart';
 import '../../config/config_product.dart';
 import '../../controllers/controller_auth.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/auth/model_auth_result.dart';
 import '../../models/auth/model_login_request.dart';
-import '../../enums/login_context.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_icon.dart';
@@ -19,7 +19,6 @@ class LoginContent extends StatefulWidget {
   const LoginContent({
     required this.request,
     required this.onAuthenticated,
-    required this.onContinueWithoutAccount,
     this.showLogo = false,
     this.showHeading = true,
     this.controller,
@@ -28,7 +27,6 @@ class LoginContent extends StatefulWidget {
 
   final LoginRequest request;
   final VoidCallback onAuthenticated;
-  final VoidCallback onContinueWithoutAccount;
   final bool showLogo;
   final bool showHeading;
   final AuthController? controller;
@@ -99,10 +97,9 @@ class _LoginContentState extends State<LoginContent> {
         textAlign: TextAlign.center,
       ),
       const SizedBox(height: UiSpacing.xl),
-      _ProviderButton(
+      AppButton(
         key: const Key('login_google'),
         label: AppStrings.continueWithGoogle,
-        mark: const Text('G', style: TextStyle(fontWeight: FontWeight.w800)),
         isLoading:
             controller.isBusy &&
             controller.loadingProvider == AuthProvider.google,
@@ -114,10 +111,9 @@ class _LoginContentState extends State<LoginContent> {
       FutureBuilder<bool>(
         future: appleAvailable,
         builder: (context, snapshot) => snapshot.data == true
-            ? _ProviderButton(
+            ? AppButton(
                 key: const Key('login_apple'),
                 label: AppStrings.continueWithApple,
-                mark: const Icon(Icons.apple, size: UiSize.iconSm),
                 isLoading:
                     controller.isBusy &&
                     controller.loadingProvider == AuthProvider.apple,
@@ -138,63 +134,9 @@ class _LoginContentState extends State<LoginContent> {
           ),
         ),
       ],
-      if (widget.request.context == LoginContext.saveProgress) ...[
-        const SizedBox(height: UiSpacing.sm),
-        TextButton(
-          onPressed: controller.isBusy ? null : widget.onContinueWithoutAccount,
-          child: const Text(AppStrings.continueWithoutAccount),
-        ),
-      ],
       const SizedBox(height: UiSpacing.lg),
       const _LegalText(),
     ],
-  );
-}
-
-class _ProviderButton extends StatelessWidget {
-  const _ProviderButton({
-    required this.label,
-    required this.mark,
-    required this.onPressed,
-    required this.isLoading,
-    super.key,
-  });
-
-  final String label;
-  final Widget mark;
-  final VoidCallback? onPressed;
-  final bool isLoading;
-
-  @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    enabled: onPressed != null,
-    label: label,
-    child: SizedBox(
-      height: UiSize.touchTarget,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: UiColor.textPrimary,
-          side: const BorderSide(color: UiColor.outline),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UiSize.touchTarget / 2),
-          ),
-        ),
-        child: isLoading
-            ? const SizedBox.square(
-                dimension: UiSize.iconSm,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(alignment: Alignment.centerLeft, child: mark),
-                  Text(label, style: UiText.p),
-                ],
-              ),
-      ),
-    ),
   );
 }
 

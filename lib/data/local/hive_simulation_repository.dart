@@ -8,14 +8,17 @@ import '../../models/model_question.dart';
 import '../../models/model_simulation.dart';
 
 class HiveSimulationRepository implements SimulationRepository {
-  HiveSimulationRepository(this._box);
+  HiveSimulationRepository(this._box, {String? userId}) : _userId = userId;
   final Box<dynamic> _box;
+  final String? _userId;
   static const _key = 'active_simulation_v1';
   static const _resultsKey = 'simulation_results_v1';
+  String _scoped(String value) =>
+      _userId == null ? value : 'user.$_userId.$value';
 
   @override
   SimulationSession? loadActive() {
-    final stored = _box.get(_key);
+    final stored = _box.get(_scoped(_key));
     if (stored is! Map) return null;
     try {
       final map = Map<String, dynamic>.from(stored);
@@ -29,11 +32,11 @@ class HiveSimulationRepository implements SimulationRepository {
 
   @override
   Future<void> saveActive(SimulationSession session) =>
-      _box.put(_key, _sessionToMap(session));
+      _box.put(_scoped(_key), _sessionToMap(session));
 
   @override
   Future<void> saveCompleted(CompletedSimulation simulation) async {
-    final stored = _box.get(_resultsKey);
+    final stored = _box.get(_scoped(_resultsKey));
     final results = stored is Map
         ? Map<String, dynamic>.from(stored)
         : <String, dynamic>{};
@@ -43,13 +46,13 @@ class HiveSimulationRepository implements SimulationRepository {
       'session': _sessionToMap(simulation.session),
       'result': _resultToMap(simulation.result),
     };
-    await _box.put(_resultsKey, results);
+    await _box.put(_scoped(_resultsKey), results);
   }
 
   @override
   CompletedSimulation? loadCompleted(String sessionId) {
     try {
-      final stored = _box.get(_resultsKey);
+      final stored = _box.get(_scoped(_resultsKey));
       if (stored is! Map || stored[sessionId] is! Map) return null;
       final map = Map<String, dynamic>.from(stored[sessionId] as Map);
       return CompletedSimulation(
@@ -139,7 +142,7 @@ class HiveSimulationRepository implements SimulationRepository {
           .toList();
 
   @override
-  Future<void> clearActive() => _box.delete(_key);
+  Future<void> clearActive() => _box.delete(_scoped(_key));
 
   static Map<String, dynamic> _questionToMap(SimulationQuestion item) => {
     'subject': item.subject.name,

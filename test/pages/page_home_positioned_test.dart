@@ -4,9 +4,7 @@ import 'package:eureka/l10n/app_strings.dart';
 import 'package:eureka/pages/home/page_home.dart';
 import 'package:eureka/pages/home/widgets/widget_action_planet_button.dart';
 import 'package:eureka/pages/home/widgets/widget_continue_learning_card.dart';
-import 'package:eureka/pages/home/widgets/widget_curved_text.dart';
 import 'package:eureka/pages/home/widgets/widget_home_universe_header.dart';
-import 'package:eureka/pages/home/widgets/widget_login_card.dart';
 import 'package:eureka/pages/home/widgets/widget_planet_button.dart';
 import 'package:eureka/pages/home/widgets/widget_planet_orbit_motion.dart';
 import 'package:eureka/pages/subject/page_subject.dart';
@@ -49,8 +47,7 @@ void main() {
       expect(find.text('0 xp'), findsOneWidget);
       expect(find.text('5° ano'), findsOneWidget);
 
-      // Deve exibir login card
-      expect(find.byType(LoginCard), findsOneWidget);
+      // A Home só é exibida depois da autenticação global.
       expect(find.byType(ActionPlanetButton), findsAtLeastNWidgets(1));
       expect(
         tester
@@ -58,21 +55,6 @@ void main() {
             .map((button) => button.size),
         everyElement(lessThan(100)),
       );
-      final loginPlanet = tester.widget<ActionPlanetButton>(
-        find.descendant(
-          of: find.byType(LoginCard),
-          matching: find.byType(ActionPlanetButton),
-        ),
-      );
-      expect(loginPlanet.imageSize, lessThan(loginPlanet.size));
-      expect(
-        find.descendant(
-          of: find.byType(LoginCard),
-          matching: find.byType(CurvedText),
-        ),
-        findsOneWidget,
-      );
-
       // Deve mostrar somente as matérias habilitadas para o ano letivo.
       expect(find.byType(PlanetButton), findsNWidgets(5));
       expect(
@@ -93,7 +75,9 @@ void main() {
         lessThan(1040),
       );
 
-      final actionTopBefore = tester.getTopLeft(find.byType(LoginCard)).dy;
+      final actionTopBefore = tester
+          .getTopLeft(find.byType(ActionPlanetButton).first)
+          .dy;
       final universeTopBefore = tester
           .getTopLeft(find.byType(HomeUniverseHeader))
           .dy;
@@ -107,7 +91,7 @@ void main() {
       await tester.pump();
 
       expect(
-        tester.getTopLeft(find.byType(LoginCard)).dy,
+        tester.getTopLeft(find.byType(ActionPlanetButton).first).dy,
         lessThan(actionTopBefore),
       );
       expect(

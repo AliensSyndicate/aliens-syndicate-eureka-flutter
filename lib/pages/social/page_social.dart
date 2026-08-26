@@ -8,12 +8,8 @@ import '../../ui/ui_icon.dart';
 import '../../ui/ui_size.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
-import '../../services/service_registry.dart';
 import '../../config/config_product.dart';
 import '../../l10n/app_strings.dart';
-import '../../enums/login_context.dart';
-import '../../models/auth/model_login_request.dart';
-import '../auth/login_bottom_sheet.dart';
 import 'widgets/widget_social_avatar.dart';
 import 'widgets/widget_social_post.dart';
 import 'widgets/widget_social_skeleton.dart';
@@ -32,38 +28,16 @@ class _PageSocialState extends State<PageSocial> {
   @override
   void initState() {
     super.initState();
-    socialAvailable =
-        widget.controller != null ||
-        (ProductConfig.socialEnabled && ServiceRegistry.user.isAuthenticated);
+    socialAvailable = widget.controller != null || ProductConfig.socialEnabled;
     if (socialAvailable) {
       controller =
           widget.controller ?? SocialController(MockSocialRepository());
-    }
-    if (!socialAvailable && ProductConfig.authenticationEnabled) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _requestLogin());
     }
     scrollController = ScrollController()..addListener(_onScroll);
     controller?.addListener(_refresh);
     if (controller?.status == SocialFeedStatus.initial) {
       controller?.loadInitial();
     }
-  }
-
-  Future<void> _requestLogin() async {
-    if (!mounted) return;
-    final authenticated = await showLoginBottomSheet(
-      context,
-      const LoginRequest(
-        context: LoginContext.social,
-        returnLocation: '/social',
-      ),
-    );
-    if (!authenticated || !ProductConfig.socialEnabled || !mounted) return;
-    controller = SocialController(MockSocialRepository())
-      ..addListener(_refresh);
-    socialAvailable = true;
-    await controller!.loadInitial();
-    if (mounted) setState(() {});
   }
 
   void _refresh() {
@@ -86,12 +60,8 @@ class _PageSocialState extends State<PageSocial> {
   Widget build(BuildContext context) {
     if (!socialAvailable) {
       return _SocialLocked(
-        onTap: ProductConfig.authenticationEnabled
-            ? _requestLogin
-            : () => context.go('/home'),
-        actionLabel: ProductConfig.authenticationEnabled
-            ? AppStrings.saveMyProgress
-            : AppStrings.backToHome,
+        onTap: () => context.go('/home'),
+        actionLabel: AppStrings.backToHome,
       );
     }
     return SafeArea(

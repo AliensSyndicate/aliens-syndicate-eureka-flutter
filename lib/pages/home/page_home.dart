@@ -10,21 +10,17 @@ import '../../app/navigation/navigation_router.dart';
 import '../../config/config_product.dart';
 import '../../controllers/controller_home.dart';
 import '../../enums/learning_mode.dart';
-import '../../enums/login_context.dart';
 import '../../enums/subject_type.dart';
 import '../../l10n/app_strings.dart';
-import '../../models/auth/model_login_request.dart';
 import '../../models/content/model_content_manifest.dart';
 import '../../services/service_registry.dart';
 import '../../ui/ui_color.dart';
 import '../../ui/ui_spacing.dart';
 import '../../ui/ui_text.dart';
-import '../auth/login_bottom_sheet.dart';
 import '../subject/page_subject.dart';
 import 'widgets/widget_continue_learning_card.dart';
 import 'widgets/widget_home_cards_skeleton.dart';
 import 'widgets/widget_home_universe_header.dart';
-import 'widgets/widget_login_card.dart';
 import 'widgets/widget_planet_button.dart';
 import 'widgets/widget_recommendation_card.dart';
 
@@ -36,7 +32,7 @@ class PageHome extends StatefulWidget {
 }
 
 class _PageHomeState extends State<PageHome> {
-  static const _quickActionsOrbitHeight = 188.0;
+  static const _quickActionsOrbitHeight = 140.0;
   static const _subjectOrbitCompression = 0.94;
 
   late int schoolYear;
@@ -61,7 +57,6 @@ class _PageHomeState extends State<PageHome> {
   @override
   Widget build(BuildContext context) {
     final progress = ServiceRegistry.progress.load();
-    final isGuest = !ServiceRegistry.user.isAuthenticated;
     final reducedMotion = ServiceRegistry.preferences.load().reducedMotion;
     final topSafeArea = MediaQuery.of(context).padding.top;
 
@@ -186,7 +181,7 @@ class _PageHomeState extends State<PageHome> {
                             left: 0,
                             right: 0,
                             height: _quickActionsOrbitHeight,
-                            child: _buildQuickActions(isGuest),
+                            child: _buildQuickActions(),
                           ),
                           // 1. Português (órbita superior esquerda)
                           if (portuguese != null)
@@ -340,7 +335,7 @@ class _PageHomeState extends State<PageHome> {
     );
   }
 
-  Widget _buildQuickActions(bool isGuest) {
+  Widget _buildQuickActions() {
     return FutureBuilder<List<dynamic>>(
       future: Future.wait([continueLearning, recommendation]),
       builder: (context, snapshot) {
@@ -351,7 +346,7 @@ class _PageHomeState extends State<PageHome> {
             ? snapshot.data![1] as ContinueLearningData?
             : null;
 
-        final hasAnyAction = continueData != null || recData != null || isGuest;
+        final hasAnyAction = continueData != null || recData != null;
         if (!hasAnyAction) return const SizedBox.shrink();
 
         return LayoutBuilder(
@@ -360,7 +355,9 @@ class _PageHomeState extends State<PageHome> {
             children: [
               if (recData != null)
                 Positioned(
-                  left: constraints.maxWidth * 0.08,
+                  left: continueData != null
+                      ? constraints.maxWidth * 0.10
+                      : (constraints.maxWidth - 80) / 2,
                   top: 8,
                   child: RecommendationCard(
                     lesson: recData.lesson,
@@ -373,8 +370,9 @@ class _PageHomeState extends State<PageHome> {
                 ),
               if (continueData != null)
                 Positioned(
-                  right: constraints.maxWidth * 0.08,
-                  top: 48,
+                  left: recData != null ? null : (constraints.maxWidth - 80) / 2,
+                  right: recData != null ? constraints.maxWidth * 0.10 : null,
+                  top: recData != null ? 38 : 8,
                   child: ContinueLearningCard(
                     lesson: continueData.lesson,
                     onTap: () => _showLessonActionSheet(
@@ -382,20 +380,6 @@ class _PageHomeState extends State<PageHome> {
                       data: continueData,
                       confirmationLabel: AppStrings.continueLabel,
                     ),
-                  ),
-                ),
-              if (isGuest)
-                Positioned(
-                  left: constraints.maxWidth * 0.08,
-                  top: 108,
-                  child: LoginCard(
-                    onTap: () async {
-                      final authenticated = await showLoginBottomSheet(
-                        context,
-                        const LoginRequest(context: LoginContext.saveProgress),
-                      );
-                      if (authenticated && mounted) setState(() {});
-                    },
                   ),
                 ),
             ],

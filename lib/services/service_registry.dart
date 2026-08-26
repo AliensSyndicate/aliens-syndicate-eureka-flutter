@@ -36,7 +36,7 @@ abstract final class ServiceRegistry {
   static Box<dynamic> get _contentBox => Hive.box<dynamic>('content_cache_v1');
   static UserService get user => UserService(HiveUserRepository(_box));
   static ProgressService get progress => ProgressService(
-    HiveProgressRepository(_box),
+    HiveProgressRepository(_box, userId: user.loadCurrentUser().id),
     cloudRepository: FirebaseService.isAvailable
         ? FirestoreProgressRepository(
             FirebaseFirestore.instance,
@@ -44,8 +44,9 @@ abstract final class ServiceRegistry {
           )
         : null,
   );
-  static PreferencesService get preferences =>
-      PreferencesService(HivePreferencesRepository(_box));
+  static PreferencesService get preferences => PreferencesService(
+    HivePreferencesRepository(_box, userId: user.loadCurrentUser().id),
+  );
   static AuthRepository? _auth;
   static AuthRepository get auth => _auth ??= FirebaseService.isAvailable
       ? FirebaseAuthRepository(AuthService(), HiveUserRepository(_box))
@@ -63,7 +64,7 @@ abstract final class ServiceRegistry {
   static SimulationService get simulation => SimulationService();
   static AnalyticsService get analytics => NoopAnalyticsService();
   static HiveSimulationRepository get simulationRepository =>
-      HiveSimulationRepository(_box);
+      HiveSimulationRepository(_box, userId: user.loadCurrentUser().id);
   static RecommendationService get recommendation => RecommendationService();
   static QuestionSelectionService get questionSelection =>
       QuestionSelectionService();
@@ -81,8 +82,10 @@ abstract final class ServiceRegistry {
       _search ??= LocalSearchRepository(content);
 
   /// Histórico de queries do Explorar (Hive).
-  static HiveExploreHistory get exploreHistory => HiveExploreHistory(_box);
+  static HiveExploreHistory get exploreHistory =>
+      HiveExploreHistory(_box, userId: user.loadCurrentUser().id);
 
   /// Lessons recentemente acessadas pelo Explorar (Hive).
-  static HiveExploreRecents get exploreRecents => HiveExploreRecents(_box);
+  static HiveExploreRecents get exploreRecents =>
+      HiveExploreRecents(_box, userId: user.loadCurrentUser().id);
 }

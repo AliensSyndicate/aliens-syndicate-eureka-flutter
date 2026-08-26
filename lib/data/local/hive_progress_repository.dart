@@ -6,18 +6,22 @@ import '../../models/model_activity_result.dart';
 import '../../models/model_progress.dart';
 
 class HiveProgressRepository implements ProgressRepository {
-  HiveProgressRepository(this._box);
+  HiveProgressRepository(this._box, {String? userId}) : _userId = userId;
 
   final Box<dynamic> _box;
+  final String? _userId;
   Future<void> _pendingLessonSave = Future<void>.value();
   static const _lessonSessionsKey = 'lesson_sessions_v1';
   static const _legacyLessonSessionsKey = 'lesson_sessions';
   static const _activityResultsKey = 'activity_results_v1';
 
+  String _key(String value) => _userId == null ? value : 'user.$_userId.$value';
+
   @override
   LessonSession loadLessonSession(String lessonId) {
     final sessions =
-        _box.get(_lessonSessionsKey) ?? _box.get(_legacyLessonSessionsKey);
+        _box.get(_key(_lessonSessionsKey)) ??
+        (_userId == null ? _box.get(_legacyLessonSessionsKey) : null);
     if (sessions is! Map || sessions[lessonId] is! Map) {
       return const LessonSession();
     }
@@ -32,14 +36,14 @@ class HiveProgressRepository implements ProgressRepository {
   Future<void> saveLessonSession(String lessonId, LessonSession session) {
     final snapshot = session.toMap();
     _pendingLessonSave = _pendingLessonSave.then((_) async {
-      final stored = _box.get(_lessonSessionsKey);
+      final stored = _box.get(_key(_lessonSessionsKey));
       final sessions = stored is Map
           ? Map<String, dynamic>.from(stored)
           : <String, dynamic>{};
       sessions[lessonId] = snapshot;
       await _box.putAll({
-        _lessonSessionsKey: sessions,
-        'last_lesson_id': lessonId,
+        _key(_lessonSessionsKey): sessions,
+        _key('last_lesson_id'): lessonId,
       });
     });
     return _pendingLessonSave;
@@ -47,12 +51,12 @@ class HiveProgressRepository implements ProgressRepository {
 
   @override
   UserProgress loadProgress() {
-    final rawXp = _box.get('xp', defaultValue: 0);
+    final rawXp = _box.get(_key('xp'), defaultValue: 0);
     final rawCompleted = _box.get(
-      'completed_lessons',
+      _key('completed_lessons'),
       defaultValue: <String>[],
     );
-    final rawLastLesson = _box.get('last_lesson_id');
+    final rawLastLesson = _box.get(_key('last_lesson_id'));
     return UserProgress(
       xp: rawXp is int ? rawXp : 0,
       completedLessonIds: rawCompleted is List
@@ -64,15 +68,16 @@ class HiveProgressRepository implements ProgressRepository {
 
   @override
   Future<void> saveProgress(UserProgress progress) => _box.putAll({
-    'xp': progress.xp,
-    'completed_lessons': progress.completedLessonIds,
-    'last_lesson_id': progress.lastLessonId,
+    _key('xp'): progress.xp,
+    _key('completed_lessons'): progress.completedLessonIds,
+    _key('last_lesson_id'): progress.lastLessonId,
   });
 
   @override
   Map<String, int> loadDifficultyScores() {
     final stored =
-        _box.get('difficulty_subjects_v1') ?? _box.get('difficulty_subjects');
+        _box.get(_key('difficulty_subjects_v1')) ??
+        (_userId == null ? _box.get('difficulty_subjects') : null);
     if (stored is! Map) return {};
     return {
       for (final entry in stored.entries)
@@ -82,11 +87,11 @@ class HiveProgressRepository implements ProgressRepository {
 
   @override
   Future<void> saveDifficultyScores(Map<String, int> scores) =>
-      _box.put('difficulty_subjects_v1', scores);
+      _box.put(_key('difficulty_subjects_v1'), scores);
 
   @override
   Future<void> saveActivityResult(ActivityResultSnapshot result) async {
-    final stored = _box.get(_activityResultsKey);
+    final stored = _box.get(_key(_activityResultsKey));
     final results = stored is Map
         ? Map<String, dynamic>.from(stored)
         : <String, dynamic>{};
@@ -105,13 +110,13 @@ class HiveProgressRepository implements ProgressRepository {
       'reviewTopics': result.reviewTopics,
       'completedAt': result.completedAt.toIso8601String(),
     };
-    await _box.put(_activityResultsKey, results);
+    await _box.put(_key(_activityResultsKey), results);
   }
 
   @override
   ActivityResultSnapshot? loadLatestActivityResult(String lessonId) {
     try {
-      final stored = _box.get(_activityResultsKey);
+      final stored = _box.get(_key(_activityResultsKey));
       if (stored is! Map || stored[lessonId] is! Map) return null;
       final map = Map<String, dynamic>.from(stored[lessonId] as Map);
       return ActivityResultSnapshot(
