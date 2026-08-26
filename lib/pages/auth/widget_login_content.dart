@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../app/components/app_button.dart';
 import '../../config/config_product.dart';
 import '../../controllers/controller_auth.dart';
 import '../../l10n/app_strings.dart';
@@ -74,30 +73,7 @@ class _LoginContentState extends State<LoginContent> {
         Center(child: UiIcon.logo(size: UiSize.avatarMd)),
         const SizedBox(height: UiSpacing.lg),
       ],
-      if (widget.showHeading) ...[
-        Semantics(
-          header: true,
-          child: Text(
-            AppStrings.loginTitle(widget.request.context),
-            style: UiText.h3,
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const SizedBox(height: UiSpacing.sm),
-      ],
-      Text(
-        AppStrings.loginDescription(widget.request.context),
-        style: UiText.p,
-        textAlign: TextAlign.center,
-      ),
-      const SizedBox(height: UiSpacing.xs),
-      Text(
-        AppStrings.authCreateOrSignIn,
-        style: UiText.label,
-        textAlign: TextAlign.center,
-      ),
-      const SizedBox(height: UiSpacing.xl),
-      AppButton(
+      _ProviderButton(
         key: const Key('login_google'),
         label: AppStrings.continueWithGoogle,
         isLoading:
@@ -111,7 +87,7 @@ class _LoginContentState extends State<LoginContent> {
       FutureBuilder<bool>(
         future: appleAvailable,
         builder: (context, snapshot) => snapshot.data == true
-            ? AppButton(
+            ? _ProviderButton(
                 key: const Key('login_apple'),
                 label: AppStrings.continueWithApple,
                 isLoading:
@@ -137,6 +113,48 @@ class _LoginContentState extends State<LoginContent> {
       const SizedBox(height: UiSpacing.lg),
       const _LegalText(),
     ],
+  );
+}
+
+class _ProviderButton extends StatelessWidget {
+  const _ProviderButton({
+    required this.label,
+    required this.onPressed,
+    required this.isLoading,
+    super.key,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    enabled: onPressed != null,
+    label: label,
+    child: SizedBox(
+      height: UiSize.touchTarget,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: UiColor.textPrimary,
+          side: const BorderSide(color: UiColor.accent),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(UiSize.touchTarget / 2),
+          ),
+        ),
+        child: isLoading
+            ? const SizedBox.square(
+                dimension: UiSize.iconSm,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: UiColor.accent,
+                ),
+              )
+            : Text(label, style: UiText.h4),
+      ),
+    ),
   );
 }
 

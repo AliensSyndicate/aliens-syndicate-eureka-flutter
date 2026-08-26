@@ -42,12 +42,8 @@ void main() {
     );
     await tester.pump();
 
-    expect(
-      find.text(AppStrings.continueWithGoogle.toUpperCase()),
-      findsOneWidget,
-    );
-    expect(find.text(AppStrings.authCreateOrSignIn), findsOneWidget);
-    expect(find.text(AppStrings.continueWithApple.toUpperCase()), findsNothing);
+    expect(find.text(AppStrings.continueWithGoogle), findsOneWidget);
+    expect(find.text(AppStrings.continueWithApple), findsNothing);
     expect(find.text(AppStrings.continueWithoutAccount), findsNothing);
   });
 
@@ -65,15 +61,8 @@ void main() {
     );
     await tester.pump();
 
-    expect(
-      find.text(AppStrings.continueWithApple.toUpperCase()),
-      findsOneWidget,
-    );
+    expect(find.text(AppStrings.continueWithApple), findsOneWidget);
     expect(find.text(AppStrings.continueWithoutAccount), findsNothing);
-    expect(
-      find.text(AppStrings.loginTitle(LoginContext.social)),
-      findsOneWidget,
-    );
   });
 }
 
